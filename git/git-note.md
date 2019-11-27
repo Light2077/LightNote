@@ -8,5 +8,14 @@
 
 提交文件：提交文件，会显示你仓库中的文件的改动情况
 
+```
+e:\GitHub\LightNote>git commit -m "my first git commit"
+[master (root-commit) a311ad6] my first git commit
+ 1 file changed, 3 insertions(+)
+ create mode 100644 README.md
+```
+
+
+
 # [时光机穿梭](https://www.liaoxuefeng.com/wiki/896043488029600/896954074659008)
 
