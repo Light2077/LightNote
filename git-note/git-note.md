@@ -19,3 +19,8 @@ e:\GitHub\LightNote>git commit -m "my first git commit"
 
 # [时光机穿梭](https://www.liaoxuefeng.com/wiki/896043488029600/896954074659008)
 
+Git无法显示中文
+
+cmd：`set LESSCHARSET=utf-8`
+
+PowerShell: `$env:LESSCHARSET='utf-8'`
