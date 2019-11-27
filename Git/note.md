@@ -196,7 +196,7 @@ Git鼓励大量使用分支：
 
 ## [解决冲突](https://www.liaoxuefeng.com/wiki/896043488029600/900004111093344)
 
-
+合并分支时遭遇冲突，可以通过`git status`
 
 ## [分支管理策略](https://www.liaoxuefeng.com/wiki/896043488029600/900005860592480)
 
