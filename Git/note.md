@@ -1,67 +1,63 @@
 - # [创建版本库](https://www.liaoxuefeng.com/wiki/896043488029600/896827951938304)
 
-  **增加文件：把文件添加到仓库**
+**增加文件：把文件添加到仓库**
 
-  `git add <file>`
+`git add <file>`
 
-  **提交文件：会显示你仓库中的文件的改动情况**
+**提交文件：会显示你仓库中的文件的改动情况**
 
-  `git commit -m <message>  `
+`git commit -m <message>  `
 
-  
 
-  ```
-  e:\GitHub\LightNote>git commit -m "my first git commit"
-  [master (root-commit) a311ad6] my first git commit
-   1 file changed, 3 insertions(+)
-   create mode 100644 README.md
-  ```
+```
+e:\GitHub\LightNote>git commit -m "my first git commit"
+[master (root-commit) a311ad6] my first git commit
+1 file changed, 3 insertions(+)
+create mode 100644 README.md
+```
 
-  
+# [时光机穿梭](https://www.liaoxuefeng.com/wiki/896043488029600/896954074659008)
 
-  # [时光机穿梭](https://www.liaoxuefeng.com/wiki/896043488029600/896954074659008)
+**查看工作区状态：查看有哪些文件改动**
 
-  **查看工作区状态：查看有哪些文件改动**
+`git status`
 
-  `git status`
+**查看文件改动的情况**
 
-  **查看文件改动的情况**
+`git diff <file>`
 
-  `git diff <file>`
+`git diff --cached <file>`不知为何，我要这么写才能看到变化
 
-  `git diff --cached <file>`不知为何，我要这么写才能看到变化
+**Git无法显示中文**
 
-  **Git无法显示中文**
+cmd：`set LESSCHARSET=utf-8`
 
-  cmd：`set LESSCHARSET=utf-8`
+PowerShell: `$env:LESSCHARSET='utf-8'`
 
-  PowerShell: `$env:LESSCHARSET='utf-8'`
+**重命名文件**
 
-  **重命名文件**
+`git mv oldname newname`
 
-  `git mv oldname newname`
+## [版本回退](https://www.liaoxuefeng.com/wiki/896043488029600/897013573512192)
 
-  ## [版本回退](https://www.liaoxuefeng.com/wiki/896043488029600/897013573512192)
+**查看版本日志，按`Q`退出**
+`head`表示当前版本，`head^`表示上个版本
 
-  **查看版本日志，按`Q`退出**
+`git log`
 
-  `head`表示当前版本，`head^`表示上个版本
+**回到以前的版本**
 
-  `git log`
+`git reset --hard HEAD^ `（最好在结尾加个空格，不然可能会出问题）
 
-  **回到以前的版本**
+`git reset --hard <commit_id>`
 
-  `git reset --hard HEAD^ `（最好在结尾加个空格，不然可能会出问题）
+`git reflog`查看以前输入的命令
 
-  `git reset --hard <commit_id>`
+## [工作区和暂存区](https://www.liaoxuefeng.com/wiki/896043488029600/897271968352576)
 
-  `git reflog`查看以前输入的命令
+**工作区（Working Directory）**
 
-  ## [工作区和暂存区](https://www.liaoxuefeng.com/wiki/896043488029600/897271968352576)
-
-  工作区（Working Directory）
-
-  电脑里能看到的目录，比如`LightNote`
+电脑里能看到的目录，比如`LightNote`
 
   
 
@@ -87,4 +83,19 @@ Git的版本库里存了很多东西，其中最重要的就是称为stage（或
 
 你可以简单理解为，需要提交的文件修改通通放到暂存区，然后，一次性提交暂存区的所有修改。
 
-俗话说，实践出真知。现在，我们再练习一遍，先对`readme.txt`做个修改，比如加上一行内容：
+## [管理修改](https://www.liaoxuefeng.com/wiki/896043488029600/897884457270432)
+
+第一次修改->`git add`->第二次修改->`git commit`
+
+其实只提交了第一次修改的内容，第二次修改**不会**更新。
+
+想要提交修改，一定要在修改之后执行`git add`
+
+## [撤销修改](https://www.liaoxuefeng.com/wiki/896043488029600/897889638509536)
+
+
+
+## [删除文件](https://www.liaoxuefeng.com/wiki/896043488029600/900002180232448)
+
+
+
