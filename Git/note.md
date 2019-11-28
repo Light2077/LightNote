@@ -1,5 +1,9 @@
 # [创建版本库](https://www.liaoxuefeng.com/wiki/896043488029600/896827951938304)
 
+初始化：在某文件夹下初始化git，使git可以管理这个文件夹
+
+`git init`
+
 **增加文件：把文件添加到仓库**
 
 `git add <file>`
