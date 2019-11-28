@@ -69,7 +69,7 @@ PowerShell: `$env:LESSCHARSET='utf-8'`
 
 Git的版本库里存了很多东西，其中最重要的就是称为**stage**（或者叫index）的暂存区，还有Git为我们自动创建的第一个分支`master`，以及指向`master`的一个指针叫`HEAD`。
 
-![git-repo](picture/git-repo)
+![git-repo](picture/git-repo.png)
 
 分支和`HEAD`的概念我们以后再讲。
 
@@ -201,6 +201,16 @@ Git鼓励大量使用分支：
 ## [分支管理策略](https://www.liaoxuefeng.com/wiki/896043488029600/900005860592480)
 
 ## [Bug分支](https://www.liaoxuefeng.com/wiki/896043488029600/900388704535136)
+
+储存当前工作分支
+
+![branch](picture/branch3.png)
+
+你在dev上工作准备更新版本时，突然发现了一个bug，需要立即修复，但是dev版本的更新起码还需要1周，现在修了bug也推不上去。
+
+用`stash`功能保存当前(dev)工作现场，从master创建bug分支来修复bug
+
+`git stash`
 
 ## [Feature分支](https://www.liaoxuefeng.com/wiki/896043488029600/900394246995648)
 
