@@ -204,13 +204,77 @@ Git鼓励大量使用分支：
 
 储存当前工作分支
 
-![branch](picture/branch3.png)
+<img src="picture/bug1.png" style="zoom: 33%;" />
 
 你在dev上工作准备更新版本时，突然发现了一个bug，需要立即修复，但是dev版本的更新起码还需要1周，现在修了bug也推不上去。
 
 用`stash`功能保存当前(dev)工作现场，从master创建bug分支来修复bug
 
-`git stash`
+用`git stash`保存dev的工作现场
+
+![](picture/bug2.png)
+
+
+
+切换到master分支，并新建一个处理bug的issue分支
+
+```
+git switch master
+git switch -c issue
+```
+
+<img src="picture/bug3.png" style="zoom:50%;" />
+
+修复issue分支上的bug并提交
+
+(这里要记住这个commit时的id)
+
+或者用`git log --graph --pretty=oneline --abbrev-commit --all --decorate`查看
+
+```
+fix bug ...
+git add <file>
+git commit -m <msg>
+```
+
+<img src="picture/bug4.png" style="zoom:50%;" />
+
+合并分支
+
+[`--no-ff`的作用](https://blog.csdn.net/zombres/article/details/82179122)：简单概括就是，没有`--no-ff`时不会产生commit。
+
+![](https://img-blog.csdn.net/20150811134840627)
+
+回到上一个版本时，不会回到`feature`里的版本
+
+```
+git switch master
+git merge --no-ff -m "fix bug" issue
+```
+
+<img src="picture/bug5.png" style="zoom:50%;" />
+
+回到dev分支，工作区还原
+
+```
+git switch dev
+git stash list # 查看stash保存的工作区列表
+git stash apply stash@{0}
+git stash drop stash@{0}
+# 或者用
+git stash pop
+```
+用`git cherry-pick <commit code>`提交之前提交过的修复bug
+
+```
+git cherry-pick 9d9644a
+```
+
+<img src="picture/bug6.png" style="zoom:50%;" />
+
+继续工作
+
+
 
 ## [Feature分支](https://www.liaoxuefeng.com/wiki/896043488029600/900394246995648)
 
