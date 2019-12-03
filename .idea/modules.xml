@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/LightNote.iml" filepath="$PROJECT_DIR$/.idea/LightNote.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../QA-abstract-and-reasoning/.idea/QA-abstract-and-reasoning.iml" filepath="$PROJECT_DIR$/../QA-abstract-and-reasoning/.idea/QA-abstract-and-reasoning.iml" />
+    </modules>
+  </component>
+</project>

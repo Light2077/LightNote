@@ -251,12 +251,16 @@ git commit -m <msg>
 
 回到上一个版本时，不会回到`feature`里的版本
 
+合并到merge分支
+
 ```
 git switch master
 git merge --no-ff -m "fix bug" issue
 ```
 
 <img src="picture/bug5.png" style="zoom:50%;" />
+
+【该图有误】
 
 回到dev分支，工作区还原
 
