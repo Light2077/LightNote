@@ -4,12 +4,35 @@
 
 :cheese: 多做几次
 
+:x:毫无头绪
+
+## 常见错误
+
+- 返回值没考虑特殊情况
+
 ## 经验总结
 
-### o(n^2^)怎么优化到o(nlogn)
+### 思路启迪
+
+- 一维数组，关于求和，可以想到
+  - 前缀和
+  - 把目标值考虑到算法中，比如创建一个`dp = [0] * len(nums)`
+- 有正有负的乘法动态规划，可以考虑用两个dp数组
+
+### o(n^2)怎么优化到o(nlogn)
 
 - 排序（排序后结合二分法）
 - 堆
+
+### 动态规划的思考流程
+
+- 考虑能否缩减问题的规模
+  - 分治：每次减小一半
+  - 每次减小一个
+- dp数组的形式
+  - 一个一维dp，dp[n]可能与dp[n-1]有关，也可能与dp[1] 到 dp[n-1] 都有关
+  - 两个一维dp，关联程度如上
+  - 如果只与dp[n-1]有关，可以简化成单个数字
 
 ### 字符串
 
@@ -33,15 +56,25 @@
 
 ### **二分查找**：
 
+- `nums[mid]` 不仅可以和target值比较
+- `nums[mid]` 和 `nums[mid-1]` 或 `nums[mid+1]` 比较。比如[162. 寻找峰值](https://leetcode-cn.com/problems/find-peak-element/)
+- `nums[mid]`和`nums[low]`或`nums[high]`比较[剑指 Offer 11. 旋转数组的最小数字](https://leetcode-cn.com/problems/xuan-zhuan-shu-zu-de-zui-xiao-shu-zi-lcof/)
+
+#### [354. 俄罗斯套娃信封问题](https://leetcode-cn.com/problems/russian-doll-envelopes/)
+
+难题，暴力最后一个样例通不过。
+
 #### [剑指 Offer 53 - II. 0～n-1中缺失的数字](https://leetcode-cn.com/problems/que-shi-de-shu-zi-lcof/)
 
-注意特例：缺失的数字处于边界的情况。	
+注意特例：缺失的数字处于边界的情况。	（用了新的二分查找思路，少了一个判断）
 
 #### [209. 长度最小的子数组](https://leetcode-cn.com/problems/minimum-size-subarray-sum/)
-这题本来可以用o(n)复杂度解题的，但是为了追求骚操作，硬是要来o(log(n))的二分查找解题法。主要是熟悉二分查找模板。信手拈来。
+:cheese:这题本来可以用o(n)复杂度解题的，但是为了追求骚操作，硬是要来o(log(n))的二分查找解题法。主要是熟悉二分查找模板。信手拈来。
 
 #### [162. 寻找峰值](https://leetcode-cn.com/problems/find-peak-element/)
-这也能二分我是没想到的
+:cheese:这也能二分我是没想到的，做第二次时没做出来
+
+
 
 #### [34. 在排序数组中查找元素的第一个和最后一个位置](https://leetcode-cn.com/problems/find-first-and-last-position-of-element-in-sorted-array/)
 二分查找左右边界的问题比如`[4,5,5,8,8,8,9]`返回8的左或右索引
@@ -58,11 +91,13 @@
 
 #### [69. x 的平方根](https://leetcode-cn.com/problems/sqrtx/)
 
-（多做）这也能二分我是没想到的
+:cheese: 这也能二分我是没想到的
 
 #### [剑指 Offer 11. 旋转数组的最小数字](https://leetcode-cn.com/problems/xuan-zhuan-shu-zu-de-zui-xiao-shu-zi-lcof/)
 
-（多做），不要只考虑if else，考虑if elif else。
+:cheese:，不要只考虑if else，考虑if elif else。
+
+在考虑问题的时候，如果感觉很难办，试试考虑另一个方向
 
 #### [剑指 Offer 31. 栈的压入、弹出序列](https://leetcode-cn.com/problems/zhan-de-ya-ru-dan-chu-xu-lie-lcof/)
 
@@ -70,7 +105,7 @@
 
 #### [剑指 Offer 59 - II. 队列的最大值](https://leetcode-cn.com/problems/dui-lie-de-zui-da-zhi-lcof/)
 
-（多做）这题算不算是单调队列的应用，这题算是对我思路的一个扩充，我知道是要使用单调队列来做，但是不知道怎么处理单调队列。主要是要考虑队列的特性：能在两把添加删除元素。
+:cheese:这题算不算是单调队列的应用，这题算是对我思路的一个扩充，我知道是要使用单调队列来做，但是不知道怎么处理单调队列。主要是要考虑队列的特性：能在两边添加删除元素。
 
 ### 栈
 
@@ -128,6 +163,12 @@ o(n)的双指针解法，注意怎么利用嵌套的while循环解决问题。�
 
 ### **二叉树**：
 
+- 二叉搜索树性质，中序遍历是递增的
+
+#### [501. 二叉搜索树中的众数](https://leetcode-cn.com/problems/find-mode-in-binary-search-tree/)
+
+:cheese: 这题要多练，简单的代码都写不顺了。
+
 #### [剑指 Offer 68 - I. 二叉搜索树的最近公共祖先](https://leetcode-cn.com/problems/er-cha-sou-suo-shu-de-zui-jin-gong-gong-zu-xian-lcof/)
 
 简单题，利用二叉搜索树的性质可以轻松解题。
@@ -136,7 +177,7 @@ o(n)的双指针解法，注意怎么利用嵌套的while循环解决问题。�
 
 #### [剑指 Offer 68 - II. 二叉树的最近公共祖先](https://leetcode-cn.com/problems/er-cha-shu-de-zui-jin-gong-gong-zu-xian-lcof/)
 
-（多做）其实挺简单一题，就是没想明白，递归的返回值的含义。
+:cheese:其实挺简单一题，就是没想明白，递归的返回值的含义。
 
 #### [剑指 Offer 55 - II. 平衡二叉树](https://leetcode-cn.com/problems/ping-heng-er-cha-shu-lcof/)
 
@@ -209,7 +250,7 @@ o(n)的双指针解法，注意怎么利用嵌套的while循环解决问题。�
 
 #### [LCP 18. 早餐组合](https://leetcode-cn.com/problems/2vYnGI/)
 
-这题，有线性复杂度的解法，
+:cheese: 这题，有线性复杂度的解法，把我给看呆了。我是先暴力解法解出来了，然后用排序求解。运用了**两数之和的思想**
 
 #### [75. 颜色分类](https://leetcode-cn.com/problems/sort-colors/)
 
@@ -229,6 +270,36 @@ o(n)的双指针解法，注意怎么利用嵌套的while循环解决问题。�
 
 
 ### **动态规划**
+
+#### [740. 删除与获得点数](https://leetcode-cn.com/problems/delete-and-earn/)
+
+:x:毫无头绪，思路是想办法转成打家劫舍问题，但其实也不是很像打家劫舍问题，需要一定的随机应变。
+
+#### [213. 打家劫舍 II](https://leetcode-cn.com/problems/house-robber-ii/)
+
+#### [198. 打家劫舍](https://leetcode-cn.com/problems/house-robber/)
+
+:cheese:以前做过的题，结果居然做错了。
+
+- 用一个N × 2的数组记录每天偷或不偷的最高收益
+  - 优化成1 × 2
+- 用一个N维列表记录第i天能获得的最大收益
+
+
+
+#### [363. 矩形区域不超过 K 的最大数值和](https://leetcode-cn.com/problems/max-sum-of-rectangle-no-larger-than-k/)
+
+:cheese: 思路是对的，暴力法差最后一个样例通过不了，和[面试题 17.24. 最大子矩阵](https://leetcode-cn.com/problems/max-submatrix-lcci/)的思路比较相似
+
+#### [面试题 17.24. 最大子矩阵](https://leetcode-cn.com/problems/max-submatrix-lcci/)
+
+:x:做完了，其实我的思路是对的，就是想办法把二维降成一维的，这题肯定是多练练，练习这个把二维降成一维的思路
+
+然后就是写代码的时候要稳
+
+#### [LCP 19. 秋叶收藏集](https://leetcode-cn.com/problems/UlBDOe/)
+
+有点难的这道题，怎么想到初始状态的
 
 #### [剑指 Offer 63. 股票的最大利润](https://leetcode-cn.com/problems/gu-piao-de-zui-da-li-run-lcof/)
 
@@ -314,7 +385,7 @@ o(n)的双指针解法，注意怎么利用嵌套的while循环解决问题。�
 
 #### [剑指 Offer 56 - I. 数组中数字出现的次数](https://leetcode-cn.com/problems/shu-zu-zhong-shu-zi-chu-xian-de-ci-shu-lcof/)
 
-（多做）想到是异或了，但是没想到怎么分组。是拓展思路的一题。
+:cheese:想到是异或了，但是没想到怎么分组。是拓展思路的一题。
 
 #### [剑指 Offer 56 - II. 数组中数字出现的次数 II](https://leetcode-cn.com/problems/shu-zu-zhong-shu-zi-chu-xian-de-ci-shu-ii-lcof/)
 
@@ -322,13 +393,13 @@ o(n)的双指针解法，注意怎么利用嵌套的while循环解决问题。�
 
 #### [剑指 Offer 16. 数值的整数次方](https://leetcode-cn.com/problems/shu-zhi-de-zheng-shu-ci-fang-lcof/)
 
-（多做）可以体会一下快速幂的实现方式，随便加深2进制和10进制互相转换的理解。
+:cheese:可以体会一下快速幂的实现方式，随便加深2进制和10进制互相转换的理解。
 
 ### 数学
 
 #### [剑指 Offer 49. 丑数](https://leetcode-cn.com/problems/chou-shu-lcof/)
 
-（多做）理解，题解。每个丑数和235结合，又能产生新的丑数
+:cheese:理解，题解。每个丑数和235结合，又能产生新的丑数
 
 #### [剑指 Offer 44. 数字序列中某一位的数字](https://leetcode-cn.com/problems/shu-zi-xu-lie-zhong-mou-yi-wei-de-shu-zi-lcof/)
 
@@ -340,7 +411,7 @@ hhh我做出来了，分析技巧在于分而治之，如何统计个位数的1�
 
 #### [202. 快乐数](https://leetcode-cn.com/problems/happy-number/)
 
-（多做）涉及循环检测，重点在于思路，思考一直按照它的方法做下去会有哪几种情况。
+:cheese:涉及循环检测，重点在于思路，思考一直按照它的方法做下去会有哪几种情况。
 
 #### [171. Excel表列序号](https://leetcode-cn.com/problems/excel-sheet-column-number/)
 

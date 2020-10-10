@@ -20,5 +20,13 @@ alt/tab/esc 关闭窗口
 
 ip地址不记得可以查看这里：[我买的腾讯云服务器](https://console.cloud.tencent.com/cvm/instance)
 
+```
+119.45.58.134
+root
+!light2077
+```
+
+
+
 ![](img/finalshell/finalshell新建连接.png)
 

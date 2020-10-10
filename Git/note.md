@@ -310,4 +310,8 @@ git cherry-pick 9d9644a
 
 # [使用SourceTree](https://www.liaoxuefeng.com/wiki/896043488029600/1317161920364578)
 
+https://www.gerritcodereview.com/
+
+https://www.jianshu.com/p/b77fd16894b6
+
 # [期末总结](https://www.liaoxuefeng.com/wiki/896043488029600/900062620154944)
