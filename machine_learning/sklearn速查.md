@@ -12,3 +12,11 @@ for train_idx, test_idx in kfold.split(x, y):
     print(train_idx, test_idx)
 ```
 
+## 数据集创建
+
+https://scikit-learn.org/stable/modules/classes.html?highlight=dataset#module-sklearn.datasets
+
+```python
+
+```
+

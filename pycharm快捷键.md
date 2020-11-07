@@ -6,7 +6,7 @@ ctrl+q 快速查看文档
 
 shift+f1 打开外部文档
 
-
+ctrl+alt+L 快速调整格式
 
 调试快捷键
 
