@@ -7,7 +7,7 @@ class Student:
         self.age = age
 ```
 
-
+`s1.__dict__`可以查看类或者对象的属性值。
 
 `s1 = Student('Lily', 18)`
 
@@ -28,6 +28,11 @@ class Student:
     def __init__(self, name, age):
         self.name = name
         self.age = age
+
+student1 = Student(name='tom', age='18')
+# 报错
+# student1.sex = 'male'
+
 ```
 
 # 魔术方法
@@ -201,6 +206,8 @@ print(s['age'])
 
 对象可以查看类属性，但是不能修改
 
+
+
 ```python
 class Student:
     """
@@ -216,6 +223,40 @@ print(s.school)
 s.school = 'colledge'
 print(s.school, print(Student.school))
 ```
+
+## `@property` 与 `@<attr>.setter`
+
+```python
+class Student:
+    """
+    This is a Student class
+    """
+    school = 'high school'
+    def __init__(self, name, age):
+        self.name = name
+        self.__age = age
+     
+    @property
+    def age(self):
+        return self.__age
+    
+    @age.setter
+    def age(self, age):
+        if age < 18:
+            print('未满18')
+        else:
+            print(f'年龄修改为{age}')
+            self.__age = age
+            
+s = Student('lily', 19)
+print(s.age)
+s.age = 17  # 未满18
+print(s.age)
+s.age = 22  # 年龄修改为22
+print(s.age)
+```
+
+
 
 # 私有属性和私有方法
 
@@ -373,6 +414,18 @@ cat.catch()
 
 了解重名函数的继承顺序
 
+深度优先
+
+```
+GrandFather  GrandMother
+    |             |
+  Father       Mother
+       \       /
+         Child 
+```
+
+调用顺序：Father->GrandFather->Mother->GrandMother
+
 ```python
 class A:
 	def foo():
@@ -401,6 +454,59 @@ class CD(C, D):
 print(CD.__mro__)  # C -> A -> D -> B
 CD.foo()  # A 的 foo
 ```
+
+`obj.__bases`__可以查看继承自谁
+
+## 菱形继承
+
+广度优先，创建对象的过程
+
+```
+    Human
+    /   \
+Father Mother
+    \   /
+    Child
+```
+
+```python
+class Human:
+    def __init__(self):
+        print('人类...')
+
+
+class Father(Human):
+    def __init__(self):
+        print('父亲初始化...')
+        super().__init__()
+        print('父亲初始化结束...')
+class Mother(Human):
+    def __init__(self):
+        print('母亲初始化...')
+        super().__init__()
+        print('母亲初始化结束...')
+
+class Child(Father, Mother):
+    def __init__(self):
+        print('孩子初始化...')
+        super().__init__()
+        print('孩子初始化结束...')
+
+print(Child.__mro__)
+c = Child()
+
+"""
+孩子初始化...
+父亲初始化...
+母亲初始化...
+人类...
+母亲初始化结束...
+父亲初始化结束...
+孩子初始化结束...
+"""
+```
+
+
 
 ## 私有属性的继承特点
 
@@ -488,6 +594,10 @@ if issubclass(Student, Person):
 
 # 多态
 
+不一定发生继承，只要调用方法名一致，只不过方法实现的效果不同。
+
+要想限制在某个类及其子类才能调用的话，可以使用`isinstance(obj, class)`来判断
+
 ## 子类重写父类方法
 
 ```python
@@ -512,7 +622,14 @@ s.sleep()
 
 
 
-## 子类在父类方法上有更多的实现
+## 子类在父类方法上有更多的实现super
+
+super().func() 可以调用父类的方法，避免重写，super()可以调用任意父类的对象。
+
+应用场景：
+
+- 父类的方法执行了一堆操作
+- 子类不想重写这些操作，只是想增加一点其他操作时
 
 ```python
 class Person:
@@ -545,7 +662,7 @@ s.sleep()
 
 
 
-多态基于继承，通过子类重写父类方法，达到不同的子类调用相同的父类方法，得到不同的结果，提高代码的灵活度。
+多继承怎么搞。
 
 ## 强制子类必须重写父类方法
 
@@ -564,6 +681,49 @@ class Student(Person):
         
 s = Student('Lily', 10)
 ```
+
+#  类方法和静态方法
+
+类是有类属性的，类属性可以用self调用，也可以用类方法调用。
+
+```python
+class Dog:
+    legs = 4
+    def print_info(self):
+        print(f'狗有{self.legs}条腿')
+    
+    @classmethod
+    def print_class_info(cls):
+        print(f'(类方法)狗有{cls.legs}条腿')
+d = Dog()
+d.print_info()
+Dog.print_class_info()
+```
+
+通过类对象修改类属性无效，只对该对象有效。
+
+```python
+d.legs = 2
+d.print_info()
+Dog.print_class_info()
+```
+
+
+
+静态方法
+
+类和对象都可以调用该方法。
+
+```python
+class Dog:
+    @staticmethod
+    def hello():
+        print('hello')
+```
+
+
+
+
 
 # 可迭代对象
 
