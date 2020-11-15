@@ -1,3 +1,19 @@
+`__new__`详解
+
+```python
+class Student:
+    def __new__(cls, *args, **kwargs):
+        print(f'args: {args}, kwargs:{kwargs}')
+        return object.__new__(cls)
+    
+    def __init__(self, name, age):
+        print(name, age)
+s = Student('tom', 19)
+
+```
+
+
+
 python中的等号赋值就是内存的赋值
 
 ```python
@@ -14,7 +30,18 @@ class Student:
 创建实例的流程：
 
 - 调用`__new__`方法，申请一段内存空间
+
+  ```python
+  class Student:
+      def __new__(cls):
+          print('分配内存空间...')
+          obj = object.__new__(cls)
+          print(obj)
+          return obj  # 如果不返回，就不会调用__init__
+  ```
+
 - 调用`__init__`方法，并让`self`指向申请好的那段内存空间。
+
 - 变量s1也指向申请好的内存空间
 
 
@@ -39,9 +66,29 @@ student1 = Student(name='tom', age='18')
 
 `__del__`
 
+只有当指向对象的所有变量都被删除时，对象的空间才会被释放
+
+```python
+s1 = Student('tom', 18)
+s2 = s1
+
+del s1 
+# 对象并不会被删除
+
+del s2
+# 对象被删除了。
+# 现在才会执行 __del__ 方法
+```
+
+
+
 `__str__`
 
 `__repl__`
+
+都定义的时候，print(s)默认是`__str__`
+
+和`__str__`的区别在于，在对象被放到列表内时，优先打印`__repl__`返回的内容。
 
 `__call__`
 
@@ -727,36 +774,49 @@ class Dog:
 
 # 可迭代对象
 
+可迭代对象不一定是迭代器，迭代器一定是可迭代对象
+
 比如：list/tuple/dict/set/str/range/filter/map
 
 只要重写了`__iter__`方法就是可迭代对象
 
 ```python
-from collections.abc import Iterable
+from collections.abc import Iterable, Iterator
 
 class Demo1:
     pass
 
 class Demo2:
     def __iter__(self):
-        pass
-
+        return self
+    def __next__(self):
+        return 1
 d1 = Demo1()
 d2 = Demo2()
 names = ['hello', 'good']
 
 # 判断是否是可迭代对象
-print(isinstance(d1, Iterable))
-print(isinstance(d2, Iterable))
-print(isinstance(names, Iterable))
+print(isinstance(d1, Iterable))  # False
+print(isinstance(d2, Iterable))  # True
+print(isinstance(names, Iterable))  # True
+# 判断是否是迭代器
+print(isinstance(d1, Iterator))  # False
+print(isinstance(d2, Iterator))  # False
+print(isinstance(names, Iterator))  # False
 
+# 判断是否是迭代器
+# print(isinstance(iter(d1), Iterator))  # 因为没定义__iter__报错
+print(isinstance(iter(d2), Iterator))  # 如果不定义 __next__ 也报错
+print(isinstance(iter(names), Iterator))  # True
 ```
 
 
 
 ## 迭代器
 
+dir()函数可以查看对像内所有属性及方法
 
+对于大数据量的访问，可以减少内存消耗。
 
 ```python
 class Demo:
@@ -823,6 +883,35 @@ for i in Fibonacci(10):
 ```python
 nums = [1, 2, ..., 10000000]
 range(1, 1000000)
+```
+
+补充：
+
+for 循环会调用`__iter__`方法。
+
+测试一下加了`self.index=len(self.data)`和不加的区别
+
+```python
+class Reverse:
+    def __init__(self, data):
+        self.data = data
+        self.index = len(data)
+    def __iter__(self):
+        self.index = len(self.data)
+        return self
+    
+    def __next__(self):
+        if self.index == 0:
+            raise StopIteration
+        else:
+            self.index -= 1
+            return self.data[self.index]
+r = Reverse('123456')
+for x in r:
+    print(x)
+    
+for x in r:
+    print(x)
 ```
 
 
