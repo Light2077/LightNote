@@ -1,3 +1,19 @@
+`__new__`详解
+
+```python
+class Student:
+    def __new__(cls, *args, **kwargs):
+        print(f'args: {args}, kwargs:{kwargs}')
+        return object.__new__(cls)
+    
+    def __init__(self, name, age):
+        print(name, age)
+s = Student('tom', 19)
+
+```
+
+
+
 python中的等号赋值就是内存的赋值
 
 ```python
@@ -14,7 +30,18 @@ class Student:
 创建实例的流程：
 
 - 调用`__new__`方法，申请一段内存空间
+
+  ```python
+  class Student:
+      def __new__(cls):
+          print('分配内存空间...')
+          obj = object.__new__(cls)
+          print(obj)
+          return obj  # 如果不返回，就不会调用__init__
+  ```
+
 - 调用`__init__`方法，并让`self`指向申请好的那段内存空间。
+
 - 变量s1也指向申请好的内存空间
 
 
@@ -39,9 +66,29 @@ student1 = Student(name='tom', age='18')
 
 `__del__`
 
+只有当指向对象的所有变量都被删除时，对象的空间才会被释放
+
+```python
+s1 = Student('tom', 18)
+s2 = s1
+
+del s1 
+# 对象并不会被删除
+
+del s2
+# 对象被删除了。
+# 现在才会执行 __del__ 方法
+```
+
+
+
 `__str__`
 
 `__repl__`
+
+都定义的时候，print(s)默认是`__str__`
+
+和`__str__`的区别在于，在对象被放到列表内时，优先打印`__repl__`返回的内容。
 
 `__call__`
 
@@ -725,162 +772,4 @@ class Dog:
 
 
 
-# 可迭代对象
-
-比如：list/tuple/dict/set/str/range/filter/map
-
-只要重写了`__iter__`方法就是可迭代对象
-
-```python
-from collections.abc import Iterable
-
-class Demo1:
-    pass
-
-class Demo2:
-    def __iter__(self):
-        pass
-
-d1 = Demo1()
-d2 = Demo2()
-names = ['hello', 'good']
-
-# 判断是否是可迭代对象
-print(isinstance(d1, Iterable))
-print(isinstance(d2, Iterable))
-print(isinstance(names, Iterable))
-
-```
-
-
-
-## 迭代器
-
-
-
-```python
-class Demo:
-    def __init__(self, x):
-        self.x = x
-        self.count = 0
-    
-    def __next__(self):
-        self.count += 1
-        if self.count <= self.x:
-            return self.count - 1
-        else:
-            raise StopIteration  # 让迭代器停止
-        
-            
-    def __iter__(self):
-        return self
-
-# for in 循环的本质就是调用可迭代对象的 __iter__ 方法，获取该方法的返回值
-# 返回值是一个对象，然后再调用这个对象的 __next__ 方法
-# 相当于
-# d = Demo(5)
-# i = d.__iter__().__next__()  # 不断重复
-for i in Demo(5):
-    print(i)
-# 也可以
-i = iter(d)
-print(next(i))
-print(next(i))
-print(next(i))
-print(next(i))
-print(next(i))
-print(next(i))
-```
-
-使用场景
-
-```python
-class Fibonacci:
-    def __init__(self, n):
-        self.n = n
-        self.cnt = 0
-        self.prev = 1
-        self.cur = 1
-    def __next__(self):
-        self.cnt += 1
-        if self.cnt <= self.n:
-            ans = self.prev
-            self.cur, self.prev = self.cur + self.prev, self.cur
-            return ans
-        else:
-            raise StopIteration  # 让迭代器停止
-    def __iter__(self):
-        return self
-    
-for i in Fibonacci(10):
-    print(i)
-```
-
-思考：既然有列表了，为什么还要有生成器呢？
-
-时间换空间
-
-```python
-nums = [1, 2, ..., 10000000]
-range(1, 1000000)
-```
-
-
-
-
-
-## 生成器
-
-生成器是特殊的迭代器
-
-```python
-g = (x ** 2 for i in range(10))
-print(type(g))
-```
-
-在函数内有yield关键词的函数就是生成器
-
-```python
-class Fibonacci:d
-    def __init__(self, n):
-        self.n = n
-    def __iter__(self):
-        prev = cur = 1
-        for i in range(self.n):
-            ans = prev
-            cur, prev = cur + prev, cur
-            yield ans
-            
-print(type(Fibonacci(10).__iter__()))
-print(type(type(iter(Fibonacci(10)))))
-
-for i in Fibonacci(10):
-    print(i)
-```
-
-yield from 的使用
-
-先把gen1和gen2都输出了，在输出gen3的yield
-
-```python
-def gen1():
-    for i in range(1, 5):
-        yield -i
-        
-def gen2():
-    for i in range(1, 5):
-        yield i ** 2
-        
-def gen3():
-    yield from gen1()
-    print('finish gen1')
-    yield from gen2()
-    print('finish gen2')
-    for i in range(1, 5):
-        yield i ** 3
-    print('finish gen3')
-g = gen3()
-while True:
-    print(next(g))
-```
 
