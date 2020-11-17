@@ -827,6 +827,8 @@ range(1, 1000000)
 
 
 
+
+
 ## 生成器
 
 生成器是特殊的迭代器
@@ -839,7 +841,7 @@ print(type(g))
 在函数内有yield关键词的函数就是生成器
 
 ```python
-class Fibonacci:
+class Fibonacci:d
     def __init__(self, n):
         self.n = n
     def __iter__(self):
