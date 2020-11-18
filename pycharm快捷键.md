@@ -6,7 +6,9 @@ ctrl+q 快速查看文档
 
 shift+f1 打开外部文档
 
-ctrl+alt+L 快速调整格式
+ctrl+alt+ ← 在按ctrl+左键查看函数调用时特别有用，可以返回到来源
+
+
 
 调试快捷键
 
@@ -25,3 +27,7 @@ Alt + F8 evaluate expression
 Ctrl + Alt + F8 快速验证表达式
 
 Ctrl + F8 断点开关
+
+已经烂熟与心的：
+
+ctrl+alt+L 快速调整格式
