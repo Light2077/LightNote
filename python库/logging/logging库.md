@@ -318,3 +318,190 @@ format=%(asctime)s - %(name)s - %(levelname)s - %(message)s
 datefmt=
 ```
 
+# 我的logging配置
+
+```
+|-logtext
+    |-jiangsu
+        |-nanjing.py
+        |-suzhou.py
+    |-taiwan
+       |-taibei.py
+       |-gaoxiong.py
+    |-log
+       |-__init__.py
+       |-logging.conf
+    |-main.py
+```
+
+**所有的城市文件类似于下面**
+
+```python
+# taiwan/taibei.py
+import logging
+logger = logging.getLogger(__name__)
+
+
+def show():
+    logger.info('我是台北')
+```
+
+
+
+**我的配置文件`log/logging.conf`**
+
+```shell
+[loggers]
+keys=root
+
+[handlers]
+keys=consoleHandler, baseFileHandler
+
+[formatters]
+keys=baseFormatter
+
+[logger_root]
+level=DEBUG
+handlers=consoleHandler,baseFileHandler
+
+[handler_consoleHandler]
+class=StreamHandler
+level=DEBUG
+formatter=baseFormatter
+args=(sys.stdout,)
+
+[handler_baseFileHandler]
+class=handlers.RotatingFileHandler
+level=DEBUG
+propagate=1
+formatter=baseFormatter
+args=('./log/base.log', 'a', 1024*100, 3, 'utf8')
+
+[formatter_baseFormatter]
+format=%(levelname)s %(asctime)s %(name)s: %(message)s
+datefmt=%Y-%m-%d %H:%M:%S
+```
+
+**在log目录下的`log/__init__.py`**
+
+```python
+import logging.config
+
+logging.config.fileConfig('log/logging.conf')  # 读取config文件
+# 创建logger记录器
+logger = logging.getLogger()
+```
+
+**主函数main**
+
+注：log一定要放到最顶部
+
+```python
+import log
+from jiangsu import nanjing, suzhou
+from taiwan import gaoxiong, taibei
+import logging
+logger = logging.getLogger()
+
+if __name__ == '__main__':
+    logger.info('开始记录')
+    logger.debug('测试debug')
+    logger.warning('测试warning')
+    logger.error('测试error')
+    logger.critical('测试critical')
+    nanjing.show()
+    suzhou.show()
+    taibei.show()
+    gaoxiong.show()
+```
+
+
+
+此时运行`main.py`的话会在log文件夹下生成一个`base.log`文件
+
+```
+|-log
+    |-__init__.py
+    |-base.log  # 新
+    |-logging.conf
+```
+
+文件内容如下
+
+```
+INFO 2020-11-30 17:27:19 root: 开始记录
+DEBUG 2020-11-30 17:27:19 root: 测试debug
+WARNING 2020-11-30 17:27:19 root: 测试warning
+ERROR 2020-11-30 17:27:19 root: 测试error
+CRITICAL 2020-11-30 17:27:19 root: 测试critical
+INFO 2020-11-30 17:27:19 jiangsu.nanjing: 我是南京
+INFO 2020-11-30 17:27:19 jiangsu.suzhou: 我是苏州
+INFO 2020-11-30 17:27:19 taiwan.taibei: 我是台北
+INFO 2020-11-30 17:27:19 taiwan.gaoxiong: 我是高雄
+```
+
+
+
+```
+# handlers  处理类，可以有多个，用逗号分开
+# qualname  logger名称，应用程序通过 logging.getLogger获取。对于不能获取的名称，则记录到root模块。
+# propagate 是否继承父类的log信息，0:否 1:是
+# [logger_simpleExample]
+# level=DEBUG
+# handlers=consoleHandler
+# qualname=simpleExample
+# propagate=0
+
+
+# 日志格式
+#--------------------------------------------------
+# %(asctime)s       年-月-日 时-分-秒,毫秒 2013-04-26 20:10:43,745
+# %(filename)s      文件名，不含目录
+# %(pathname)s      目录名，完整路径
+# %(funcName)s      函数名
+# %(levelname)s     级别名
+# %(lineno)d        行号
+# %(module)s        模块名
+# %(message)s       消息体
+# %(name)s          日志模块名
+# %(process)d       进程id
+# %(processName)s   进程名
+# %(thread)d        线程id
+# %(threadName)s    线程名
+```
+
+# django log 配置
+
+```
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': 'log/debug.log',
+            'formatter': 'base',
+        },
+        'console': {
+            'level': 'INFO',
+            'filters': ['special'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'base',
+        }
+    },
+    'formatters': {
+        # 基本字体
+        'base': {
+            'format': '%(levelname)s %(asctime)s %(name)s: %(message)s',
+            'datefmt': '%Y-%m-%d %H:%M:%S',
+        }
+    },
+    'root': {
+        'handlers': ['file', 'console'],
+        'level': 'DEBUG',
+        'propagate': True,
+    },
+}
+```
+
