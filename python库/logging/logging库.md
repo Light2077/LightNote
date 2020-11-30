@@ -472,6 +472,10 @@ INFO 2020-11-30 17:27:19 taiwan.gaoxiong: 我是高雄
 
 # django log 配置
 
+https://docs.djangoproject.com/en/3.1/topics/logging/
+
+这个配置在添加filter时会报错
+
 ```
 LOGGING = {
     'version': 1,
@@ -485,7 +489,6 @@ LOGGING = {
         },
         'console': {
             'level': 'INFO',
-            'filters': ['special'],
             'class': 'logging.StreamHandler',
             'formatter': 'base',
         }
@@ -504,4 +507,88 @@ LOGGING = {
     },
 }
 ```
+
+使用`logging.conf`的方式无法配置过滤器！
+
+在settings.py后接
+
+```python
+LOGGING_CONFIG = None
+
+import logging.config
+logging.config.dictConfig(...)
+```
+
+最终，我找到了解决方案，在log文件夹下新建`filter.py`文件
+
+```
+|-log
+    |-filter.py
+```
+
+在里面这么写
+
+通过重写record.name函数达到目的。
+
+精确到了函数级别
+
+```python
+import logging
+
+
+class UserFilter(logging.Filter):
+    def filter(self, record):
+        if record.name == 'demo.views' and record.funcName in {'login', 'show'}:
+            return True
+        else:
+            return False
+
+```
+
+然后是`settings.py`的配置方法
+
+```python
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'filters': {
+        'my_filter': {
+            '()': 'log.filter.UserFilter',
+            # 'foo': 'demo.views.index'
+        },
+
+    },
+    'handlers': {
+        'file': {
+            'level': 'DEBUG',
+            'filters': ['my_filter'],
+            'class': 'logging.FileHandler',
+            'filename': 'log/debug.log',
+            'formatter': 'base',
+            'encoding': 'utf8',
+        },
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'base',
+            'filters': ['my_filter']
+        }
+    },
+    'formatters': {
+        # 基本字体
+        'base': {
+            'format': '%(levelname)s %(asctime)s %(name)s: %(message)s',
+            'datefmt': '%Y-%m-%d %H:%M:%S',
+        }
+    },
+    'root': {
+        'handlers': ['file', 'console'],
+        'level': 'DEBUG',
+        'propagate': True,
+        'filters': ['my_filter']
+    },
+}
+```
+
+
 
