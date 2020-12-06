@@ -234,6 +234,8 @@ math.pow(2, 10)  # 2 ** 10
 
 math.sin(math.pi / 6)  # 弧度 π=180°
 
+math.fabs(-10)  # 绝对值
+math.modf(14.677)  # (0.6769999999999996, 14.0)
 ```
 
 
@@ -241,11 +243,17 @@ math.sin(math.pi / 6)  # 弧度 π=180°
 # random模块
 
 ```python
+import random
+
 random.randint(a, b)  # [a, b]中的整数随机数
 random.randrange(a, b)  # [a, b)中的随机整数
+random.uniform(1, 10)  # [1, 10) 中随机浮点数
 random.random()  # [0, 1)的随机浮点数
-random.choice(iter)  # 用来再可迭代对象随机抽取一个数据
-random.sample(iter, n)  # 随机选取两个
+random.choice('1234')  # 用来再可迭代对象随机抽取一个数据
+random.sample('1234', n)  # 随机选取n个元素，不会有重复，返回list
+random.choices('1234', k=4)  # 随机选取4个元素，会有重复，返回list
+
+random.shuffle(iter)  # 没有返回值，随机打乱iter对象
 
 ```
 
@@ -285,11 +293,11 @@ delta = dt.timedelta(days=1, seconds=20,minutes=10,hours=10)s
 
 ```python
 time.time()  # 当前时间的时间戳
-time.strftime('%Y-%m-%d %H:%M:%S')
+time.strftime('%Y-%m-%d %H:%M:%S')  # 2020-12-06 19:36:28
 time.asctime()  # 'Sun Aug  2 19:17:26 2020'
 time.ctime()  # 'Sun Aug  2 19:17:41 2020'  输入秒数
 
-time.sleep(2)  # 赞展厅两秒
+time.sleep(2)  # 暂停两秒
 ```
 
 # calender模块
