@@ -280,7 +280,7 @@ logger = logging.getLogger('simpleExample')
 # 使用日志功能
 logger.debug('debug message')
 logger.info('info message')
-logger.warn('warn message')
+logger.warning('warn message')
 logger.error('error message')
 logger.critical('critical message')
 ```
@@ -563,7 +563,7 @@ LOGGING = {
             'level': 'DEBUG',
             'filters': ['my_filter'],
             'class': 'logging.FileHandler',
-            'filename': 'log/debug.log',
+            'filename': 'log/demo.log',
             'formatter': 'base',
             'encoding': 'utf8',
         },
@@ -575,11 +575,11 @@ LOGGING = {
         }
     },
     'formatters': {
-        # 基本字体
+        # 基本格式
         'base': {
             'format': '%(levelname)s %(asctime)s %(name)s: %(message)s',
             'datefmt': '%Y-%m-%d %H:%M:%S',
-        }
+        },
     },
     'root': {
         'handlers': ['file', 'console'],
@@ -591,4 +591,26 @@ LOGGING = {
 ```
 
 
+
+## RotatingFileHandler
+
+日志大小到一定程度了就换下一个文件
+
+```python
+    'handlers': {
+        'file': {
+            'level': 'DEBUG',
+            'filters': ['my_filter'],
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': 'log/demo.log',
+            'formatter': 'base',
+            'encoding': 'utf8',
+            'maxBytes': 1024 * 1024,  # 1mb
+            'backupCount': 3  # 最多保留3个文件
+        },
+
+
+# filename, mode='a', maxBytes=0, backupCount=0, encoding=None, delay=False
+# args=('./log/base.log', 'a', 1024*100, 3, 'utf8')
+```
 
