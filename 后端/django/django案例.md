@@ -302,3 +302,427 @@ python manage.py migrate mysite 0009_student_school
 python manage.py makemigrations mysite -n 0011_rename_age_field
 ```
 
+# 外键
+
+```
+python manage.py startapp foreign
+```
+
+新建一个app，并且在`settings.py`里注册它
+
+```python
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'mysite.apps.MysiteConfig',
+    'foreign'
+]
+```
+
+## 多对一
+
+比如说，北京，上海，广州，深圳都属于中国的城市。纽约，华盛顿，西雅图属于美国的城市。在这个案例中，城市就是“多”的一方，国家就是“一”的一方。
+
+再比如，小明，小红是清华大学的学生，小蓝，小华是北京大学的学生。
+
+此处学生是“多”，学校是“一”。还是用之前的例子
+
+### 外键字段的写法
+
+```python
+school = models.ForeignKey('School',
+                           null=True,
+                           default=None,
+                           on_delete=models.CASCADE)
+```
+
+
+
+编写`./mysite/models.py`，加入学校模型，同时在学生类这里把学校改成用外键来表示。
+
+```python
+from django.db import models
+
+
+# Create your models here.
+class Student(models.Model):
+    SEX = (
+        ('male', '男'),
+        ('female', '女'),
+        ('unknown', '保密'),
+    )
+    name = models.CharField(max_length=30)
+    age = models.IntegerField()
+    sex = models.CharField(max_length=10, choices=SEX, default='unknown')
+    e_time = models.DateTimeField("入学时间", auto_now_add=True)
+    school = models.ForeignKey('School',
+                               null=True,
+                               default=None,
+                               on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        db_table = 'student'
+
+
+class School(models.Model):
+    name = models.CharField(max_length=30)
+    city = models.CharField(max_length=30)
+    c_date = models.DateField('建校日')
+    population = models.FloatField('人数(万)')
+```
+
+### on_delete参数
+
+`on_delete`参数可选的值都内置在`django.db.models`中（全部为大写），包括：
+
+- CASCADE：模拟SQL语言中的`ON DELETE CASCADE`约束，将定义有外键的模型对象同时删除！
+- PROTECT:阻止上面的删除操作，但是弹出`ProtectedError`异常
+- SET_NULL：将外键字段设为null，只有当字段设置了`null=True`时，方可使用该值。
+- SET_DEFAULT:将外键字段设为默认值。只有当字段设置了default参数时，方可使用。
+- DO_NOTHING：什么也不做。
+- SET()：设置为一个传递给SET()的值或者一个回调函数的返回值。注意大小写。
+
+迁移后：
+
+![image-20201217152408287](img/image-20201217152408287.png)
+
+### 给“多”的那一方加上外键对象
+
+创建几个学校：
+
+```python
+from mysite.models import Student, School
+
+School.objects.create(name='清花小学',
+                      city='北京',
+                      c_date='1999-04-11',
+                      population=3.28)
+
+School.objects.create(name='芙丹小学',
+                      city='上海',
+                      c_date='2004-03-27',
+                      population=1.74)
+```
+
+![image-20201217152029756](img/image-20201217152029756.png)
+
+给这几个学生添上学校
+
+```python
+from mysite.models import Student, School
+
+boys = Student.objects.filter(sex='male')
+girls = Student.objects.filter(sex='female')
+
+qinghua = School.objects.get(name='清花小学')
+fudan = School.objects.get(name='芙丹小学')
+
+boys.update(school=qinghua)
+girls.update(school=fudan)
+```
+
+
+
+![image-20201217153042791](img/image-20201217153042791.png)
+
+### 外键正反查询
+
+```python
+from mysite.models import Student, School
+
+# 多查一
+lily = Student.objects.get(name='lily')
+print('lily 的学校是', lily.school)
+
+# 一查多
+fudan = School.objects.get(name='芙丹小学')
+students = fudan.student_set.all()
+print('芙丹小学有以下学生：', students)
+```
+
+结果：
+
+```
+lily 的学校是 芙丹小学
+芙丹小学有以下学生： <QuerySet [<Student: lily>, <Student: alice>]>
+```
+
+### 有外键约束的情况下删除
+
+```python
+from mysite.models import Student, School
+# 可以删除
+lily = Student.objects.get(name='lily')
+lily.delete()
+
+# 会把所有属于fudan小学的学生都删掉
+fudan = School.objects.get(name='芙丹小学')
+fudan.delete()
+```
+
+## 多对多
+
+首先清空学校表和学生表（手动删除即可）
+
+
+
+下面建立个多对多的模型，一个学生可以有多个老师，同样一个老师可以教多个学生。定义多对多字段的时候，只需要定义一个就行。
+
+- 给Student类新增一个teacher字段
+- 新增一个Teacher类
+
+```python
+from django.db import models
+
+
+# Create your models here.
+class Student(models.Model):
+    SEX = (
+        ('male', '男'),
+        ('female', '女'),
+        ('unknown', '保密'),
+    )
+    name = models.CharField(max_length=30)
+    age = models.IntegerField()
+    sex = models.CharField(max_length=10, choices=SEX, default='unknown')
+    e_time = models.DateTimeField("入学时间", auto_now_add=True)
+    school = models.ForeignKey('School',
+                               null=True,
+                               default=None,
+                               on_delete=models.CASCADE)
+    teachers = models.ManyToManyField('Teacher')
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        db_table = 'student'
+
+
+class Teacher(models.Model):
+    name = models.CharField(max_length=30)
+    age = models.IntegerField()
+
+    def __str__(self):
+        return self.name
+```
+
+建议为多对多字段名使用复数形式。
+
+多对多关系需要一个位置参数：关联的对象模型，其它用法和外键多对一基本类似。
+
+如果要创建一个关联自己的多对多字段，依然是通过`'self'`引用。
+
+**在数据库后台，Django实际上会额外创建一张用于体现多对多关系的中间表**。默认情况下，该表的名称是“`多对多字段名+包含该字段的模型名+一个独一无二的哈希码`”，例如‘author_books_9cdf4’，当然你也可以通过`db_table`选项，自定义表名。
+
+### 创建数据
+
+```python
+from mysite.models import Student, Teacher
+
+students = [{'name': 'lily', 'age': 13, 'sex': 'female'},
+            {'name': 'andy', 'age': 12, 'sex': 'female'},
+            {'name': 'tom', 'age': 14, 'sex': 'male'},
+            {'name': 'jack', 'age': 13, 'sex': 'male'}]
+
+teachers = [{'name': '花花', 'age': 24},
+            {'name': '星星', 'age': 26}]
+
+for s in students:
+    Student.objects.create(name=s['name'],
+                           age=s['age'],
+                           sex=s['sex'])
+
+for t in teachers:
+    Teacher.objects.create(name=t['name'],
+                           age=t['age'])
+
+```
+
+![image-20201217160333679](img/image-20201217160333679.png)![image-20201217160344702](img/image-20201217160344702.png)
+
+### 相互关联
+
+```python
+from mysite.models import Student, Teacher
+
+teams = {
+    '花花': ['lily', 'andy', 'jack'],
+    '星星': ['lily', 'andy', 'tom'],
+}
+
+for teacher in teams:
+    t = Teacher.objects.get(name=teacher)
+    for student in teams[teacher]:
+        s = Student.objects.get(name=student)
+        s.teachers.add(t)
+```
+
+添加完后，可以看到student_teachers这张表就多了这些信息
+
+![image-20201217160834915](img/image-20201217160834915.png)
+
+### 相互查找
+
+```python
+from mysite.models import Student, Teacher
+
+lily = Student.objects.get(name='lily')
+huahua = Teacher.objects.get(name='花花')
+
+print(lily.teachers.all())
+print(huahua.student_set.all())
+```
+
+结果
+
+```
+<QuerySet [<Teacher: 花花>, <Teacher: 星星>]>
+<QuerySet [<Student: lily>, <Student: andy>, <Student: jack>]>
+```
+
+### 取消关联
+
+以下5步，建议一步一步执行，然后边执行边查看`student_teachers`数据表
+
+- lily不要星星老师了!
+- 花花老师不要jack了！
+- andy决定自学成才了！
+- 花花老师一怒之下不教了！
+- 花花老师冷静了一下，重新收回了lily，andy，jack
+
+```python
+from mysite.models import Student, Teacher
+lily = Student.objects.get(name='lily')
+jack = Student.objects.get(name='jack')
+andy = Student.objects.get(name='andy')
+huahua = Teacher.objects.get(name='花花')
+xingxing = Teacher.objects.get(name='星星')
+# lily不要星星老师了!
+lily.teachers.remove(xingxing)
+# 花花老师不要jack了！
+huahua.student_set.remove(jack)
+# andy决定自学成才了！
+andy.teachers.clear()
+# 花花老师一怒之下不教了！
+huahua.student_set.clear()
+# 花花老师冷静了一下，重新收回了lily，andy，jack
+huahua.student_set.set([lily, andy, jack])
+```
+
+### 删除
+
+可以直接删除，同时会把中间表中关联到的数据也进行删除。
+
+```python
+from mysite.models import Student, Teacher
+lily = Student.objects.get(name='lily')
+huahua = Teacher.objects.get(name='花花')
+
+lily.delete()
+huahua.delete()
+```
+
+## 一对一
+
+https://docs.djangoproject.com/en/3.1/topics/db/examples/one_to_one/
+
+在进行这个操作之前，把老学生都删了。
+
+
+
+这种关系类型多数用于当一个模型需要从别的模型扩展而来的情况。比如，Django自带auth模块的User用户表，如果你想在自己的项目里创建用户模型，又想方便的使用Django的auth中的一些功能，那么一个方案就是在你的用户模型里，使用一对一关系，添加一个与auth模块User模型的关联字段。
+
+一个学生只能有一张校园卡，一张校园卡的主人也只能有一个学生
+
+### 定义模型
+
+定义新的校园卡模型，一对一关联到学生
+
+```python
+class Card(models.Model):
+    student = models.OneToOneField('Student', on_delete=models.SET_NULL, null=True)
+    money = models.IntegerField()
+```
+
+### 创建并关联一对一关系
+
+创建几个学生和几张校园卡
+
+```python
+from mysite.models import Student, Card
+
+students = [{'name': 'lily', 'age': 13, 'sex': 'female'},
+            {'name': 'andy', 'age': 12, 'sex': 'female'},
+            {'name': 'tom', 'age': 14, 'sex': 'male'},
+            {'name': 'jack', 'age': 13, 'sex': 'male'}]
+
+for s in students:
+    student = Student.objects.create(name=s['name'],
+                                     age=s['age'],
+                                     sex=s['sex'])
+    Card.objects.create(money=100, student=student)
+
+```
+
+![image-20201217165706705](img/image-20201217165706705.png)
+
+### 相互查找
+
+```python
+from mysite.models import Student, Card
+
+lily = Student.objects.get(name='lily')
+jacks_card = Card.objects.get(student__name='jack')
+
+print(lily.card.money)
+print(jacks_card.student)
+```
+
+结果
+
+```
+100
+jack
+```
+
+### 取消关联
+
+```python
+from mysite.models import Student, Card
+
+toms_card = Card.objects.get(student__name='tom')
+toms_card.student = None
+toms_card.save()
+```
+
+### 删除
+
+直接删除卡不会影响到student表
+
+```python
+from mysite.models import Student, Card
+
+lily = Student.objects.get(name='lily')
+jacks_card = Card.objects.get(student__name='jack')
+
+lily.card.delete()
+jacks_card.delete()
+```
+
+删除student会把卡的`student_id`列设为空，因为之前设定了`on_delete=models.SET_NULL`
+
+```python
+from mysite.models import Student, Card
+
+andy = Student.objects.get(name='andy')
+andy.delete()
+```
+
