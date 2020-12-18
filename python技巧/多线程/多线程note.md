@@ -935,3 +935,24 @@ if __name__ == '__main__':
 
 线程做耗时操作的事，比如爬虫，文件的io，网络下载等。
 
+## 自定义
+
+```python
+class RunFileThread(threading.Thread):
+    """ 自定义的thread 为了获取task的返回值 """
+
+    def __init__(self, target, args):
+        super(RunFileThread, self).__init__()
+        self.target = target
+        self.args = args
+        self.res = None
+
+    def run(self):
+        self.res = self.target(*self.args)
+
+    def get_result(self):
+        return self.res
+```
+
+
+

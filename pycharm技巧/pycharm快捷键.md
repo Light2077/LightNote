@@ -28,7 +28,7 @@ ctrl+p 快速查看函数的输入
 
 shift+f1 打开外部文档
 
-ctrl+alt+ ← 在按ctrl+左键查看函数调用时特别有用，可以返回到来源
+
 
 alt+shift+E 执行一段代码。（这个非常有用）
 
@@ -51,12 +51,6 @@ ctrl+alt+T 快速使用try if 等包裹当前选中的代码块
 **快速封装代码**:选中要封装的代码，按ctrl+alt+M
 
 使用 Live Template自定义自己需要的模板，已有的模板比如`main`就非常常用。
-
-已经烂熟与心的：
-
-ctrl+alt+L 快速调整格式(**还可以快速调整json格式**)
-
-ctrl+b 效果等同于ctrl+鼠标左键。
 
 
 
@@ -89,6 +83,20 @@ FIXME 与 TODO 标记代码代办事项，查看全局TODO
 只要安装了jupyter，就能用pycharm跑：pip install jupyter
 
 扩大/缩小选中的区域：ctrl+w / ctrl+shift+w
+
+
+
+已经烂熟与心的：
+
+ctrl+alt+L 快速调整格式(**还可以快速调整json格式**)
+
+ctrl+b 效果等同于ctrl+鼠标左键。
+
+ctrl+alt+ ← 在按ctrl+左键查看函数调用时特别有用，可以返回到来源
+
+
+
+
 
 # 搜索技巧
 
@@ -134,3 +142,8 @@ ctrl+g 输入100:4 表示定位到第100行第4个字符处
 
 HTTP接口调试：Test RESTful Web Service
 
+# 其他技巧
+
+## 配置函数注释模板
+
+File→Setting→Tools→Python Integrated Tools→Docstrings→Docstring format
