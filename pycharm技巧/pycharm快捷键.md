@@ -2,11 +2,15 @@ https://www.cnblogs.com/liangmingshen/p/9297381.html
 
 http://pycharm.iswbm.com/zh_CN/latest/c02/c02_03.html
 
+**alt+q 查看上下文**，就是在函数内就查看现在是在哪个函数名下，在类内就查看是属于哪个类下面的。
+
+
+
 使用Run -> profile '`<filename>`' 可以在运行完毕后得到相关的时间等信息。
 
 静态代码分析检查：自动查出你的代码有没有问题。右键项目文件夹，选Inspect Code
 
-恢复误删除文件：右键项目目录，查看local history 找到delete，右键删除的文件，可以选revert恢复。
+**恢复误删除文件**：右键项目目录，查看local history 找到delete，右键删除的文件，可以选revert恢复。
 
 列选择模式：右键选择column selection mode。这个可以方便地删除像下面这样的注释
 
@@ -42,7 +46,7 @@ ctrl+shift+enter 自动补全if，try 等的冒号，就是写完主要功能，
 
 右键terminal可以查看以json格式查看输出
 
-**alt+q** 查看上下文，就是在函数内就查看现在是在哪个函数名下，在类内就查看是属于哪个类下面的。
+
 
 ctrl+alt+T 快速使用try if 等包裹当前选中的代码块
 
