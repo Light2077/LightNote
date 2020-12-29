@@ -4,7 +4,7 @@ http://pycharm.iswbm.com/zh_CN/latest/c02/c02_03.html
 
 **alt+q 查看上下文**，就是在函数内就查看现在是在哪个函数名下，在类内就查看是属于哪个类下面的。
 
-
+**ctrl+alt+o** 优化导包结构
 
 使用Run -> profile '`<filename>`' 可以在运行完毕后得到相关的时间等信息。
 
