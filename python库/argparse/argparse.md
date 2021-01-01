@@ -18,7 +18,7 @@ ls -a
 # demo.py
 import argparse
 parser = argparse.ArgumentParser()
-parser.add_argument("name")
+parser.add_argument("name")  # 增加一个位置参数
 args = parser.parse_args()
 print("hello %s!" % args.name)
 ```
@@ -35,7 +35,7 @@ python demo.py jack
 hello jack!
 ```
 
-查看帮助：
+使用`-h`或`--help`查看帮助：
 
 ```
 >>> python demo.py -h
@@ -51,10 +51,10 @@ optional arguments:
 - positional arguments 是必须要输入的参数
 - optional arguments 可以输入也可以不输入
 
-## 例2：常用参数
+## 例2：add_argument的常用参数
 
-- type: 指定这个参数的数据类型，默认是字符串
-- help: 提示说明，建议每个参数都写
+- `type`: 指定这个参数的数据类型，默认是字符串
+- `help`: 提示说明，建议每个参数都写
 
 ```python
 # demo.py
@@ -66,7 +66,7 @@ args = parser.parse_args()
 print(f"hello {args.name}, you are {args.age} years old.")
 ```
 
-如果还是只输入jack，会报错
+如果还是只输入jack，会报错，因为增加了`age`这个位置参数
 
 ```
 python demo.py jack
@@ -87,7 +87,7 @@ python demo.py jack 13
 hello jack, you are 13 years old.
 ```
 
-如果年龄输字符串，会报错
+如果年龄输成字符串，会报错
 
 ```
 python demo.py jack apple

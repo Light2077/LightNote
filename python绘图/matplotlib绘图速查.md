@@ -6,13 +6,16 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
+plt.figure(figsize=(3, 4))
 x = np.array([0, 1, 2])
 y1 = np.array([1, 2, 3])
 y2 = np.array([3, 2, 1])
-
+y3 = np.array([1, 1, 1])
 plt.bar(x, y1)
 plt.bar(x, y2, bottom=y1, color='c')
-
+plt.bar(x, y3, bottom=y1+y2, color='lightblue')
+plt.savefig('堆积柱状图.png')
+plt.show()
 ```
 
 ![](img/堆积柱状图.png)
@@ -88,10 +91,16 @@ plt.setp(labels, rotation=45, horizontalalignment='center')
 
 https://matplotlib.org/api/text_api.html#matplotlib.text.Text
 
-常用：fontfamliy / fontsize / fontproperties
+常用：`fontfamliy` / `fontsize` / `fontproperties`
 
 ```python
 ax.set_xlabels('年份', fontfamily='STSong')
+```
+
+对于legend，要使用prop设置字体比如
+
+```python
+plt.legend(prop={'family': 'SimHei'})
 ```
 
 
@@ -207,6 +216,8 @@ plt.show()
 
 ### 设置坐标轴不可见
 
+但是还是会显示刻度
+
 ```python
 ax.spines['top'].set_visible(False)
 ```
@@ -216,8 +227,6 @@ ax.spines['top'].set_visible(False)
 ```python
 plt.axis("off")
 ```
-
-
 
 ### 设置坐标轴位置
 
@@ -256,6 +265,8 @@ ax.plot(x, np.sin(x))
 plt.show()
 ```
 
+![](img/带箭头的坐标轴.png)
+
 ## 文本框
 
 ### 设置文本
@@ -264,25 +275,36 @@ plt.show()
 ax.text(x, y, s, ha='center', va='center')
 ```
 
-
-
 ### 文本框对齐举例
 
 ```python
 import matplotlib.pyplot as plt
 
-fig, ax = plt.subplots(3, 3, figsize=(9, 9))
+fig, axes = plt.subplots(3, 3, figsize=(9, 9))
 
-ha = ['left', 'center', 'right']
-va = ['top', 'center', 'bottom']
+ha = ['left', 'center', 'right']  # 横向对齐
+va = ['top', 'center', 'bottom']  # 纵向对齐
 
 for col in range(3):
     for row in range(3):
-        ax[col][row].text(0.5, 0.5, va[col] + "+" +ha[row],
-                          ha=ha[row], va=va[col], bbox=dict(pad=4, facecolor='none'))
-        ax[col][row].scatter(0.5, 0.5, c='r', s=5)
+        ax = axes[col][row]
+        ax.text(0.5,
+                0.5,
+                va[col] + "+" + ha[row],
+                ha=ha[row],
+                va=va[col],
+                bbox=dict(pad=4, facecolor='none'))
+        ax.scatter(0.5, 0.5, c='r', s=5)
+        # 隐藏刻度值
+        ax.tick_params(labelbottom=False, labelleft=False)
+        # 隐藏刻度线
+        ax.tick_params(bottom=False, left=False)
+        plt.axis("off")
+plt.savefig('文本框对齐.png')
 plt.show()
 ```
+
+![](img/文本框对齐.png)
 
 ### 公式字体
 
@@ -299,15 +321,18 @@ import matplotlib.pyplot as plt
 from matplotlib import rcParams
 
 config = {
-    "font.family":'serif',
+    "font.family": 'serif',
     "font.size": 20,
-    "mathtext.fontset":'stix',
+    "mathtext.fontset": 'stix',
     "font.serif": ['SimSun'],
 }
-rcParams.update(config)
 
-plt.title(r'宋体 $\mathrm{Times \; New \; Roman}\/\/ \alpha_i > \beta_i$')
+rcParams.update(config)
+plt.figure(figsize=(5, 0.5))
+plt.text(0, 0, r'宋体 $\mathrm{Times \; New \; Roman}\/\/ \alpha_i > \beta_i$')
 plt.axis('off')
+plt.savefig('公式字体.png')
 plt.show()
 ```
 
+![](img/公式字体.png)
