@@ -40,28 +40,28 @@
 
 ## Highway Network
 
-这里用$y$而不是用$x$有一定的迷惑性
-
-前馈神经网络
+传统的前馈神经网络
 $$
-z=g(Wy+b)
+y=g(W_gx+b_g)
 $$
 高速神经网络
 $$
 \begin{aligned}
-z&=t\odot g(W_Hy+b_H)+(1-t)\odot y \\
-t&=\sigma(W_Ty+b_T)
+z &= g(W_gx+b_g) \\
+t &= \sigma(W_tx+b_t) \\
+y &= tz + (1-t)x 
 \end{aligned}
 $$
-![image-20210102235717634](img/image-20210102235717634.png)
+![](img/highway.png)
 
-就是说，$y$的一部分是直接进入到下一层的
+就是说，$x$的一部分是直接进入到下一层的
 
-由$t$来控制，原始的输入和变换后的输入的比例。
+进入下一层的比例由$t$来控制，原始的输入和变换后的输入的比例。
 
-- $W_H,b_H$仿射变换
 - $t$ 转换率
 - $(1-t)$ 携带率
+
+优点：比较深层的网络，收敛效果也会比较好
 
 # 3. Contextual Embedding Layer
 
