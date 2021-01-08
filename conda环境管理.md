@@ -20,3 +20,6 @@ conda env remove -n [env-name]
 
 
 
+## TensorFlow 2.4
+
+https://tf.wiki/
