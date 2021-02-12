@@ -1,3 +1,7 @@
+## docker
+
+https://docs.docker.com/
+
 ## docker 安装
 
 docker 安装
@@ -16,6 +20,44 @@ systemctl start docker
 
 ```shell
 docker run hello-world
+```
+
+或者参考腾讯的官方文档
+
+https://cloud.tencent.com/document/product/213/46000
+
+## 配置镜像加速
+
+创建`daemon.json`文件
+
+```
+vim /etc/docker/daemon.json
+```
+
+把下面的代码拷贝进文件中
+
+```json
+{
+    "registry-mirrors": ["https://y4tay211.mirror.aliyuncs.com"]
+}
+```
+
+重启
+
+```
+systemctl daemon-reload
+systemctl restart docker
+```
+
+## 配置docker 私有仓库的安全地址
+
+修改`/etc/docker/daemon.json`
+
+```
+{
+    "registry-mirrors": ["https://y4tay211.mirror.aliyuncs.com"],
+    "insecure-registries": ["10.35.166.143:5000"]
+}
 ```
 
 

@@ -602,7 +602,7 @@ if __name__ == '__main__':
 
 
 ```python
-""" 非阻塞式 """
+""" 阻塞式 """
 from multiprocessing import Pool
 import os
 import time
@@ -618,7 +618,7 @@ def task(task_name):
 if __name__ == '__main__':
     pool = Pool(5)
     for i in range(10):
-        pool.apply(task, args=(i,))  # asynchronous 不同时的，异步的
+        pool.apply(task, args=(i,))
 
     pool.close()  # 添加任务结束
     pool.join()  # 等待子进程结束
