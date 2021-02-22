@@ -1,4 +1,13 @@
-[Bidirectional Attention Flow for Machine Comprehension](https://arxiv.org/abs/1611.01603)
+# Bi-DAF
+
+论文原文：[Bidirectional Attention Flow for Machine Comprehension](https://arxiv.org/abs/1611.01603)
+
+https://www.yuque.com/clskmw/uh23d9/10638631
+
+- Bi-DAF的设计思想（确立了什么样的结构【对于机器阅读理解问题】）
+- Bi-DAF共有几层，每层分别有什么作用。
+
+
 
 正式确立编码层-交互层-输出层的结构
 
@@ -40,6 +49,8 @@
 
 ## Highway Network
 
+主要记住多了一个门控单元，写出 $y$ 的公式，传统的$y=g(wx+b)$，而高速网络多了个门控单元 $t$ ，这个门控单元决定有多少 $x$ 能进入下一层神经网络。(类似于残差)
+
 传统的前馈神经网络
 $$
 y=g(W_gx+b_g)
@@ -54,22 +65,35 @@ y &= tz + (1-t)x
 $$
 ![](img/highway.png)
 
-就是说，$x$的一部分是直接进入到下一层的
+> $x$的一部分是直接进入到下一层的
+>
+> 进入下一层的比例由 $t$ 来控制
+>
+> - $t$ 转换率
+> - $(1-t)$ 携带率，$x$进入下一层的比例。
+>
+> 优点：比较深层的网络，收敛效果也会比较好
 
-进入下一层的比例由$t$来控制，原始的输入和变换后的输入的比例。
+经过字符级嵌入和词嵌入的编码后最终得到两个矩阵：
 
-- $t$ 转换率
-- $(1-t)$ 携带率
+- context的编码结果：$X \in R^{d\times T}$
+- query的编码结果：$Q \in R^{d\times J}$
 
-优点：比较深层的网络，收敛效果也会比较好
+$T$和$J$分别是context句子的长度和query句子的长度
 
 # 3. Contextual Embedding Layer
 
-接受char与word嵌入向量，用单层双向lstm处理
+上下文嵌入层：利用周围单词的上下文线索来提炼单词的嵌入。前三层应用于查询和上下文。
+
+接受char与word嵌入向量，用单层双向lstm处理，因此处理之后，矩阵向量维度会翻倍。由 $d$ 变成 $2d$ 
 
 ![](img/Contextual-Embedding-Layer.png)
 
 # 4. Attention Flow Layer
+
+**注意力流层**
+
+
 
 在这一层，要通过上下文嵌入$H$(context)和$U$(query)计算出一个相似度矩阵$S\in R^{T \times J}$
 
@@ -77,12 +101,13 @@ $S_{tj}$就表示第$t$个context词与第$j$个query词之间的相似度。通
 $$
 \begin{aligned}
 S_{tj}&=\alpha(H_{:t},U_{:j}) \\
-\alpha(h,u)&=w^T_S[h;u;h\odot u]
+\alpha(h,u)&=w^T_S[h;u;h\circ u]
 \end{aligned}
 $$
 
+$H_:t$和$U_:j$是列向量，比如$H_:t$表示 $H \in R ^{2d \times T}$ 矩阵第 $t$ 列的向量($t < T$)
 
-$H_:t$和$U_:j$是单独一列的向量，$[;]$表示矩阵拼接，注意因为有矩阵拼接，所以$w_S$的维度为：$w_S \in R^{6d}$
+“ ; ”表示矩阵拼接，**注意**，拼接了3个矩阵，所以$w_S$的维度为：$w_S \in R^{6d}$
 
 ![](img/相似度矩阵.png)
 
@@ -129,23 +154,28 @@ $$
 $$
 G_{:t}=\beta(H_{:t},\tilde{U}_{:t},\tilde{H}_{:t})
 $$
-$\beta$可以有各种不同的设计，最终一列的维度为：$G_{:t} \in R^{8d}$。
+$\beta$可以有各种不同的设计
 
 文章给出了其中一种有较好结果的设计是：
 $$
 \beta(h,\tilde{u},\tilde{h})=[h;\tilde{u};h\circ \tilde{u};h \circ \tilde{h}]
 $$
 
+“ $\circ$ ”表示对应元素之间相乘，最终一列的维度为：$G_{:t} \in R^{8d}$。
+
+$G \in R^{8d \times T}$
 
 # 5. Modeling Layer
 
 前面的$G\in R^{8d \times T}$通过一个双层双向的lstm。
 
-这一层与第3层不同的是，还融合了query的信息。
+这一层与**上下文嵌入层**不同的是，模型层融合了query的信息，上下文嵌入层只捕获了各个句子的信息。
 
 最终获得$M\in R^{2d \times T}$
 
 # 6. Output Layer
+
+使用RNN区扫描context
 
 这一层可以根据任务的不同，设计也可以发生变化，对于squad数据集，是要寻找一个开始索引和结束索引。
 
@@ -155,7 +185,7 @@ p^1=\text{softmax}(w^T_{p^1}[G;M])
 $$
 将$M$通过另一个双向lstm层，得到$M^2 \in R^{2d \times T}$用$M^2$来预测结尾索引：
 $$
-p^1=\text{softmax}(w^T_{p^1}[G;M^2])
+p^2=\text{softmax}(w^T_{p^1}[G;M^2])
 $$
 
 # 训练

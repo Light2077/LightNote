@@ -336,3 +336,40 @@ plt.show()
 ```
 
 ![](img/公式字体.png)
+
+## 正态分布曲线
+
+```python
+import matplotlib.pyplot as plt
+import numpy as np
+
+def normal(x):
+    return 1 / np.sqrt(2 * np.pi) * np.e ** (-x ** 2 / 2)
+
+x = np.linspace(-2, 2, 40)
+y = normal(x)
+bottom = x * 0
+
+left_x = np.linspace(-5, -2, 30)
+left_y = normal(left_x)
+left_bottom = left_x * 0
+
+right_x = np.linspace(2, 5, 30)
+right_y = normal(right_x)
+right_bottom = right_x * 0
+
+fig, ax = plt.subplots(figsize=(6, 3))
+ax.plot(x, y, color='black')
+ax.plot(left_x, left_y, color='black')
+ax.plot(right_x, right_y, color='black')
+
+ax.fill_between(x, y, bottom, where=(y > bottom), facecolor='red', alpha=0.3)
+ax.fill_between(left_x, left_y, left_bottom, where=(left_y > left_bottom), facecolor='blue', alpha=0.3)
+ax.fill_between(right_x, right_y, right_bottom, where=(right_y > right_bottom), facecolor='blue', alpha=0.3)
+ax.vlines([-2, 2], -0.1, max(y), linestyles='--', color='red', alpha=0.5)
+
+plt.show()
+plt.savefig('正态分布.png')
+```
+
+![](./img/正态分布.png)
