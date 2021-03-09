@@ -47,3 +47,11 @@ root = self.winfo_toplevel()
 
 ### 焦点设置
 self.focus_set()
+
+### 打包发布
+
+[Python | 用Pyinstaller打包发布exe应用](https://link.zhihu.com/?target=http%3A//jingyan.baidu.com/article/a378c960b47034b3282830bb.html)
+
+### 教程经验
+
+https://www.zhihu.com/question/32703639
