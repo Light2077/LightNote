@@ -1017,6 +1017,8 @@ select * from student where id>=3 having city='北京';
 
 where和having的区别
 
+- 如果选择的列没有出现，后面不能用having
+
 ```mysql
 -- 只能使用where
 select id, name, sex, city from student where money>=20;
@@ -1024,10 +1026,12 @@ select id, name, sex, city from student where money>=20;
 select id, name, sex, city from student having money>=20; -- 报错，因为money没出现在from之前
 ```
 
-
+- where不能用别名
+- 聚合函数之后不能接where
 
 ```mysql
 select id as i, name as n, sex as s, city as c from student where name='周杰伦';
+
 -- 报错 where不能使用别名
 select id as i, name as n, sex as s, city as c from student where n='周杰伦';
 

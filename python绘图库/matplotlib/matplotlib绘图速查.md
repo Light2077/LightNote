@@ -1,78 +1,41 @@
-## 柱状图
 
-### 堆积柱状图
-
-```python
-import matplotlib.pyplot as plt
-import numpy as np
-
-plt.figure(figsize=(3, 4))
-x = np.array([0, 1, 2])
-y1 = np.array([1, 2, 3])
-y2 = np.array([3, 2, 1])
-y3 = np.array([1, 1, 1])
-plt.bar(x, y1)
-plt.bar(x, y2, bottom=y1, color='c')
-plt.bar(x, y3, bottom=y1+y2, color='lightblue')
-plt.savefig('堆积柱状图.png')
-plt.show()
-```
-
-![](img/堆积柱状图.png)
-
-## 箱线图
-
-### 最简单箱线图
-
-下四分位：q1
-
-上四分位：q3
-
-四分位距：IQR = q3 - q1
-
-上限 top = q3 + 1.5 × IQR
-
-下限bottom = q1 - 1.5 × IQR
-
-但是上下限不能超过数据本身的维度
-
-`bottom = max(bottom, data.min())`
-
-`top= min(top, data.max())`
-
-```python
-import matplotlib.pyplot as plt
-import numpy as np
-
-x = np.random.normal(size=100)
-
-plt.boxplot(x)
-plt.show()
-```
-
-![](img/箱线图.png)
-
-### 同时绘制多个箱线图
-
-具体参考文档
-
-http://seaborn.pydata.org/generated/seaborn.boxplot.html?highlight=boxplot#seaborn.boxplot
-
-```python
-import seaborn as sns
-sns.set_theme(style="ticks", palette="pastel")
-# Load the example tips dataset
-tips = sns.load_dataset("tips")
-
-# Draw a nested boxplot to show bills by day and time
-sns.boxplot(x="day", y="total_bill", hue="smoker", palette=["m", "g"],
-            data=tips)
-sns.despine(offset=10, trim=True)
-```
-
-![](img/seaborn箱线图1.png)
 
 ## 小技巧速查
+
+### xy轴的刻度间隔相同
+
+- 此时 `ax.set_ylim()`或`plt.ylim()`无效。对x轴也无效。
+- 只有通过更改`figsize`来改变y轴的范围，比如：
+  - `plt.figure(figsize=(3, 4))`
+  - `plt.figure(figsize=(3, 8))`
+  - 后者的y轴范围更广
+
+```python
+import matplotlib.pyplot as plt
+import numpy as np
+x = np.linspace(-10, 10)
+y = np.sin(x)
+fig, axes = plt.subplots(2, 2, figsize=(8, 8))
+
+# axis 参数
+params = [["scaled", "equal"], 
+          ["tight", "image"]]
+
+for i in range(2):
+    for j in range(2):
+        ax = axes[i][j]
+        ax.plot(x, y)
+        ax.set_title(params[i][j])
+        
+        # 设置不同的参数
+        # ax.axis("equal")
+        ax.axis(params[i][j])
+
+plt.savefig("设置刻度间隔相同.png")
+plt.show()
+```
+
+![](img/设置刻度间隔相同.png)
 
 ### 双y轴
 
@@ -112,6 +75,14 @@ plt.legend(prop={'family': 'SimHei'})
 ```python
 plt.tight_layout()
 ```
+
+### 保存图片时显示不完整
+
+```
+plt.savefig(..., bbox_inches="tight")
+```
+
+
 
 ### 共享y轴
 
@@ -267,6 +238,21 @@ plt.show()
 
 ![](img/带箭头的坐标轴.png)
 
+绘制tanh函数
+
+```python
+# Some sample data.
+x = np.linspace(-5, 5, 100)
+y = np.tanh(x)
+ax.set_xticks([-5,-4, -3, -2, -1, 1, 2, 3, 4, 5])
+ax.set_yticks([-1, 1])
+ax.plot(x, y)
+```
+
+
+
+
+
 ## 文本框
 
 ### 设置文本
@@ -373,3 +359,126 @@ plt.savefig('正态分布.png')
 ```
 
 ![](./img/正态分布.png)
+
+## subplots
+
+参数`constrained_layout` 可以防止标签重叠问题
+
+```python
+fig, axs = plt.subplots(nrows=2, ncols=2, constrained_layout=True)
+```
+
+参数`sharex=True`
+
+[Matplotlib中多子图绘图时，坐标轴及其label的几种排布方式](https://zodiac911.github.io/blog/matplotlib-axis.html)
+
+### 统一设置x,y轴标签
+
+```python
+import matplotlib.pyplot as plt
+import numpy as np
+
+fig, ax = plt.subplots(2, 2)
+
+x = np.linspace(-5, 5, 100)
+y00 = np.sin(x)
+y01 = np.cos(x)
+y10 = np.sinh(x)
+y11 = np.tanh(x)
+
+ax[0][0].plot(x, y00)
+ax[0][1].plot(x, y01)
+ax[1][0].plot(x, y10)
+ax[1][1].plot(x, y11)
+
+plt.show()
+```
+
+![image-20210414110614166](img/image-20210414110614166.png)
+
+可以优化的点：
+
+- 统一设置x label 和 y label
+- 对于一列，只显示下面的xticks （`sharex=True`）
+
+```python
+import matplotlib.pyplot as plt
+import numpy as np
+
+fig, ax = plt.subplots(2, 2, sharex=True)
+
+x = np.linspace(-5, 5, 100)
+y00 = np.sin(x)
+y01 = np.cos(x)
+y10 = np.sinh(x)
+y11 = np.tanh(x)
+
+ax[0][0].plot(x, y00)
+ax[0][1].plot(x, y01)
+ax[1][0].plot(x, y10)
+ax[1][1].plot(x, y11)
+
+# 代替x label
+fig.text(0.5, 0, 'x label', ha='center')
+# 代替 y label
+fig.text(0, 0.5, 'y label', va='center', rotation='vertical')
+# title
+fig.suptitle("my title")
+plt.tight_layout()
+plt.show()
+```
+
+![image-20210414111716818](img/image-20210414111716818.png)
+
+## linestyle
+
+![Named linestyles, Parametrized linestyles](img/sphx_glr_linestyles_001.png)
+
+## marker
+
+matplotlib 绘制曲线时如果数据点较多， 添加 marker 后会出现 marker 重叠或太密集的现象， 可以用 `markevery` 来控制 marker 的间距。
+
+```python
+plt.plot(x, y, marker='o', markevery=10)
+```
+
+
+
+![Un-filled markers](img/sphx_glr_marker_reference_001.png)
+
+![Filled markers](img/sphx_glr_marker_reference_002.png)
+
+## legend
+
+参数1 `loc`，**控制位置**
+
+- 使用`plt.legend()`或`ax.legend()`设置图例
+- 通常情况默认就行了默认`ax.legend(loc="best")`
+- 位置设置可以用英文来记
+  - 上中下：upper center lower
+  - 左中右：left center right
+- 例：
+  - `loc="upper left"`
+  - `loc="center"`
+  - `loc="center right"`
+
+参数2 `prop`，**控制字体**
+
+- 传入文本格式，比如`prop={"family": "STSong"}`
+
+
+
+```python
+import matplotlib.pyplot as plt
+import numpy as np
+x = np.linspace(-10, 10)
+y = np.sin(x)
+
+fig, ax = plt.subplots()
+ax.plot(x, y, label="sin(x)")
+
+ax.legend()
+plt.savefig("legend演示1.png")
+plt.show()
+```
+
