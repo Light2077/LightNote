@@ -54,3 +54,18 @@ for weights in ['uniform', 'distance']:
 plt.show()
 ```
 
+
+
+## 怎么手算KNN
+
+kd-TREE
+
+https://zhuanlan.zhihu.com/p/53826008
+
+求中位数
+
+建立一颗二叉查找树
+
+给定二叉查找树和其中的一个数a，求与这个数a最接近的k个数
+
+ 
