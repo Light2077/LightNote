@@ -70,3 +70,41 @@ print([(i.step,i.value) for i in val_psnr])
 [(0, 33.70820617675781), (1, 34.52505874633789), (2, 34.26629638671875), (3, 35.47195053100586), (4, 35.45940017700195), (5, 35.336708068847656), (6, 35.467647552490234), (7, 35.919857025146484), (8, 35.29727554321289), (9, 35.63655471801758), (10, 36.219871520996094), (11, 36.178646087646484), (12, 35.93777847290039), (13, 35.587406158447266), (14, 36.198944091796875), (15, 36.241966247558594), (16, 36.379913330078125), (17, 36.28306198120117), (18, 36.03053665161133), (19, 36.20806121826172), (20, 36.21710968017578), (21, 36.42262268066406), (22, 36.00306701660156), (23, 36.4374885559082), (24, 36.163787841796875), (25, 36.53673553466797), (26, 35.99557113647461), (27, 36.96220016479492), (28, 36.63676452636719)]
 ```
 
+
+
+# 读取数据
+
+```python
+import tensorflow as tf
+
+
+from tensorboard.backend.event_processing.event_accumulator import EventAccumulator
+writer = tf.summary.create_file_writer("./tmp/mylogs/eager")
+
+# write to summary writer
+with writer.as_default():
+  for step in range(100):
+    # other model code would go here
+    tf.summary.scalar("my_metric", 0.5, step=step)
+    writer.flush()
+
+# read from summary writer
+event_acc = EventAccumulator("/tmp/mylogs/eager")
+event_acc.Reload()
+event_acc.Tags()  # 关键
+```
+
+
+
+You need to convert the tensor values in the event accumulator, stored as [`TensorProto`](https://github.com/tensorflow/tensorflow/blob/v2.2.0/tensorflow/core/framework/tensor.proto) messages, into arrays, which you can do with [`tf.make_ndarray`](https://www.tensorflow.org/api_docs/python/tf/make_ndarray):
+
+```python
+pd.DataFrame([(w, s, tf.make_ndarray(t)) for w, s, t in event_acc.Tensors('my_metric')],
+             columns=['wall_time', 'step', 'tensor'])
+```
+
+To avoid a subset of steps, I would suggest:  
+
+```python
+event_acc = EventAccumulator("/tmp/mylogs/eager", size_guidance={'tensors': 0})
+```
