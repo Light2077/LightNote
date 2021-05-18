@@ -20,11 +20,17 @@ chromedriver的版本要与chrome的版本一致
 查看chrome版本：在浏览器输入：
 
 ```
-chrome://version/
+chrome://version
+```
 
+```
 # 我查到的是
 88.0.4324.146
 ```
+
+谷歌浏览器驱动程序和浏览器的映射关系：
+
+https://blog.csdn.net/huilan_same/article/details/51896672
 
 解压缩，把`chromedriver.exe`复制到chrome的安装目录（复制到任意目录都行）
 
@@ -39,11 +45,21 @@ from selenium import webdriver
 
 driver = webdriver.Chrome('C:\Program Files\Google\Chrome\Application\chromedriver.exe')
 driver.get('http://www.baidu.com')
+# 关闭流量器
+# dri
 ```
 
 # 操作
 
 ## 元素定位
+
+### 获取页面源码
+
+```
+html = driver.page_source
+```
+
+
 
 ### 根据id
 
@@ -204,7 +220,11 @@ driver.quit()
 
 ## 页面异步ajax的解决方法
 
-原因： 由于网页中有ajax的异步执行的js, 导致driver.get()之后查找元素报 NoSuchElementException异常
+原因： 由于网页中有ajax的异步执行的js代码,
+
+执行driver.get()时，可能有些ajax还没加载完
+
+导致driver.get()查找元素报 NoSuchElementException异常
 
 ```python
 from selenium.webdriver.common.by import By
