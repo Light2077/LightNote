@@ -218,6 +218,10 @@ driver.quit()
 
 # 其他
 
+## class name 有空格怎么处理
+
+将空格用 `.` 来代替即可
+
 ## 页面异步ajax的解决方法
 
 原因： 由于网页中有ajax的异步执行的js代码,
@@ -372,6 +376,37 @@ for d in divs:
     abstract = d.find_element_by_class_name('c-abstract').text
     res.append((title, url, abstract))
 
+```
+
+## 模拟淘宝搜索
+
+- 打开淘宝网
+- 在搜索框中输入“python”
+- 点击搜索
+
+研究流程：F12打开抓包工具
+
+找到搜索框，发现搜索框的两个属性
+
+- class: search-combobox-input
+- id: q
+
+```python
+import time
+from selenium import webdriver
+
+driver = webdriver.Chrome('C:\Program Files (x86)\Google\Chrome\Application\chromedriver.exe')
+
+driver.get("https://www.taobao.com")
+time.sleep(1)
+search_input = driver.find_element_by_id("q")
+# 文本框输入内容
+search_input.send_keys("python")
+# 点击搜索按钮
+
+time.sleep(1)
+search_btn = driver.find_element_by_class_name("btn-search.tb-bg")
+search_btn.click()
 ```
 
 

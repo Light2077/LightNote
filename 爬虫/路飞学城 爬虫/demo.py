@@ -1,23 +1,15 @@
-import asyncio
+import time
+from selenium import webdriver
 
+driver = webdriver.Chrome('C:\Program Files (x86)\Google\Chrome\Application\chromedriver.exe')
 
-# 定义协程
-async def get_html(url):
-    print('get url: ', url)
-    return url
+driver.get("https://www.taobao.com")
+time.sleep(1)
+search_input = driver.find_element_by_id("q")
+# 文本框输入内容
+search_input.send_keys("python")
+# 点击搜索按钮
 
-
-def callback_func(task):
-    print("success get: ", task.result())
-
-
-# 获得协程对象
-c = get_html("www.baidu.com")
-
-# 创建事件循环对象
-loop = asyncio.get_event_loop()
-task = asyncio.ensure_future(c)
-
-# 将回调函数绑定到任务对象中
-task.add_done_callback(callback_func)
-loop.run_until_complete(task)
+time.sleep(1)
+search_btn = driver.find_element_by_class_name("btn-search.tb-bg")
+search_btn.click()
