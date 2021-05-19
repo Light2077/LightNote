@@ -34,7 +34,13 @@ https://blog.csdn.net/huilan_same/article/details/51896672
 
 解压缩，把`chromedriver.exe`复制到chrome的安装目录（复制到任意目录都行）
 
-我是放到了：`C:\Program Files\Google\Chrome\Application\chromedriver.exe`
+我是放到了：
+
+```
+C:\Program Files\Google\Chrome\Application\chromedriver.exe
+```
+
+
 
 可以把这个文件所在的文件夹加到环境变量，就不需要每次都写一遍
 
@@ -93,6 +99,8 @@ driver.find_element_by_class_name()
 
 如果类名有空格，比如`<p class="show para">`
 
+则`.`代替空格即可
+
 ```
 driver.find_element_by_class_name('.show.para')
 ```
@@ -116,25 +124,25 @@ driver.find_element_by_link_text()
 ### 获取元素属性
 
 ```
-.get_attribute('class')
+tag.get_attribute('class')
 ```
 
 ### 获取元素文本
 
 ```
-.text
+tag.text
 ```
 
 ### 获取id
 
 ```
-.id
+tag.id
 ```
 
 ### 获取标签名
 
 ```
-.tag_name
+tag.tag_name
 ```
 
 ## 交互
@@ -150,6 +158,15 @@ click()
 ```
 send_keys()
 ```
+
+### 回退前进
+
+```
+driver.back()
+driver.forward()
+```
+
+
 
 ### 模拟JS滚动
 
@@ -170,6 +187,14 @@ document.documentElement.scrollLeft
 ```	
 var q = window.document.documentElement.scrollTop=10000
 ```
+
+滚动一屏幕的高度
+
+```
+window.scrollTo(0, document.body.scrollHeight)
+```
+
+
 
 执行js代码
 
@@ -272,6 +297,131 @@ driver.window_handlers[0]
 # 如果不存在第二个页签会报错
 driver.window_handlers[1]
 ```
+
+# iframe处理+动作链
+
+>什么是iframe：iframe是浏览器页面中嵌套的一个子页面
+
+
+
+![image-20210519154732250](img/image-20210519154732250.png)
+
+```python
+import time
+from selenium import webdriver
+driver = webdriver.Chrome('C:\Program Files\Google\Chrome\Application\chromedriver.exe')
+driver.get('https://www.runoob.com/try/try.php?filename=jqueryui-api-droppable')
+
+div = driver.find_element_by_id("draggable")
+```
+
+执行这个代码会报错，因为这个div存在于iframe内。
+
+因此无法进行定位。
+
+```python
+# 切换浏览器标签作用域
+driver.switch_to.frame("iframeResult")
+# 定位到要拖动的标签
+div = driver.find_element_by_id("draggable")
+```
+
+## 动作链
+
+
+
+接下来使用动作链进行拖动操作
+
+```python
+from selenium.webdriver import ActionChains
+# 实例化动作链对象
+action = ActionChains(driver)
+# 触发动作链中的长按且点击操作
+action.click_and_hold(div)
+
+for i in range(5):
+    # .perform() 表示立即执行动作量操作
+    action.move_by_offset(17, 0).perform()
+    time.sleep(1)
+action.release()  # 释放动作链对象
+```
+
+
+
+完整代码
+
+```python
+import time
+from selenium import webdriver
+from selenium.webdriver import ActionChains
+
+driver = webdriver.Chrome('C:\Program Files\Google\Chrome\Application\chromedriver.exe')
+driver.get('https://www.runoob.com/try/try.php?filename=jqueryui-api-droppable')
+
+# 切换浏览器标签作用域
+driver.switch_to.frame("iframeResult")
+# 定位到要拖动的标签
+div = driver.find_element_by_id("draggable")
+print(div)
+time.sleep(3)
+action = ActionChains(driver)
+action.click_and_hold(div)
+
+for i in range(5):
+    # .perform() 表示立即执行动作量操作
+    # 传入 x, y 的偏移量
+    action.move_by_offset(17, 0).perform()
+    time.sleep(0.3)
+action.release()  # 释放动作链对象
+
+time.sleep(2)
+driver.quit()
+```
+
+# 无头浏览器
+
+如何让谷歌浏览器变成无可视化界面的浏览器（无头浏览器）
+
+由于phantomjs最近停止维护了，可以使用谷歌的无头浏览器
+
+```python
+import time
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+
+# 实现无可视化操作
+chrome_options = Options()
+chrome_options.add_argument("--headless")
+chrome_options.add_argument("--disable-gpu")
+
+path = "C:\Program Files\Google\Chrome\Application\chromedriver.exe"
+driver = webdriver.Chrome(path, chrome_options=chrome_options)
+
+driver.get('https://www.baidu.com')
+driver.save_screenshot("baidu.png")
+print(driver.page_source)
+```
+
+# 规避检测
+
+```python
+import time
+from selenium import webdriver
+from selenium.webdriver import ChromeOptions
+
+# 规避检测
+options = ChromeOptions()
+options.add_experimental_option("excludeSwitches", ["enable-automation"])
+path = "C:\Program Files\Google\Chrome\Application\chromedriver.exe"
+
+driver = webdriver.Chrome(path, options=options)
+
+driver.get('https://www.baidu.com')
+driver.save_screenshot("baidu.png")
+print(driver.page_source)
+```
+
+
 
 # 例子
 
@@ -468,5 +618,106 @@ for d in divs:
     res.append((url, title, salary, company))
 ```
 
+## 模拟登录
 
+
+
+```python
+import time
+from selenium import webdriver
+
+driver = webdriver.Chrome('C:\Program Files\Google\Chrome\Application\chromedriver.exe')
+
+driver.get("https://qzone.qq.com")
+
+# 处理iframe
+driver.switch_to.frame("login_frame")
+tag = driver.find_element_by_id("switcher_plogin")
+
+tag.click()
+
+username_tag = driver.find_element_by_id("u")
+password_tag = driver.find_element_by_id("p")
+
+time.sleep(1)
+username_tag.send_keys("328410948")
+time.sleep(1)
+password_tag.send_keys("123456789")
+time.sleep(1)
+btn = driver.find_element_by_id("login_button")
+btn.click()
+
+time.sleep(3)
+driver.quit()
+```
+
+## 12306模拟登录
+
+https://kyfw.12306.cn/otn/resources/login.html
+
+使用selenium 打开登录页面
+
+对当前页面截图
+
+对当前图片局部区域（验证码图片）进行裁剪
+
+
+
+```python
+import time
+from selenium import webdriver
+from chaojiying import ocr
+from PIL import ImageGrab
+
+driver = webdriver.Chrome('C:\Program Files\Google\Chrome\Application\chromedriver.exe')
+
+driver.get("https://kyfw.12306.cn/otn/resources/login.html")
+driver.maximize_window()
+
+tag = driver.find_element_by_xpath("//li[@class='login-hd-account']")
+time.sleep(1)
+tag.click()
+time.sleep(1)
+
+# 下载图片
+img = driver.find_element_by_id("J-loginImg")
+# 直接截图也可以
+# img.screenshot("a.jpg")
+
+# 根据页面坐标来截图
+# 确定验证码的左上角和右下角坐标
+# 左上角 img.location {'x': 1016, 'y': 292}
+# img.size {'height': 188, 'width': 300}
+# 右下角就可以计算出来了
+
+# 由于笔记本电脑有放大125%，需要额外乘个系数
+x_left = img.location["x"] * 1.25
+y_top = img.location["y"] * 1.25
+
+x_right = x_left + img.size["width"] * 1.25
+y_bottom = y_top + img.size["height"] * 1.25
+
+rangle = (x_left, y_top, x_right, y_bottom)
+# (1016, 292, 1316, 480)
+
+i = ImageGrab.grab(rangle)
+# 根据指定区域进行图片裁剪
+frame = i.crop(rangle)
+i.save("cc.png")
+
+
+# 使用超级鹰识别验证码图片
+def get_verification_result():
+    # 9004 就是12306的识别对象
+    im = open('a.jpg', 'rb').read()
+    res = ocr.PostPic(im, 9004)
+    return res
+
+
+# 对指定坐标进行点击
+action = webdriver.ActionChains(driver)
+action.move_to_element_with_offset(img, 123, 444).click().perform()
+
+# ps: 这个代码不完整，仅作为参考
+```
 
