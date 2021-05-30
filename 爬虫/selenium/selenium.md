@@ -421,6 +421,14 @@ driver.save_screenshot("baidu.png")
 print(driver.page_source)
 ```
 
+# COOKIE设置
+
+```python
+cookies = driver.get_cookies()
+```
+
+# 同时操作2个页签
+
 
 
 # 例子
