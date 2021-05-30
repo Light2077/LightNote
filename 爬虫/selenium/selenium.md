@@ -429,6 +429,23 @@ cookies = driver.get_cookies()
 
 # 同时操作2个页签
 
+# 隐式等待
+
+
+
+```python
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
+element = WebDriverWait(driver,5,0.5).until(
+                  EC.presence_of_element_located((By.ID,'kw'))
+                    )
+
+```
+
+
+
 
 
 # 例子
