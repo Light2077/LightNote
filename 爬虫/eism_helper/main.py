@@ -10,6 +10,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 import config
+from travel import Battle
 
 
 class EsimHelper:
@@ -27,10 +28,10 @@ class EsimHelper:
         self.driver.get(config.url)
         time.sleep(1)
         try:
-            # self.driver.find_element_by_id("userAvatar")
-            element = WebDriverWait(self.driver, 30).until(
-                EC.presence_of_element_located((By.ID, 'indexShortcut'))
-            )
+            self.driver.find_element_by_id("userAvatar")
+            # element = WebDriverWait(self.driver, 30).until(
+            #     EC.presence_of_element_located((By.ID, 'indexShortcut'))
+            # )
             print("已登录!")
             return
         except Exception as e:
@@ -122,9 +123,7 @@ class EsimHelper:
             time.sleep(2)
 
 
-if __name__ == '__main__':
-    eh = EsimHelper()
-    eh.login()
+def auto_league():
     lea = League(eh.driver, 64)
     while True:
         if battle_id := lea.get_battle_id():
@@ -132,3 +131,10 @@ if __name__ == '__main__':
         else:
             break
         time.sleep(300)
+
+
+if __name__ == '__main__':
+    eh = EsimHelper()
+    eh.login()
+    # battle = Battle(eh.driver, 101805)
+
