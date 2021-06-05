@@ -429,6 +429,46 @@ cookies = driver.get_cookies()
 
 # 同时操作2个页签
 
+https://www.cnblogs.com/mafu/p/14158337.html
+
+```python
+new_page = 'window.open("https://www.sina.com.cn");'
+driver.execute_script(new_page)
+
+driver.execute_script('window.open("https://www.sina.com.cn");')
+```
+
+切换标签页
+
+```python
+driver.switch_to.window(driver.window_handles[-1])
+
+# 当前窗口的handle
+# driver.current_window_handle
+```
+
+## 异步操作页签
+
+
+
+https://blog.csdn.net/ngsb153/article/details/99674382  这个作用不大，仅做参考
+
+同时收集2个网页的信息，每30秒刷新并打印一下
+
+```python
+import time
+from selenium import webdriver
+
+driver = webdriver.Chrome('C:\Program Files\Google\Chrome\Application\chromedriver.exe')
+driver.get('https://www.163.com/')
+driver.execute_script('window.open("https://www.sina.com.cn");')
+
+handle1 = driver.window_handles[0]
+handle2 = driver.window_handles[1]
+```
+
+
+
 # 隐式等待
 
 

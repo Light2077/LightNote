@@ -6,43 +6,45 @@
 如果 battle 结束 等待一段时间再查看
 
 """
-from selenium.webdriver.chrome.webdriver import WebDriver
-import config
+from base import BaseManager
 
 
-class League:
-    def __init__(self, driver: WebDriver, league_id):
-        self.driver = driver
-        self.id = league_id
+# 国家杯 共5场 每场一个1v1
+class League(BaseManager):
+    def __init__(self, driver, id_):
+        super().__init__(driver, id_=id_, name="tournamentEvent")
+        self.end_ = False
 
-    @property
-    def id(self):
-        return self._id
-
-    @id.setter
-    def id(self, league_id):
-        self._id = league_id
-        self.url = config.url + "/tournamentEvent.html?id=%s" % league_id
-
+    # 获得战场id
     def get_battle_id(self):
-        self.driver.get(self.url)
-        if self.is_ended():
+        if self.is_ended:
             print("league is finished!")
             return
         xpath = "//table/tbody/tr/td[2][@style='background:lightgreen']/parent::tr/td[4]/a"\
                 "|"\
                 "//table/tbody/tr/td[6][@style='background:lightgreen']/parent::tr/td[4]/a"
         try:
-            battle_link = self.driver.find_elements_by_xpath(xpath)[-1].get_attribute("href")
-            battle_id = battle_link.split("=")[-1]
+            links = self.driver.find_elements_by_xpath(xpath)
+            if not links:
+                print("league is not begin!")
+                return
+
+            battle_id = links[-1].get_attribute("href").split("=")[-1]
             return battle_id
 
         except Exception as e:
             print(str(e))
 
+    @property
     def is_ended(self):
+        if self.end_:
+            return True
+        self.page()
         ranking_label = self.driver.find_element_by_xpath("//li[@class='rc-active']/a")
         if ranking_label.get_attribute("href").split("#")[-1] == "slide6":
+            self.end_ = True
+            self.driver.close()
+            self.driver.switch_to.window(self.driver.window_handles[-1])
             return True
         else:
             return False

@@ -4,13 +4,10 @@ from selenium.webdriver import ChromeOptions
 from selenium.webdriver.common.action_chains import ActionChains
 import tqdm
 from league import League
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
+
 
 import config
-from travel import Battle
+from battle import Battle
 
 
 class EsimHelper:
@@ -20,6 +17,7 @@ class EsimHelper:
         self.options.add_experimental_option("excludeSwitches", ["enable-automation"])
         self.options.add_argument("user-data-dir=%s" % config.chrome_user_data_path)
         self.driver = webdriver.Chrome(config.driver_path, options=self.options)
+        self.driver.implicitly_wait(10)
         self.username = config.username
         self.password = config.password
         self.url = config.url
@@ -53,14 +51,6 @@ class EsimHelper:
         # with open("cookies.json", "w", encoding="utf8") as f:
         #     json.dump(cookies, f)
 
-    def fight(self):
-        fight_btn = self.driver.find_element_by_id("fightButton1")
-        fight_btn.click()
-        # fight_again_btn = driver.find_element_by_id("fightagainbutton")
-        time.sleep(1)
-        ActionChains(self.driver).move_by_offset(100, 100).click().perform()
-        print("攻击1下")
-
     def select_item(self, food="Q5", gift="Q5", weapon="Q1"):
         time.sleep(1)
         self.driver.find_element_by_id("sfood" + food).click()
@@ -88,43 +78,28 @@ class EsimHelper:
 
         time.sleep(1)
 
-    # 检查战斗是否已经结束
-    def is_ended(self):
-        defender_ball = self.driver.find_element_by_xpath("//div[@class='fightRounds fightRoundsDefender']/img[1]")
-        defender_color = defender_ball.get_attribute("src").split("/")[-1]
-
-        attacker_ball = self.driver.find_element_by_xpath("//div[@class='fightRounds fightRoundsAttacker']/img[8]")
-        attacker_color = attacker_ball.get_attribute("src").split("/")[-1]
-
-        if defender_color == attacker_color:
-            return False
-        return True
-
     # 自动战斗，每场比赛自动打一下
     def auto_fight(self, battle_id):
-
-        self.driver.get(f"{self.url}/battle.html?id={battle_id}")
+        battle = Battle(self.driver, battle_id)
         time.sleep(1)
-        self.select_item(weapon="Q0")
+        self.select_item(weapon="Q1")
 
         while True:
-            if self.is_ended():
+            if battle.is_ended:
                 print("战斗结束!")
                 break
-
-            damage_div = self.driver.find_element_by_id("topPlayerHit")
-            my_damage = int(damage_div.text.replace(",", ""))
-            print("damage", my_damage)
+            battle.page()
+            print("damage", battle.my_damage)
             self.recover()
-            if my_damage < 100:
-                self.fight()
+            # 伤害低于一个阈值则攻击
+            if battle.my_damage < 100:
+                battle.hit()
             time.sleep(60)
-            self.driver.refresh()
-            time.sleep(2)
 
 
-def auto_league():
-    lea = League(eh.driver, 64)
+def auto_league(league_id):
+    # 516
+    lea = League(eh.driver, league_id)
     while True:
         if battle_id := lea.get_battle_id():
             eh.auto_fight(battle_id)
@@ -136,5 +111,5 @@ def auto_league():
 if __name__ == '__main__':
     eh = EsimHelper()
     eh.login()
-    # battle = Battle(eh.driver, 101805)
-
+    battle1 = Battle(eh.driver, 101883)
+    battle2 = Battle(eh.driver, 101882)

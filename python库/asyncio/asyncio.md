@@ -1,5 +1,9 @@
 https://docs.python.org/zh-cn/3/library/asyncio-task.html#coroutines
 
+# 协程的基础概念
+
+- 协程对象：coroutine
+
 # 协程的最简单应用
 
 下面这个代码就是最简单的协程应用，先打印`hello`，等待2秒后打印`world`
@@ -442,3 +446,76 @@ async def do_something():
 ```
 
 改版2无效，改版3有效，改版4有效
+
+## 一个例子
+
+一共3个水果，每2秒会来一个水果，一个水果要切3次，每隔1秒切一次
+
+如果是同步执行：
+
+```python
+import time
+
+
+def main():
+    print("start at:", time.strftime('%X'))
+    fruits = ["apple", "banana", "pear"]
+    for fruit in fruits:
+        cut(fruit)
+        time.sleep(2)
+    print("end at:", time.strftime('%X'))
+
+
+def cut(fruit):
+    print("start at:", time.strftime('%X'))
+    for i in range(3):
+        print(f"cut {fruit}, {i + 1}")
+        time.sleep(1)
+    print("end at:", time.strftime('%X'))
+main()
+```
+
+```
+start at: 20:35:34
+start at: 20:35:34
+cut apple, 1
+cut apple, 2
+cut apple, 3
+end at: 20:35:37
+start at: 20:35:39
+cut banana, 1
+cut banana, 2
+cut banana, 3
+end at: 20:35:42
+start at: 20:35:44
+cut pear, 1
+cut pear, 2
+cut pear, 3
+end at: 20:35:47
+end at: 20:35:49
+```
+
+异步
+
+```python
+import time
+import asyncio
+
+async def main():
+    print("start at:", time.strftime('%X'))
+    fruits = ["apple", "banana", "pear"]
+    for fruit in fruits:
+        cut(fruit)
+        await asyncio.sleep(2)
+    print("end at:", time.strftime('%X'))
+
+
+async def cut(fruit):
+    print("start at:", time.strftime('%X'))
+    for i in range(3):
+        print(f"cut {fruit}, {i + 1}")
+        await asyncio.sleep(1)
+    print("end at:", time.strftime('%X'))
+main()
+```
+
