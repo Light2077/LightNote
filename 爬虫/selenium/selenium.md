@@ -484,6 +484,15 @@ element = WebDriverWait(driver,5,0.5).until(
 
 ```
 
+# driver.get不等待
+
+```python
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+desired_capabilities = DesiredCapabilities.CHROME
+desired_capabilities["pageLoadStrategy"] = "none"
+driver = webdriver.Chrome(desired_capabilities=desired_capabilities)
+```
+
 
 
 

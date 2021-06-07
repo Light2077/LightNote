@@ -31,6 +31,7 @@ class BaseManager:
         if self.handle not in self.driver.window_handles:
             self.handle = self.open_new_tab(self.url)
         else:
+            print("刷新界面:", self.url)
             self.driver.switch_to.window(self.handle)
             self.driver.refresh()
 

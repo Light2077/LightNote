@@ -60,14 +60,19 @@ class Battle(BaseManager):
 
     # 战斗类型
     def check_type(self):
-        tags = self.driver.find_elements_by_xpath("//div[@id='fightName']/span/*[2]")
-        if tags:
-            tag = tags[0]
-            if tag.text[:3] == "起义战":
-                return "起义战"
-            else:
-                return "未知战"
-        return "进攻战"
+        """
+        102100 国家杯
+        102129 Resistance war
+        101990 league
+        101491 Country Tournament
+        :return:
+        """
+        text = self.driver.find_element_by_xpath("//div[@id='fightName']/span/*[2]").text
+        if text[:3] == "起义战" or "Resistance" in text:
+            return "起义战"
+        elif self.driver.find_element_by_xpath("//div[@id='fightName']/span/*[1]").text:
+            return "进攻战"
+        return text
 
     # 自己的输出
     @property
@@ -79,7 +84,7 @@ class Battle(BaseManager):
     def is_ended(self):
         if self.end_:
             return True
-        self.page()
+        # self.page()
         if self.defender_score == 8 or self.attacker_score == 8:
             self.end_ = True
             self.driver.close()

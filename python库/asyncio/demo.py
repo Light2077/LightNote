@@ -1,15 +1,14 @@
-import asyncio
+import time
+from concurrent.futures import Future
+from concurrent.futures.thread import ThreadPoolExecutor
+from concurrent.futures.process import ProcessPoolExecutor
 
-async def nested():
-    return 42
+def func(value):
+    time.sleep(1)
+    print(value)
+    
+pool = ThreadPoolExecutor(max_workers=5)
 
-async def main():
-    # Nothing happens if we just call "nested()".
-    # A coroutine object is created but not awaited,
-    # so it *won't run at all*.
-    nested()
-
-    # Let's do it differently now and await it:
-    print(await nested())  # will print "42".
-
-asyncio.run(main())
+for i in range(5):
+    future = pool.submit(func, i)
+    print(future)

@@ -3,7 +3,7 @@ from selenium.webdriver.chrome.webdriver import WebDriver
 
 
 def test_league(driver: WebDriver):
-    from league import League
+    from tournament.league import League
     lea = League(driver, "516")
 
     # 转到国家杯页面

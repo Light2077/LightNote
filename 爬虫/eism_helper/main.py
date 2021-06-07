@@ -1,10 +1,10 @@
 import time
 from selenium import webdriver
 from selenium.webdriver import ChromeOptions
-from selenium.webdriver.common.action_chains import ActionChains
-import tqdm
-from league import League
-
+from tournament.league import League
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+import asyncio
+from tournament.country import CountryTournament
 
 import config
 from battle import Battle
@@ -16,7 +16,11 @@ class EsimHelper:
         # 规避检测
         self.options.add_experimental_option("excludeSwitches", ["enable-automation"])
         self.options.add_argument("user-data-dir=%s" % config.chrome_user_data_path)
-        self.driver = webdriver.Chrome(config.driver_path, options=self.options)
+        desired_capabilities = DesiredCapabilities.CHROME
+        desired_capabilities["pageLoadStrategy"] = "none"
+
+        self.driver = webdriver.Chrome(config.driver_path, options=self.options,
+                                       desired_capabilities=desired_capabilities)
         self.driver.implicitly_wait(10)
         self.username = config.username
         self.password = config.password
@@ -24,25 +28,28 @@ class EsimHelper:
 
     def login(self):
         self.driver.get(config.url)
-        time.sleep(1)
         try:
-            self.driver.find_element_by_id("userAvatar")
-            # element = WebDriverWait(self.driver, 30).until(
+            self.driver.find_element_by_id("indexShortcut")
+            # element = WebDriverWait(self.driver, 10).until(
             #     EC.presence_of_element_located((By.ID, 'indexShortcut'))
             # )
             print("已登录!")
             return
         except Exception as e:
-            print(e)
+
+            print("未登录!", e)
             pass
 
+        self.driver.find_element_by_id("login_section_btn").click()
         username_input = self.driver.find_element_by_id("registeredPlayerLogin")
-        password_input = self.driver.find_elements_by_xpath("//input[@name='password']")[0]
-        time.sleep(1)
+        password_input = self.driver.find_elements_by_xpath("//input[@name='password']")[1]
         login_btn = self.driver.find_element_by_xpath("//button[@value='Login']")
 
+        username_input.clear()
+        password_input.clear()
         username_input.send_keys(self.username)
         password_input.send_keys(self.password)
+
         time.sleep(1)
         login_btn.click()
 
@@ -53,6 +60,7 @@ class EsimHelper:
 
     def select_item(self, food="Q5", gift="Q5", weapon="Q1"):
         time.sleep(1)
+        print("select food %s, gift %s, weapon %s" % (food, gift, weapon))
         self.driver.find_element_by_id("sfood" + food).click()
         self.driver.find_element_by_id("sgift" + gift).click()
         self.driver.find_element_by_id("weapon" + weapon).click()
@@ -78,38 +86,77 @@ class EsimHelper:
 
         time.sleep(1)
 
-    # 自动战斗，每场比赛自动打一下
-    def auto_fight(self, battle_id):
+    # 自动战斗
+    async def auto_fight(self, battle_id, min_damage=-100):
         battle = Battle(self.driver, battle_id)
-        time.sleep(1)
+        print("auto battle:", battle_id)
         self.select_item(weapon="Q1")
-
         while True:
+            battle.page()
             if battle.is_ended:
                 print("战斗结束!")
                 break
-            battle.page()
-            print("damage", battle.my_damage)
+            print("current damage", battle.my_damage)
             self.recover()
             # 伤害低于一个阈值则攻击
-            if battle.my_damage < 100:
+            if battle.my_damage < min_damage:
                 battle.hit()
-            time.sleep(60)
+
+            # 等待60秒
+            await asyncio.sleep(60)
 
 
-def auto_league(league_id):
-    # 516
-    lea = League(eh.driver, league_id)
+async def auto_country_tournament(driver, tournament_id):
+    ct = CountryTournament(driver, tournament_id)
     while True:
-        if battle_id := lea.get_battle_id():
-            eh.auto_fight(battle_id)
+        ct.page()
+        battle_id = ct.get_battle_ids()
+        if battle_id:
+            break
+        tasks = [
+            asyncio.create_task(eh.auto_fight(battle_id[0])),
+            asyncio.create_task(eh.auto_fight(battle_id[1])),
+        ]
+        done, pending = await asyncio.wait(tasks)
+        print("battle is end!")
+
+        time.sleep(300)
+
+
+async def auto_league(driver, tournament_id):
+    # 516
+    lea = League(driver, tournament_id)
+    while True:
+        battle_id = lea.get_battle_id()
+        if battle_id:
+            await eh.auto_fight(battle_id)
         else:
             break
         time.sleep(300)
 
 
+async def auto_team_tournament(driver, tournament_id):
+    from tournament.team import TeamTournament
+    # 8
+    tournament = TeamTournament(driver, tournament_id)
+    while True:
+        battle_id = tournament.get_battle_id()
+        if battle_id:
+            await eh.auto_fight(battle_id)
+        else:
+            break
+        time.sleep(300)
+
+
+# ct = CountryTournament(eh.driver, 38)
 if __name__ == '__main__':
     eh = EsimHelper()
     eh.login()
-    battle1 = Battle(eh.driver, 101883)
-    battle2 = Battle(eh.driver, 101882)
+    # 自动 country tournament
+    # asyncio.run(auto_country_tournament(eh.driver, 38))
+
+    # 自动 league
+    # asyncio.run(auto_league(eh.driver, 524))
+
+    # 自动 team tournament
+    asyncio.run(auto_team_tournament(eh.driver, 8))
