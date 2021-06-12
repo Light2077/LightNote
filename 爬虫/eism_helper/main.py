@@ -1,4 +1,6 @@
 import time
+
+import tqdm
 from selenium import webdriver
 from selenium.webdriver import ChromeOptions
 from tournament.league import League
@@ -27,6 +29,7 @@ class EsimHelper:
         self.url = config.url
 
     def login(self):
+        # 如果不开代理的话，会因为要加载谷歌的服务而等待很久
         self.driver.get(config.url)
         try:
             self.driver.find_element_by_id("indexShortcut")
@@ -83,11 +86,13 @@ class EsimHelper:
             eat_food_btn = self.driver.find_element_by_id("useGiftButton2")
             eat_food_btn.click()
             print("use gift!")
+        else:
+            raise ValueError("Food/Gift limit not enough!")
 
         time.sleep(1)
 
     # 自动战斗
-    async def auto_fight(self, battle_id, min_damage=-100):
+    async def auto_fight(self, battle_id, min_damage=100):
         battle = Battle(self.driver, battle_id)
         print("auto battle:", battle_id)
         self.select_item(weapon="Q1")
@@ -111,7 +116,7 @@ async def auto_country_tournament(driver, tournament_id):
     while True:
         ct.page()
         battle_id = ct.get_battle_ids()
-        if battle_id:
+        if not battle_id:
             break
         tasks = [
             asyncio.create_task(eh.auto_fight(battle_id[0])),
@@ -132,7 +137,8 @@ async def auto_league(driver, tournament_id):
             await eh.auto_fight(battle_id)
         else:
             break
-        time.sleep(300)
+        for _ in tqdm.tqdm(range(270)):
+            time.sleep(1)
 
 
 async def auto_team_tournament(driver, tournament_id):
@@ -153,10 +159,10 @@ if __name__ == '__main__':
     eh = EsimHelper()
     eh.login()
     # 自动 country tournament
-    # asyncio.run(auto_country_tournament(eh.driver, 38))
+    asyncio.run(auto_country_tournament(eh.driver, 39))
 
     # 自动 league
     # asyncio.run(auto_league(eh.driver, 524))
 
     # 自动 team tournament
-    asyncio.run(auto_team_tournament(eh.driver, 8))
+    # asyncio.run(auto_team_tournament(eh.driver, 8))

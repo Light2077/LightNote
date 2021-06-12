@@ -27,19 +27,20 @@ class CountryTournament(BaseManager):
             return
 
         self.driver.find_element_by_xpath("//a[@href='#slideShedule']").click()
-        time.sleep(10)
-        xpath = '//*[@id="table-container"]/div[3]/table/tbody/tr[1]/td[%s]//a'
-
+        # time.sleep(10)
+        # xpath = '//*[@id="table-container"]/div[3]/table/tbody/tr[1]/td[%s]//a'
+        xpath = '//*[@id="table-container"]/div[3]/table/tbody/tr[1]/td[@class="marked"][last()]//a'
+        print("find battle ids!")
         try:
-            for i in range(5, 0, -1):
-                elements = self.driver.find_elements_by_xpath(xpath % (i + 2))
-                battle_ids = []
-                for k in range(0, 4, 2):
-                    href = elements[k].get_attribute("href")
-                    if href:
-                        battle_ids.append(href.split("=")[-1])
-                if battle_ids:
-                    return battle_ids
+            elements = self.driver.find_elements_by_xpath(xpath)
+            battle_ids = []
+            for k in range(0, 4, 2):
+                href = elements[k].get_attribute("href")
+                if href:
+                    battle_ids.append(href.split("=")[-1])
+            if battle_ids:
+                print(battle_ids)
+                return battle_ids
             print("country tournament may not begin")
         except Exception as e:
             print(str(e))
