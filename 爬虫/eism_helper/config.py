@@ -4,8 +4,8 @@
 # driver path
 # driver_path = r"C:\Program Files (x86)\Google\Chrome\Application\chromedriver.exe"
 
-driver_path = r"C:\Program Files\Google\Chrome\Application\chromedriver.exe"
-chrome_user_data_path = r"C:\Users\light\AppData\Local\Google\Chrome\User Data"
+driver_path = r"C:\Program Files (x86)\Google\Chrome\Application\chromedriver.exe"
+chrome_user_data_path = r"C:\Users\ztn\AppData\Local\Google\Chrome\User Data"
 
 server_name = "primera"
 # 主url
