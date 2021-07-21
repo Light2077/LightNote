@@ -51,12 +51,26 @@ class Battle(BaseManager):
     # 防御方得分
     @property
     def defender_score(self):
-        return len(self.driver.find_elements_by_xpath("//*[contains(@src, 'blue_ball')]"))
+        # return len(self.driver.find_elements_by_xpath("//*[contains(@src, 'blue_ball')]"))
+        tags = self.driver.find_elements_by_xpath("//div[@class='fightRounds fightRoundsDefender']/img")
+        ans = 8
+        for tag in tags:
+            src = tag.get_attribute("src")
+            if "null_ball" in src:
+                ans -= 1
+        return ans
 
     # 进攻方得分
     @property
     def attacker_score(self):
-        return len(self.driver.find_elements_by_xpath("//*[contains(@src, 'red_ball')]"))
+        # return len(self.driver.find_elements_by_xpath("//*[contains(@src, 'red_ball')]"))
+        tags = self.driver.find_elements_by_xpath("//div[@class='fightRounds fightRoundsAttacker']/img")
+        ans = 8
+        for tag in tags:
+            src = tag.get_attribute("src")
+            if "null_ball" in src:
+                ans -= 1
+        return ans
 
     # 战斗类型
     def check_type(self):

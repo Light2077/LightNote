@@ -23,7 +23,7 @@ class EsimHelper:
 
         self.driver = webdriver.Chrome(config.driver_path, options=self.options,
                                        desired_capabilities=desired_capabilities)
-        self.driver.implicitly_wait(10)
+        self.driver.implicitly_wait(15)
         self.username = config.username
         self.password = config.password
         self.url = config.url
@@ -96,19 +96,33 @@ class EsimHelper:
         battle = Battle(self.driver, battle_id)
         print("auto battle:", battle_id)
         self.select_item(weapon="Q1")
+        error_count = 0
         while True:
-            battle.page()
-            if battle.is_ended:
-                print("战斗结束!")
-                break
-            print("current damage", battle.my_damage)
-            self.recover()
-            # 伤害低于一个阈值则攻击
-            if battle.my_damage < min_damage:
-                battle.hit()
+
+            try:
+                battle.page()
+                if battle.is_ended:
+                    print("战斗结束!")
+                    break
+                print("current damage", battle.my_damage)
+                self.recover()
+                # 伤害低于一个阈值则攻击
+                if battle.my_damage < min_damage:
+                    battle.hit()
+
+            except Exception as e:
+                print(e)
+                error_count += 1
+
+                if error_count > 3:
+                    break
+
+                continue
 
             # 等待60秒
+            print("wait 60 sec")
             await asyncio.sleep(60)
+            error_count = 0
 
 
 async def auto_country_tournament(driver, tournament_id):
@@ -131,14 +145,17 @@ async def auto_country_tournament(driver, tournament_id):
 async def auto_league(driver, tournament_id):
     # 516
     lea = League(driver, tournament_id)
+    count = 0
     while True:
+        if count > 0:
+            time.sleep(150)
+
         battle_id = lea.get_battle_id()
         if battle_id:
             await eh.auto_fight(battle_id)
         else:
             break
-        for _ in tqdm.tqdm(range(270)):
-            time.sleep(1)
+        count += 1
 
 
 async def auto_team_tournament(driver, tournament_id):
@@ -154,13 +171,30 @@ async def auto_team_tournament(driver, tournament_id):
         time.sleep(300)
 
 
+async def auto_cup_tournament(driver, tournament_id):
+    from tournament.cup import CupTournament
+    # 8
+    tournament = CupTournament(driver, tournament_id)
+    while True:
+
+        battle_id = tournament.get_battle_id()
+        if battle_id:
+            await eh.auto_fight(battle_id)
+        else:
+            break
+        print("wait 60 sec")
+        time.sleep(60)
+        tournament.page()
+
+
 # ct = CountryTournament(eh.driver, 38)
 if __name__ == '__main__':
     eh = EsimHelper()
     eh.login()
     # 自动 country tournament
-    asyncio.run(auto_country_tournament(eh.driver, 39))
-
+    # asyncio.run(auto_country_tournament(eh.driver, 39))
+    # asyncio.run(eh.auto_fight(102864))
+    asyncio.run(auto_cup_tournament(eh.driver, 525))
     # 自动 league
     # asyncio.run(auto_league(eh.driver, 524))
 
