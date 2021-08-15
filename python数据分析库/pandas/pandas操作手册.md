@@ -1,4 +1,4 @@
-p这是个按照pandas使用流程来写的操作手册。
+这是个按照pandas使用流程来写的操作手册。
 
 pandas是用来处理数据的python工具包，我的理解中，pandas是底层版的excel，它可以实现的功能更多，但是也比excel更麻烦。excel可能动动鼠标就完成一个工作了，但是pandas需要编写相应的代码。
 
