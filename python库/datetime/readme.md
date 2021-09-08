@@ -80,7 +80,7 @@ now.microsecond
 
 ```python
 # 创建时间戳
-
+now = datetime.datetime.now()
 d = datetime.timedelta(days=1, 
                        seconds=10, 
                        microseconds=239, 
