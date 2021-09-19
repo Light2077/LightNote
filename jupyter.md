@@ -98,3 +98,9 @@ pip install ipykernel
 ```
 python -m nb_conda_kernels list
 ```
+
+
+
+
+
+https://www.markroepke.me/posts/2019/06/05/tips-for-slideshows-in-jupyter.html
