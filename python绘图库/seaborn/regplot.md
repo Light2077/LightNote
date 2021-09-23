@@ -1,0 +1,1 @@
+https://stackoverflow.com/questions/45902739/seaborn-annotate-the-linear-regression-equation
