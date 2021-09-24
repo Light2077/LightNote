@@ -11,6 +11,7 @@ total_iter = 1000
 for i in range(total_iter):
     time.sleep(total_time / total_iter)
     pbar.update(size / total_iter)
+    pbar.set_description("Processing %s" % i)
 ```
 
 - total : 总大小
@@ -18,3 +19,4 @@ for i in range(total_iter):
 - desc：下载描述，在进度条前面
 - unit_scale：自动缩放范围，把单位变成 G M K 等格式
 - unit：单位字符串
+
