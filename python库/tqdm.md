@@ -20,3 +20,7 @@ for i in range(total_iter):
 - unit_scale：自动缩放范围，把单位变成 G M K 等格式
 - unit：单位字符串
 
+```
+Processing 276:  28%|██▊       | 6.55M/23.7M [00:01<00:04, 4.24MB/s]
+```
+
