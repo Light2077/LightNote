@@ -261,7 +261,9 @@ ax.plot(x, y)
 ax.text(x, y, s, ha='center', va='center')
 ```
 
-### 文本框对齐举例
+### 文本框对齐
+
+left的意思是，坐标（x,y)中的x就是文本框的left边。
 
 ```python
 import matplotlib.pyplot as plt
@@ -482,6 +484,7 @@ plt.savefig("legend演示1.png")
 plt.show()
 ```
 
+
 # 内嵌图
 
 https://zhuanlan.zhihu.com/p/138687299
@@ -513,3 +516,18 @@ ax.plot(range(10))
 plt.show()
 
 ```
+
+## figure.suptitle()
+
+多子图绘图时，设置一个总的标题
+
+常用参数
+
+- t：总标题文本
+- x：默认0.5，总标题横轴位置
+- y：默认0.98，总标题纵轴位置
+- ha：{'center', 'left', 'right'}, default: center
+- va：{'top', 'center', 'bottom', 'baseline'}, default: top
+- fontsize：字体大小
+- fontweight：字体粗细
+

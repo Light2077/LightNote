@@ -59,3 +59,16 @@ while s.Find.Execute(
 - 样式表里要有一个”题注“样式，这样插入表格题注以后，该行文字的样式就会由原本的**“表格题注”样式**变成**“题注”样式**。这样重复执行代码就不会发生重复插入题注的问题了
 - 这里的题注会显示章节号（表1-3中的1表示这是第一章的表格），因此需要事先定义好标题1的样式。
 
+
+
+## win32com.client.constants
+
+一些常量
+
+
+
+https://stackoverflow.com/questions/28264548/how-to-use-win32com-client-constants-with-ms-word
+
+- wdDoNotSaveChanges：退出时不保存
+- wdSaveChanges：退出时保存
+
