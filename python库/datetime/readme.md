@@ -10,6 +10,30 @@ https://docs.python.org/3/library/datetime.html
 
 # 常用操作
 
+时间戳转datetime格式
+
+```python
+import datetime
+dt_stamp = 1633864562
+dt = datetime.datetime.fromtimestamp(dt_stamp)
+print(dt)
+```
+
+```
+2021-10-10 19:16:02
+```
+
+字符串转时间戳
+
+```python
+import datetime
+dt_str = '2021-10-10 19:16:02'
+dt = datetime.datetime.strptime(dt_str, '%Y-%m-%d %H:%M:%S')
+print(dt.timestamp())
+```
+
+
+
 获取当天日期
 
 ```python
@@ -111,6 +135,8 @@ t1 = datetime.datetime(2021, 6, 1)
 t2 = datetime.datetime(2020, 1, 12, 10, 30, 5)
 t2 - t1
 ```
+
+
 
 
 

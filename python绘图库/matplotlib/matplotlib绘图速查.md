@@ -482,3 +482,34 @@ plt.savefig("legend演示1.png")
 plt.show()
 ```
 
+# 内嵌图
+
+https://zhuanlan.zhihu.com/p/138687299
+
+```text
+import os
+from PIL import Image
+import matplotlib.pyplot as plt
+
+
+def insert_img(parent_ax, img_path, x, y, width, height):
+    img = Image.open(img_path)
+    # 为了x,y 处于图片中心
+    x = x - width / 2
+    y = y - height / 2
+
+    ax = parent_ax.inset_axes([x, y, width, height], transform=parent_ax.transData, )
+    ax.imshow(img, zorder=100)
+    ax.spines[:].set_visible(False)
+    ax.set_xticks([])
+    ax.set_yticks([])
+
+
+test_img_path = 'img/antimage_vert_circle.png'
+
+fig, ax = plt.subplots()
+insert_img(ax, test_img_path, x=2, y=6, width=5, height=5)
+ax.plot(range(10))
+plt.show()
+
+```

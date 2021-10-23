@@ -2,7 +2,7 @@
 
 https://github.com/yhilpisch/py4fi2nd
 
-前7章的笔记分散到各个部分了，pandas、matplotlib等
+前7章的主要是python基础数据分析库的介绍，比如numpy、pandas、matplotlib
 
 之后出现的数据集也可以从这里面下载
 
