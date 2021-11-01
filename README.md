@@ -4,14 +4,6 @@ Lightnote 是一本笔记，记录在学习过程中遇到的问题和解决方�
 
 
 
-## Numpy
-
-`neg, pos = np.bincount(array)`
-
-`np.clip(a,a_min,a_max)` 小于`a_min`的数据变成`a_min`,大于`a_max`的数据变成`a_max`
-
-
-
 ## Jupyter
 
 - 如何设置默认启动位置：[修改配置文件 jupyter_notebook_config.py](https://www.cnblogs.com/xxtalhr/p/10841241.html)([补充](https://blog.csdn.net/qq_42711359/article/details/98305578))
@@ -31,12 +23,6 @@ Lightnote 是一本笔记，记录在学习过程中遇到的问题和解决方�
 - 创建新环境：`conda create -n tf2 python=3.7`
 
 - 加速包的下载安装：[清华镜像站使用](https://mirror.tuna.tsinghua.edu.cn/help/anaconda/)
-
-
-
-## Pycharm
-
-修改变量名：`shift F6`
 
 
 

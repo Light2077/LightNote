@@ -59,7 +59,21 @@ ctrl+左键点击链接
 1. 定义一个锚(id)：`<span id="jump">跳转到的地方</span>`
 2. 使用markdown语法：`[点击跳转](#jump)`
 
-### 公式
+
+
+### 引用
+
+`ctrl + shift + Q`
+
+`>`
+
+> 怎么引用？
+
+
+
+
+
+## 常用latex
 
 [官方文档](https://support.typora.io/Math/)
 
@@ -76,18 +90,4 @@ ctrl+左键点击链接
 | $\bar{a}$ | `\bar{a}` | $\mathcal{L}$ | `$\mathbb{L}$`  |      |      |
 | $\hat{a}$ | `\hat{a}` | $\mathscr{L}$ | `$\mathscr{L}$` |      |      |
 |           |           | $\mathbb{L}$  | `$\mathbb{L}$`  |      |      |
-
-
-
-
-
-
-
-### 引用
-
-`ctrl + shift + Q`
-
-`>`
-
-> 怎么引用？
 

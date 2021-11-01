@@ -27,12 +27,10 @@
 https://matplotlib.org/gallery/color/colormap_reference.html#sphx-glr-gallery-color-colormap-reference-py
 
 ```python
-import numpy as np
-import matplotlib.pyplot as plt
-
 
 cmaps = [('Perceptually Uniform Sequential', [
-            'viridis', 'plasma', 'inferno', 'magma', 'cividis']),
+            'viridis', 'plasma', 'inferno', 'magma', 'cividis', 'crest',
+            'flare', 'icefire', 'mako', 'rocket']),
          ('Sequential', [
             'Greys', 'Purples', 'Blues', 'Greens', 'Oranges', 'Reds',
             'YlOrBr', 'YlOrRd', 'OrRd', 'PuRd', 'RdPu', 'BuPu',
@@ -42,8 +40,8 @@ cmaps = [('Perceptually Uniform Sequential', [
             'spring', 'summer', 'autumn', 'winter', 'cool', 'Wistia',
             'hot', 'afmhot', 'gist_heat', 'copper']),
          ('Diverging', [
-            'PiYG', 'PRGn', 'BrBG', 'PuOr', 'RdGy', 'RdBu',
-            'RdYlBu', 'RdYlGn', 'Spectral', 'coolwarm', 'bwr', 'seismic']),
+            'PiYG', 'PRGn', 'BrBG', 'PuOr', 'RdGy', 'RdBu', 'RdYlBu', 
+            'RdYlGn', 'Spectral', 'coolwarm', 'bwr', 'seismic', 'vlag']),
          ('Cyclic', ['twilight', 'twilight_shifted', 'hsv']),
          ('Qualitative', [
             'Pastel1', 'Pastel2', 'Paired', 'Accent',
@@ -55,7 +53,6 @@ cmaps = [('Perceptually Uniform Sequential', [
             'gist_rainbow', 'rainbow', 'jet', 'turbo', 'nipy_spectral',
             'gist_ncar'])]
 
-
 gradient = np.linspace(0, 1, 256)
 gradient = np.vstack((gradient, gradient))
 
@@ -64,7 +61,7 @@ def plot_color_gradients(cmap_category, cmap_list):
     # Create figure and adjust figure height to number of colormaps
     nrows = len(cmap_list)
     figh = 0.35 + 0.15 + (nrows + (nrows-1)*0.1)*0.22
-    fig, axs = plt.subplots(nrows=nrows, figsize=(6.4, figh))
+    fig, axs = plt.subplots(nrows=nrows, figsize=(6.4, figh), dpi=110)
     fig.subplots_adjust(top=1-.35/figh, bottom=.15/figh, left=0.2, right=0.99)
 
     axs[0].set_title(cmap_category + ' colormaps', fontsize=14)
