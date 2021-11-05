@@ -30,9 +30,8 @@ import datetime
 dt_str = '2021-10-10 19:16:02'
 dt = datetime.datetime.strptime(dt_str, '%Y-%m-%d %H:%M:%S')
 print(dt.timestamp())
+# 1633864562.0
 ```
-
-
 
 获取当天日期
 

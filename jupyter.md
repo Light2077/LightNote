@@ -101,3 +101,15 @@ python -m nb_conda_kernels list
 
 https://www.markroepke.me/posts/2019/06/05/tips-for-slideshows-in-jupyter.html
 
+## 自动重新加载包
+
+```python
+%load_ext autoreload
+%autoreload 2
+
+# 环境变量加入项目根目录（可以导入自定义的包）
+import os
+import sys
+sys.path.append(os.path.dirname(os.getcwd()))
+```
+

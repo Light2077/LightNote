@@ -6,6 +6,8 @@ http://pycharm.iswbm.com/zh_CN/latest/c02/c02_03.html
 
 **ctrl+alt+o** 优化导包结构
 
+**ctrl+alt+space** 代码补全提示
+
 使用Run -> profile '`<filename>`' 可以在运行完毕后得到相关的时间等信息。
 
 静态代码分析检查：自动查出你的代码有没有问题。右键项目文件夹，选Inspect Code
@@ -22,7 +24,7 @@ c = 2  # davfere
 
 pycharm 右下角的小锁可以锁定代码不让编辑。
 
-ctrl+alt+space 代码补全提示
+
 
 ctrl+q 快速查看文档
 
@@ -88,13 +90,13 @@ FIXME 与 TODO 标记代码代办事项，查看全局TODO
 
 扩大/缩小选中的区域：ctrl+w / ctrl+shift+w
 
+ctrl+b 效果等同于ctrl+鼠标左键。
 
 
-已经烂熟与心的：
+
+已经烂熟于心的：
 
 ctrl+alt+L 快速调整格式(**还可以快速调整json格式**)
-
-ctrl+b 效果等同于ctrl+鼠标左键。
 
 ctrl+alt+ ← 在按ctrl+左键查看函数调用时特别有用，可以返回到来源
 
