@@ -113,3 +113,24 @@ import sys
 sys.path.append(os.path.dirname(os.getcwd()))
 ```
 
+## 导包固定操作
+
+```python
+%load_ext autoreload
+%autoreload 2
+
+import os
+import sys
+sys.path.append(os.path.dirname(os.getcwd()))
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+plt.rcParams['font.family'] = "SimHei"   # 中文字体
+plt.rcParams['axes.unicode_minus'] = False  # 保证绘图时负号显示不出错
+pd.set_option('display.max_columns', 200)  # pandas 最多显示200行
+pd.set_option('display.float_format', '{:,.4f}'.format)  # pandas浮点数格式：保留4位小数
+# 以上为固定操作，以下添加额外需要的包
+```
+
