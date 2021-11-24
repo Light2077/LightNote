@@ -271,7 +271,54 @@ np.eye(2, 3)
 
 ```
 
+## 数组拼接
 
+vstack，hstack与stack的差异
+
+hstack——横向连接
+
+vstack——纵向连接
+
+hstack连接一维数组时不改变数组维度
+
+hstack, vstack连接二维矩阵时不改变数组维度
+
+```python
+import numpy as np
+# hstack 连接一维数组不改变维度（仍是1维数组）
+a = np.array([1, 1, 1])
+b = np.array([2, 2, 2])
+np.hstack([a, b])  # 同np.r_[a, b]
+```
+
+```
+array([1, 1, 1, 2, 2, 2])
+```
+
+
+
+```python
+# vstack 连接一维数组使维度+1
+a = np.array([1, 1, 1])
+b = np.array([2, 2, 2])
+np.vstack([a, b])  # 同np.c_[a, b]
+```
+
+```python
+array([[1, 1, 1],
+       [2, 2, 2]])
+```
+
+
+
+```python
+# hstack 和 vstack连接二维数组不改变维度
+a
+```
+
+
+
+### numpy.stack
 
 ```python
 

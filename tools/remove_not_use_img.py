@@ -24,4 +24,4 @@ for root, dirs, files in os.walk('.'):
             if file not in used_imgs:
                 path = os.path.join(root, 'img', file)
                 print('remove', path)
-                os.remove(path)
+                # os.remove(path)
