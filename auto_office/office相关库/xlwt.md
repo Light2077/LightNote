@@ -10,3 +10,4 @@ worksheet = workbook.add_sheet('sheet1', cell_overwrite_ok=True)
 style = xlwt.XFStyle()
 ```
 
+导出表格、导出报告的功能是否需要呢。
