@@ -2,6 +2,12 @@
 
 Lightnote 是一本笔记，记录在学习过程中遇到的问题和解决方案。
 
+## 文档编写准则
+
+一个markdown有且只有一个一级标题（适配vuepress）
+
+尽量多拆分markdown，讲解的细一点
+
 
 
 ## Jupyter

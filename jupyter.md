@@ -134,3 +134,54 @@ pd.set_option('display.float_format', '{:,.4f}'.format)  # pandas浮点数格式
 # 以上为固定操作，以下添加额外需要的包
 ```
 
+## jupyter文件格式转换
+
+https://blog.csdn.net/qq_36178962/article/details/115870759
+
+https://nbconvert.readthedocs.io/en/latest/index.html
+
+### 批量将ipynb转换为md
+
+在一个文件夹下按照如下目录创建3个ipynb文件。notebook里的内容不关键
+
+```
+|-demo1.ipynb
+|-demo2.ipynb
+|-demo
+  |-demo3.ipynb
+```
+
+创建一个mycfg.py文件，填写如下内容
+
+```python
+c = get_config()
+c.NbConvertApp.notebooks = [
+	"demo1.ipynb", 
+	"demo2.ipynb", 
+	'./demo/demo3.ipynb'
+]
+```
+
+在该文件夹下的目录启动命令行窗口，输入
+
+```
+jupyter nbconvert --config mycfg.py --to markdown
+```
+
+如果在notebook里用matplotlib绘制了图片，导出markdown后会自动把图片保存到一个文件夹里。
+
+假设demo1.ipynb生成了一张图片，导出的文件为：
+
+```
+|-demo1.md
+|-demo1 files
+  |- xxx.png
+```
+
+注意：demo1.ipynb插入的图片并不会跟着一起被导出。
+
+> 后续操作：
+>
+> - 移动生成的文件夹里的图片到指定目录，删除该文件夹
+> - 移动markdown文件到指定目录
+> - 修改所有markdown文件里图片的路径。
