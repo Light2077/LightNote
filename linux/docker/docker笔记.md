@@ -1,22 +1,38 @@
 进入某个容器：
 
-`docker run -it registry.cn-shenzhen.aliyuncs.com/light2077/covid19sim:0.3 /bin/bash `
+```
+docker run -it registry.cn-shenzhen.aliyuncs.com/light2077/covid19sim:0.3 /bin/bash
+```
+
+
 
 查看运行中的容器：
 
-`docker ps`
+```
+docker ps
+```
+
+
 
 查看所有容器
 
-`docker ps -a`
+```
+docker ps -a
+```
+
+
 
 停用全部运行中的容器
 
-`docker stop $(docker ps -q)`
+```
+docker stop $(docker ps -q)
+```
 
 删除全部容器
 
-`docker rm $(docker ps -aq)`
+```
+docker rm $(docker ps -aq)
+```
 
 容器更新为镜像
 
