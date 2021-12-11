@@ -18,6 +18,22 @@ conda env remove -n [env-name]
 
 
 
+https://mirrors.tuna.tsinghua.edu.cn/help/pypi/
+
+pip临时换源
+
+```
+pip install -i https://pypi.douban.com/simple
+```
+
+
+
+pip永久换源
+
+```
+pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
+```
+
 
 
 ## TensorFlow 2.4
