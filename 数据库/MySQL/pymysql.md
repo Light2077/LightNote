@@ -214,7 +214,7 @@ with connection:
         cursor.execute('truncate table student;')
         
         # 插入一条数据
-       import pymysql
+import pymysql
 
 connection = pymysql.connect(host='localhost',
                              user='root',
@@ -436,7 +436,6 @@ with connection:
         try:
             # 插入一条正常数据
             cursor.execute("INSERT INTO student Values(6, 'luna', 14)")
-            
             # 插入一条正常数据
             cursor.execute("INSERT INTO student Values(7, 'lina', 24)")
             connection.commit()

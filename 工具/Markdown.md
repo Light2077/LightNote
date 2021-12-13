@@ -71,6 +71,16 @@ ctrl+左键点击链接
 
 
 
+### 高亮
+
+```
+==要高亮的文字==
+```
+
+==要高亮的文字==
+
+
+
 
 
 ## 常用latex
@@ -90,4 +100,47 @@ ctrl+左键点击链接
 | $\bar{a}$ | `\bar{a}` | $\mathcal{L}$ | `$\mathbb{L}$`  |      |      |
 | $\hat{a}$ | `\hat{a}` | $\mathscr{L}$ | `$\mathscr{L}$` |      |      |
 |           |           | $\mathbb{L}$  | `$\mathbb{L}$`  |      |      |
+
+### 公式对齐
+
+使用`&`确定对齐的位置
+
+[公式对齐](https://blog.csdn.net/bendanban/article/details/77336206)
+
+```
+$$
+\begin{align}
+f(x) =& x^2 + 2x + 1 \\
+g(x) =& 2x + 2
+\end{align}
+$$
+```
+
+$$
+\begin{align}
+f(x) =& x^2 + 2x + 1 \\
+g(x) =& 2x + 2
+\end{align}
+$$
+
+### 常用数学公式
+
+**带大括号的公式**
+$$
+a_{i}=
+\left\{ 
+    \begin{aligned}
+        0 & & {a>p}\\ 
+        1 & & {a \leq p} \\
+    \end{aligned} 
+\right.
+$$
+
+**数组**
+$$
+\mathbf{x}=[x_1, x_2,...,x_n]
+$$
+
+
+$r_i \in \{0, 1\}$
 

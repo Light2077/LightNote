@@ -1,3 +1,17 @@
+
+
+# Anaconda
+
+- 更新Anaconda：`conda update conda`
+
+- 更新所有包：`codna update --all`
+
+- 创建新环境：`conda create -n tf2 python=3.7`
+
+- 加速包的下载安装：[清华镜像站使用](https://mirror.tuna.tsinghua.edu.cn/help/anaconda/)
+
+
+
 列出环境
 
 ```

@@ -2,6 +2,8 @@
 
 windows环境下修改jupyter notebook默认启动路径
 
+首先要生成jupyter的配置文件
+
 ```
 jupyter notebook --generate-config
 ```
@@ -41,6 +43,10 @@ c.NotebookApp.notebook_dir = "D:/notebooks"
 ```
 D:\software\Anaconda\python.exe D:\software\Anaconda\cwp.py D:\software\Anaconda\ D:\software\Anaconda\python.exe D:\software\Anaconda\Scripts\jupyter-notebook-script.py
 ```
+
+> 有时候修改可能会失效，这时需要右键jupyter notebook的快捷方式->属性，把路径中的`"%USERPROFILE"`删掉。
+
+
 
 ## jupyter打开其他conda环境
 
@@ -127,10 +133,15 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-plt.rcParams['font.family'] = "SimHei"   # 中文字体
-plt.rcParams['axes.unicode_minus'] = False  # 保证绘图时负号显示不出错
-pd.set_option('display.max_columns', 200)  # pandas 最多显示200行
-pd.set_option('display.float_format', '{:,.4f}'.format)  # pandas浮点数格式：保留4位小数
+# 中文字体
+plt.rcParams['font.family'] = "SimHei"
+# 保证绘图时负号显示不出错
+plt.rcParams['axes.unicode_minus'] = False
+# pandas 最多显示200行
+pd.set_option('display.max_columns', 200)
+# pandas浮点数格式：保留4位小数
+pd.set_option('display.float_format', '{:,.4f}'.format)
+
 # 以上为固定操作，以下添加额外需要的包
 ```
 
@@ -185,3 +196,6 @@ jupyter nbconvert --config mycfg.py --to markdown
 > - 移动生成的文件夹里的图片到指定目录，删除该文件夹
 > - 移动markdown文件到指定目录
 > - 修改所有markdown文件里图片的路径。
+
+
+
