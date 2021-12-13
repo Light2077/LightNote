@@ -132,7 +132,7 @@ requests的主要方法
 
 这个[网页](https://python123.io/ws/demo.html)的长相
 
-![爱上对方](E:\GitHub\SandCastle\爬虫\插图\图1.jpg)
+
 
 它的html代码格式
 

@@ -724,7 +724,7 @@ urlpatterns = [
 
 修改admin表单默认排序，修改`polls/admin.py`
 
-![](https://img2020.cnblogs.com/blog/1762677/202010/1762677-20201005191206035-1453376763.png)
+![](images/1762677-20201005191206035-1453376763.png)
 
 ```python
 from django.contrib import admin

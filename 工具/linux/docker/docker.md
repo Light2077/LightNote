@@ -69,7 +69,7 @@ systemctl restart docker
 - 最底层的镜像就是**父镜像**
 - 镜像ID是一个64位的十六进制字符串(256bit)
 
-![](https://doc.yonyoucloud.com/doc/chinese_docker/terms/images/docker-filesystems-multilayer.png)
+![](images/docker-filesystems-multilayer.png)
 
 
 

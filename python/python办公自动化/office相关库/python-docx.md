@@ -122,7 +122,7 @@ def add_picture(pic_path, max_width=Cm(14.64), title=None):
 
 首先创建一个名为demo的文件夹，然后打开这个链接https://movie.douban.com/photos/photo/2158653283/ 把里面的海报图片保存到demo文件夹内，命名为`monty-truth.png`。这个图片就是官网用到的那张图片，也可以直接保存下面这张图片。
 
-<img src="img/monty-truth.png" alt="monty-truth" style="zoom:33%;" />
+![](img/monty-truth.png)
 
 
 

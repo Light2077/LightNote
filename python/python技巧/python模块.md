@@ -185,7 +185,7 @@ os.path.isdir()  # 判断是否是文件夹
 os.path.isfile()  # 判断是否是文件
 os.path.exists()  # 判断是否存在
 os.path.abspath()  # 绝对路径
-
+os.path.normpath(path)  # 规范路径
 os.path.splitext('2020.2.21.demo.py')  # 文件名后缀名分割
 
 # 其他

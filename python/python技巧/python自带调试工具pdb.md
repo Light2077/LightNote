@@ -2,7 +2,7 @@ Python自带一个调试器, 在Python 3.7之后甚至成为内置调试器. 这
 
 下面我们看一下基本演示(GIF循环播放):
 
-![](https://ai.bdstatic.com/file/368702F4ACC64CF59009A3EE348F9765)
+![](images/368702F4ACC64CF59009A3EE348F9765.gif)
 
 对应代码如下, 大家可以运行起来试一下. 
 
@@ -48,7 +48,7 @@ scrapy.parse()
 
 下面是详细使用说明, 主要内容参考 [howchoo](https://howchoo.com/g/zgi2y2iwyze/debugging-your-python-code) 
 
-![](https://ai-studio-static-online.cdn.bcebos.com/adb216d833604fff86cec8d7aa68b5b512e3a6b10d204198a2b37903bd29dcb1)
+![](images/adb216d833604fff86cec8d7aa68b5b512e3a6b10d204198a2b37903bd29dcb1.png)
 
 Python具有一个整洁的调试功能（像大多数其他语言一样），在这种情况下非常方便。本指南是快速教程，希望能让您的生活更轻松
 
@@ -129,7 +129,7 @@ if __name__ == '__main__':
 
 如下图所示: 
 
-![](https://ai-studio-static-online.cdn.bcebos.com/6e50855df42e478898e8d34f8048d01d9d3c9b3a17e04ed4a432ec032130907d)
+![](images/6e50855df42e478898e8d34f8048d01d9d3c9b3a17e04ed4a432ec032130907d.png)
 
 在这个输入框里敲入命令, 即可开始调试. 
 
@@ -140,11 +140,11 @@ if __name__ == '__main__':
 
 在输入框里, 输入n, 可转到下一行
 
-![](https://ai-studio-static-online.cdn.bcebos.com/08a9fb56feb44f41999fd9b7e1f42b02df264b48ccc4495e8a12d11da5a6c2db)
+![](images/08a9fb56feb44f41999fd9b7e1f42b02df264b48ccc4495e8a12d11da5a6c2db.png)
 
 这将执行当前代码行，现在可以执行下一行。
 
-![](https://ai-studio-static-online.cdn.bcebos.com/545d1fd617c148b0afb5325c06a34fa00f945b06e5f54ae0aab144eed28e2ac8)
+![](images/545d1fd617c148b0afb5325c06a34fa00f945b06e5f54ae0aab144eed28e2ac8.png)
 
 我们可以使用n逐行遍历整个程序，但这不会非常有用。
 
@@ -164,11 +164,11 @@ p num1
 
 如截图所示:
 
-![](https://ai-studio-static-online.cdn.bcebos.com/684676cd8e5346e0bc7ba08004a47d882d6f134ab8d147628245f497e84bc0f5)
+![](images/684676cd8e5346e0bc7ba08004a47d882d6f134ab8d147628245f497e84bc0f5.png)
 
 回车
 
-![](https://ai-studio-static-online.cdn.bcebos.com/2e950c54bdf149d89ad0f802261246186e0c652eeefa4b34b5ef801c4d60936e)
+![](images/2e950c54bdf149d89ad0f802261246186e0c652eeefa4b34b5ef801c4d60936e.png)
 
 
 这非常方便查看我们的变量实际存储的值。
@@ -186,11 +186,11 @@ p num1
 # 6. 动态分配变量
 知道在调试会话期间可以分配变量以帮助调试也很有用。考虑：
 
-![](https://ai-studio-static-online.cdn.bcebos.com/fa65a33c9d4e49bc9e53d385dc04312ebbb2015698744ea8b0659d6da516edb1)
+![](images/fa65a33c9d4e49bc9e53d385dc04312ebbb2015698744ea8b0659d6da516edb1.png)
 
 输入后运行
 
-![](https://ai-studio-static-online.cdn.bcebos.com/ca3a74f79ae14aad87baee29a613307d4ce917c5bbb5404fb90ec2ecbde7dd3a)
+![](images/ca3a74f79ae14aad87baee29a613307d4ce917c5bbb5404fb90ec2ecbde7dd3a.png)
 
 # 7. 退出 - > q
 最后，如果你想在任何时候退出，你可以使用q。正在执行的程序被中止。

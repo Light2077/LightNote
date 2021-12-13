@@ -549,7 +549,7 @@ light ALL=(ALL:ALL)   ALL
 - `gpasswd -a alice light`把用户alice加到组light内
 - `gpasswd -d alice light`把用户alice从组light内移除
 
-![](用户组.png)
+![](img/用户组.png)
 
 在ubuntu中可以用`gpasswd -a light sudo`使得light用户也能使用`sudo`命令。
 
@@ -803,7 +803,7 @@ extra packages for enterprise linux
 
 ## 4.5 虚拟环境介绍
 
-![](/img/虚拟环境.png)
+![](img/虚拟环境.png)
 
 系统的主环境有个site_packages
 

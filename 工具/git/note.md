@@ -249,7 +249,7 @@ git commit -m <msg>
 
 [`--no-ff`的作用](https://blog.csdn.net/zombres/article/details/82179122)：简单概括就是，没有`--no-ff`时不会产生commit。
 
-![](https://img-blog.csdn.net/20150811134840627)
+![](images/20150811134840627.png)
 
 回到上一个版本时，不会回到`feature`里的版本
 
