@@ -1004,7 +1004,7 @@ plt.plot(m2, color='blue', marker='^',label='m2')
 legend = plt.legend(loc='lower right') # 图例
 ```
 
-![相关性系数](笔记插图/pandas/相关性系数.png)
+
 
 ## 自测
 

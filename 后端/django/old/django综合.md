@@ -691,11 +691,11 @@ INSTALLED_APPS = [
 
 contenttypes不是中间件，不是视图，也不是模板，而是一个应用，有它自己的models模型，定义了一些"额外的数据表"!所以，在使用它们之前，你需要执行makemigrations和migrate操作，为contenttypes框架创建它需要的数据表，用于保存特定的数据。这张表通常叫做`django_content_type`，让我们看看它在数据库中的存在方式：
 
-![1558359639770](http://liujiangblog.com/static/images/blog/1558359639770.png)
+![1558359639770](images/1558359639770.png)
 
 而表的结构形式则如下图所示：
 
-![1558359709577](http://liujiangblog.com/static/images/blog/1558359709577.png)
+![1558359709577](images/1558359709577.png)
 
 一共三个字段：
 

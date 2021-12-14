@@ -1,12 +1,6 @@
 # Markdown
 
-### 图片
 
-![fig2](C:/Users/Light/Desktop/2019年7月论文翻译/图片/fig2.png)
-
-图片大小和位置
-
-<img src="XXXX" width = "100%" height = "100%" div align=right />
 
 ### 删除线
 

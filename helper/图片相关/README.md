@@ -74,7 +74,7 @@ python remove_not_use_img.py ./demo -r True -d img
 
 ## 图片文件夹迁移
 
-[img_move.py](img_move.py)
+[move_img.py](move_img.py)
 
 
 
@@ -88,5 +88,19 @@ python remove_not_use_img.py ./demo -r True -d img
 
 3.修改markdown对应的图片路径
 
+技巧
 
+移除代码块，有时候匹配到的图片可能出现在代码块里，这时候就需要将代码块给去掉
+
+```python
+text = re.sub(r'`.*?`', '',  text, flags=re.S)  # 去除代码块
+```
+
+
+
+使用
+
+```
+python move_img.py E:\Github\LightNote
+```
 

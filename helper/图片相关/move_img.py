@@ -23,6 +23,7 @@ def move_markdown_used_imgs(dir_path):
     for markdown_path in markdown_paths:
         with open(markdown_path, 'r', encoding='utf8') as f:
             text = f.read()
+            text = re.sub(r'`.*?`', '',  text, flags=re.S)  # 去除代码块
             img_paths = pattern.findall(text)
 
             for img_path in img_paths:
@@ -30,11 +31,15 @@ def move_markdown_used_imgs(dir_path):
                 if img_dir == "images":
                     continue
 
+                # 若图片不存在则不进行操作
                 if not os.path.isfile(os.path.join(dir_path, img_path)):
-                    print(markdown_path, ":", os.path.join(dir_path, img_path))
+                    continue
+                    # print(markdown_path, ":", os.path.join(dir_path, img_path))
+
+                # 新的图片的路径
                 new_img_path = os.path.join("images", img_name).replace('\\', '/')
                 # 移动图片到新位置
-                # print(markdown_path, "move", img_path, "to", new_img_path)
+                print(markdown_path, "move", img_path, "to", new_img_path)
                 # print("move", os.path.join(dir_path, img_path), "to", os.path.join(dir_path, new_img_path))
                 # shutil.move(os.path.join(dir_path, img_path), os.path.join(dir_path, new_img_path))
                 
@@ -51,11 +56,10 @@ def move_markdown_used_imgs(dir_path):
 
     # 删除旧图片
     if used_img_paths:
-        # print("----------------------删除旧图片----------------------")
-        pass
+        print("----------------------删除旧图片----------------------")
+
     for img_path in used_img_paths:
-        # print("remove", img_path)
-        pass
+        print("remove", img_path)
         # os.remove(img_path)
 
 
