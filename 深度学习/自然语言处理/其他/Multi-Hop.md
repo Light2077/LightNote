@@ -4,7 +4,7 @@ Multi-Hop的思想是来自于人的re-read做法-带着问题反复的读文章
 
 多次提取充足信息
 
-![image-20210223114733206](img/image-20210223114733206.png)
+![image-20210223114733206](images/image-20210223114733206.png)
 
 像之前讲过的Attentive Reader，其实就是one-hop，这里的g是用于最后输出的，one-hop指的是只提取了一次。
 

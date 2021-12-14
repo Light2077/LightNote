@@ -17,7 +17,7 @@ tips = sns.load_dataset("tips")
 sns.kdeplot(data=tips, x="total_bill")
 ```
 
-·![](img/kdeplot_1_0.png)
+·![](images/kdeplot_1_0.png)
 
 也可以绘制在y轴
 
@@ -25,5 +25,5 @@ sns.kdeplot(data=tips, x="total_bill")
 sns.kdeplot(data=tips, y="total_bill")
 ```
 
-![](img/kdeplot_3_0.png)
+![](images/kdeplot_3_0.png)
 

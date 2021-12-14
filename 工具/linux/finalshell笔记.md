@@ -28,5 +28,5 @@ root
 
 
 
-![](img/finalshell/finalshell新建连接.png)
+![](images/finalshell新建连接.png)
 

@@ -50,7 +50,7 @@ asyncio.run(main())
 
 下面的例子会在1秒后打印`hello`，**再**等2秒后打印`world`。一共执行了3秒。
 
-![](img/运行方式2.png)
+![](images/运行方式2.png)
 
 ```python
 import asyncio
@@ -84,7 +84,7 @@ finished at 14:39:19
 
 下面的例子会先打印`hello`，过1秒后打印`world`。总共执行2秒。
 
-![](img/运行方式3.png)
+![](images/运行方式3.png)
 
 ```python
 import asyncio

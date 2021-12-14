@@ -6,7 +6,7 @@
 
 Dynamic Time Warping，动态时间扭曲，是一种衡量两个时间序列相似度的方法。这里的相似度指的是**距离相似度**，两个曲线越接近，它们就越相似。为避免混淆，可以用下图表示。
 
-![dtw1](img/dtw1.png)
+![dtw1](images/dtw1.png)
 
 上面左边的图，蓝色曲线和红色曲线比较接近，因此认为两个曲线相似。
 
@@ -34,7 +34,7 @@ ax = lineplot(y1, y2)
 plt.show()
 ```
 
-![dtw2](img/dtw2.png)
+![dtw2](images/dtw2.png)
 
 因为y1和y2长度不同，所以不方便直接计算距离。一个简单的思路是截断y1，使得y1和y2等长，然后计算距离。
 
@@ -44,7 +44,7 @@ ax.axvline(len(y2)-1, lw=3, ls='--', c='k')
 plt.show()
 ```
 
-![dtw3](img/dtw3.png)
+![dtw3](images/dtw3.png)
 
 为方便起见，使用绝对距离（对应点位相减的绝对值求和）。
 
@@ -72,7 +72,7 @@ ax = lineplot(y1[path[0]], y2[path[1]])
 plt.show()
 ```
 
-![dtw4](img/dtw4.png)
+![dtw4](images/dtw4.png)
 
 
 

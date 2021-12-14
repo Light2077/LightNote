@@ -35,7 +35,7 @@ plt.savefig("设置刻度间隔相同.png")
 plt.show()
 ```
 
-![](img/设置刻度间隔相同.png)
+![](images/设置刻度间隔相同.png)
 
 ### 双y轴
 
@@ -145,11 +145,11 @@ ax.set_xticks(np.arange(-10, 11, 1), minor=True)
 ax.tick_params(axis='both', which='major', direction='inout', length=10,
                width=2, pad=10, bottom=False, left=False, labeltop=True)
 
-plt.savefig("../img/主副刻度值的设置.png")
+plt.savefig(".images/主副刻度值的设置.png")
 plt.show()
 ```
 
-![](./img/主副刻度值的设置.png)
+![](images/主副刻度值的设置.png)
 
 ### 隐藏刻度线
 
@@ -236,7 +236,7 @@ ax.plot(x, np.sin(x))
 plt.show()
 ```
 
-![](img/带箭头的坐标轴.png)
+![](images/带箭头的坐标轴.png)
 
 绘制tanh函数
 
@@ -292,7 +292,7 @@ plt.savefig('文本框对齐.png')
 plt.show()
 ```
 
-![](img/文本框对齐.png)
+![](images/文本框对齐.png)
 
 ### 公式字体
 
@@ -323,7 +323,7 @@ plt.savefig('公式字体.png')
 plt.show()
 ```
 
-![](img/公式字体.png)
+![](images/公式字体.png)
 
 ## 正态分布曲线
 
@@ -360,7 +360,7 @@ plt.show()
 plt.savefig('正态分布.png')
 ```
 
-![](./img/正态分布.png)
+![](images/正态分布.png)
 
 ## subplots
 
@@ -396,7 +396,7 @@ ax[1][1].plot(x, y11)
 plt.show()
 ```
 
-![image-20210414110614166](img/image-20210414110614166.png)
+![image-20210414110614166](images/image-20210414110614166.png)
 
 可以优化的点：
 
@@ -430,11 +430,11 @@ plt.tight_layout()
 plt.show()
 ```
 
-![image-20210414111716818](img/image-20210414111716818.png)
+![image-20210414111716818](images/image-20210414111716818.png)
 
 ## linestyle
 
-![Named linestyles, Parametrized linestyles](img/sphx_glr_linestyles_001.png)
+![Named linestyles, Parametrized linestyles](images/sphx_glr_linestyles_001.png)
 
 ## marker
 
@@ -446,9 +446,9 @@ plt.plot(x, y, marker='o', markevery=10)
 
 
 
-![Un-filled markers](img/sphx_glr_marker_reference_001.png)
+![Un-filled markers](images/sphx_glr_marker_reference_001.png)
 
-![Filled markers](img/sphx_glr_marker_reference_002.png)
+![Filled markers](images/sphx_glr_marker_reference_002.png)
 
 ## legend
 

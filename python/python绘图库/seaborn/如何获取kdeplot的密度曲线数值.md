@@ -8,7 +8,7 @@ x = np.random.randn(100)
 sns.kdeplot(x)
 ```
 
-![获取kde曲线1](img/获取kde曲线1.png)
+![获取kde曲线1](images/获取kde曲线1.png)
 
 首先要接收kdeplot()的返回值，返回的是一个[`matplotlib.axes.Axes`](https://matplotlib.org/stable/api/axes_api.html#matplotlib.axes.Axes)对象
 

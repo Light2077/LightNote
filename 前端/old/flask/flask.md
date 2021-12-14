@@ -109,11 +109,11 @@ app.run(host="192.168.31.211", port=8080)
 
 或者在pycharm的右上角
 
-![image-20200817235624391](img/flask debug模式1.png)
+![image-20200817235624391](images/flask debug模式1.png)
 
 把√选上
 
-![image-20200817235812026](img/flask debug模式2.png)
+![image-20200817235812026](images/flask debug模式2.png)
 
 ```python
 app.run(debug=True)

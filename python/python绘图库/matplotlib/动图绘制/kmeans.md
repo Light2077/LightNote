@@ -105,9 +105,9 @@ def gen():
 
 
 animation = FuncAnimation(fig, update, init_func=init, frames=gen, interval=300, repeat=False)
-animation.save('./img/kmeans.gif')
+animation.save('./images/kmeans.gif')
 plt.show()
 
 ```
 
-![kmeans](img/kmeans.gif)
+![kmeans](images/kmeans.gif)

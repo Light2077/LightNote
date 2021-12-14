@@ -379,7 +379,7 @@ print(Student.school)
 
 # 单例设计模式
 
-![](./img/单例.jpg)
+![](images/单例.jpg)
 
 
 

@@ -19,7 +19,7 @@ plt.show()
 
 ```
 
-![index](img/index-16372158224411.png)
+![index](images/index-16372158224411.png)
 
 三个y轴的情况
 
@@ -46,4 +46,4 @@ ax3.yaxis.set_ticks_position('right')
 plt.show()
 ```
 
-![index](img/index-16372158403952.png)
+![index](images/index-16372158403952.png)

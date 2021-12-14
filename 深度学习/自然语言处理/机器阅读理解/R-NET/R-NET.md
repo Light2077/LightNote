@@ -6,7 +6,7 @@ https://www.microsoft.com/en-us/research/wp-content/uploads/2017/05/r-net.pdf
 
 https://www.yuque.com/clskmw/uh23d9/10690900
 
-![image-20210223155527332](img/image-20210223155527332.png)
+![image-20210223155527332](images/image-20210223155527332.png)
 
 在预测P(Begin) 和 P(End) 时，引入了$r^Q$，一起预测最终的结果
 
@@ -19,7 +19,7 @@ https://www.yuque.com/clskmw/uh23d9/10690900
 
 $t$表示是第几个词语，$m$和$n$表示问题和文章分别由多少个词组成。
 
-![image-20210226193414732](img/image-20210226193414732.png)
+![image-20210226193414732](images/image-20210226193414732.png)
 
 对于每个词，分别有**字级别**和**词级别**的编码：
 
@@ -37,7 +37,7 @@ $$
 
 这里的RNN使用的是**GRU**，GRU与LSTM的区别，GRU是LSTM的简化版，参数更少。
 
-![image-20210226212848054](img/image-20210226212848054.png)
+![image-20210226212848054](images/image-20210226212848054.png)
 
 ## Gated Attention-Based Recurrent Networks
 

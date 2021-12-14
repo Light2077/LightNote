@@ -19,7 +19,7 @@ Neo4j Browser是一个命令驱动的客户端，例如基于Web的shell环境�
 
 ### 编辑器
 
-![index](img/index.png)
+![index](images/index.png)
 
 编辑器是输入和运行命令的主要界面。 输入Cypher查询以使用图形数据。 使用客户端命令，例如`:help`进行其他操作。
 
@@ -30,7 +30,7 @@ Neo4j Browser是一个命令驱动的客户端，例如基于Web的shell环境�
 
 ### stream
 
-![stream](img/stream.png)
+![stream](images/stream.png)
 
 为每个命令执行创建一个结果框，将其添加到流的顶部以按相反的时间顺序创建可滚动的集合。
 
@@ -41,7 +41,7 @@ Neo4j Browser是一个命令驱动的客户端，例如基于Web的shell环境�
 
 ### Frame code view
 
-![](img/frame_code_view.png)
+![](images/frame_code_view.png)
 
 代码选项卡显示发送和接收Neo4j服务器的所有内容，包括：
 
@@ -91,7 +91,7 @@ Neo4j stores data in a Graph, with records called Nodes.
 
 最简单的图只有一个结点，结点带有一些**有名字的值**（实体）。比如下面这个结点。
 
-![](img/single_node.png)
+![](images/single_node.png)
 
 - 在一个图中，**结点**是数据记录的名字
 - 数据以**实体**的方式存储
@@ -103,7 +103,7 @@ Associate a set of nodes.
 
 通过添加**标签（label）**可以给结点分组，我们把社交网络图中的结点标记为“Person”，这里红色就表示“person”类型的结点。
 
-![](img/labels.png)
+![](images/labels.png)
 
 - 一个结点可以拥有0个或多个标签
 - 标签不具有任何实体
@@ -120,7 +120,7 @@ Schema-free, nodes can have a mix of common and unique properties.
 
 像任何数据库一样，在Neo4j中存储数据就像添加更多记录一样简单。 我们将添加更多结点
 
-![](img/more_nodes.png)
+![](images/more_nodes.png)
 
 
 
@@ -142,7 +142,7 @@ Neo4j的真正力量在于连接的数据。 要关联任意两个节点，请�
 
 Neo4j的精髓在于数据之间的连接，可以通过**关系（Relationship）**关联任意两个结点，**关系**可以记录两个结点的关联方式。
 
-![](img/consider_relationships.png)
+![](images/consider_relationships.png)
 
 - 关系是有向的
 - 关系总是有一个类型（Relationships always have a type）
@@ -160,7 +160,7 @@ Store information shared by two nodes.
 
 
 
-![](img/relationship_properties.png)
+![](images/relationship_properties.png)
 
 
 
@@ -263,7 +263,7 @@ WHERE js.name = "Johan" AND surfer.hobby = "surfing"
 RETURN DISTINCT surfer
 ```
 
-![plan](img/plan.png)
+![plan](images/plan.png)
 
 ### Live Cypher warnings
 
@@ -799,7 +799,7 @@ WITH TomH as a
 MATCH (a)-[:ACTED_IN]->(m)<-[:DIRECTED]-(d) RETURN a,m,d LIMIT 10;
 ```
 
-![](img/movie_graph.png)
+![](images/movie_graph.png)
 
 ### Find
 
@@ -809,7 +809,7 @@ MATCH (a)-[:ACTED_IN]->(m)<-[:DIRECTED]-(d) RETURN a,m,d LIMIT 10;
 MATCH (tom {name: "Tom Hanks"}) RETURN tom
 ```
 
-![](img/node_tom_hanks.png)
+![](images/node_tom_hanks.png)
 
 ```json
 [
@@ -836,7 +836,7 @@ MATCH (tom {name: "Tom Hanks"}) RETURN tom
 MATCH (cloudAtlas {title: "Cloud Atlas"}) RETURN cloudAtlas
  ```
 
-![](img/node_movie.png)
+![](images/node_movie.png)
 
 ```json
 [
@@ -916,7 +916,7 @@ Finding patterns within the graph.
 MATCH (tom:Person {name: "Tom Hanks"})-[:ACTED_IN]->(tomHanksMovies) RETURN tom,tomHanksMovies
 ```
 
-![](img/tom_hanks_act_movies.png)
+![](images/tom_hanks_act_movies.png)
 
 
 
@@ -948,7 +948,7 @@ MATCH (cloudAtlas {title: "Cloud Atlas"})<-[:DIRECTED]-(directors) RETURN direct
 MATCH (cloudAtlas {title: "Cloud Atlas"})<-[:DIRECTED]-(directors) RETURN directors, cloudAtlas
 ```
 
-![](img/cloudAtlas_directors.png)
+![](images/cloudAtlas_directors.png)
 
 
 
@@ -978,7 +978,7 @@ MATCH (tom:Person {name:"Tom Hanks"})-[:ACTED_IN]->(m)<-[:ACTED_IN]-(coActors) R
 MATCH (tom:Person {name:"Tom Hanks"})-[:ACTED_IN]->(m)<-[:ACTED_IN]-(coActors) RETURN coActors, tom, m LIMIT 3
 ```
 
-![](img/tom_co_actors.png)
+![](images/tom_co_actors.png)
 
 #### 人们是怎么和Cloud Atlas关联起来的
 
@@ -990,7 +990,7 @@ MATCH (people:Person)-[relatedTo]-(:Movie {title: "Cloud Atlas"}) RETURN people.
 
 
 
-![Solve](img/image-20210314195021521.png)
+![Solve](images/image-20210314195021521.png)
 
 ### Solve
 
@@ -1016,7 +1016,7 @@ MATCH (bacon:Person {name:"Kevin Bacon"})-[*1]-(hollywood)
 RETURN DISTINCT hollywood, bacon
 ```
 
-![](img/bacon_1hop.png)
+![](images/bacon_1hop.png)
 
 最多2个连接
 
@@ -1025,7 +1025,7 @@ MATCH (bacon:Person {name:"Kevin Bacon"})-[*1..2]-(hollywood)
 RETURN DISTINCT hollywood, bacon
 ```
 
-![](img/bacon_2hop.png)
+![](images/bacon_2hop.png)
 
 #### 查找两人之间的最短关联路径
 
@@ -1038,7 +1038,7 @@ RETURN p
 
 
 
-![](img/shortest_path.png)
+![](images/shortest_path.png)
 
 ### Recommend
 
@@ -1055,7 +1055,7 @@ WHERE NOT (tom)-[:ACTED_IN]->()<-[:ACTED_IN]-(cocoActors) AND tom <> cocoActors
 RETURN cocoActors.name AS Recommended, count(*) AS Strength ORDER BY Strength DESC
 ```
 
-![image-20210314201136337](img/image-20210314201136337.png)
+![image-20210314201136337](images/image-20210314201136337.png)
 
 #### 找人向汤姆·克鲁斯介绍汤姆·汉克斯
 
@@ -1065,7 +1065,7 @@ MATCH (tom:Person {name:"Tom Hanks"})-[:ACTED_IN]->(m)<-[:ACTED_IN]-(coActors),
 RETURN tom, m, coActors, m2, cruise
 ```
 
-![](img/hanks_and_cruise.png)
+![](images/hanks_and_cruise.png)
 
 ### Clean up
 

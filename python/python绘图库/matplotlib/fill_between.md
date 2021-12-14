@@ -16,7 +16,7 @@ ax.plot(x, y2, c='k')
 ax.fill_between(x, y1, y2, color='yellow', alpha=.5)
 ```
 
-![fill_between1](img/fill_between1.png)
+![fill_between1](images/fill_between1.png)
 
 ## where参数
 
@@ -37,7 +37,7 @@ ax.fill_between(x, y1, y2, where=(y1<1), color='lightgreen', alpha=.5)
 
 
 
-![fill_between2](img/fill_between2.png)
+![fill_between2](images/fill_between2.png)
 
 ## step参数
 
@@ -53,7 +53,7 @@ ax.step(x, y1, where='pre', c='k')
 ax.fill_between(x, y1, 0, color='yellow', alpha=.5, step='pre')
 ```
 
-![fill_between3](img/fill_between3.png)
+![fill_between3](images/fill_between3.png)
 
 ## interpolate参数
 
@@ -69,7 +69,7 @@ ax.fill_between(x, y1, 0, where=y1>0, color='yellow', alpha=.5)
 ax.fill_between(x, y1, 0, where=y1<0, color='lightgreen', alpha=.5)
 ```
 
-![fill_between4](img/fill_between4.png)
+![fill_between4](images/fill_between4.png)
 
 加上这个参数以后，空白部分也会被填充
 
@@ -82,4 +82,4 @@ ax.fill_between(x, y1, 0, where=y1>0, color='yellow', alpha=.5, interpolate=True
 ax.fill_between(x, y1, 0, where=y1<0, color='lightgreen', alpha=.5, interpolate=True)
 ```
 
-![fill_between5](img/fill_between5-16354129175612.png)
+![fill_between5](images/fill_between5-16354129175612.png)

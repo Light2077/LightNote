@@ -1,6 +1,6 @@
 http://pycharm.iswbm.com/zh_CN/latest/c02/c02_03.html
 
-![image2](img/20200823140008.png)
+![image2](images/20200823140008.png)
 
 Show Execution Point: Alt+F10 跳转到代码执行到的位置
 

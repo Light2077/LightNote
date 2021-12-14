@@ -1,26 +1,26 @@
 # 单色
 
-![](img/颜色1.png)
+![](images/颜色1.png)
 
-![](img/颜色2.png)
+![](images/颜色2.png)
 
-![](img/颜色3.png)
+![](images/颜色3.png)
 
 # 渐变色
 
-![](img/渐变1.png)
+![](images/渐变1.png)
 
-![](img/渐变2.png)
+![](images/渐变2.png)
 
-![](img/渐变3.png)
+![](images/渐变3.png)
 
-![](img/渐变4.png)
+![](images/渐变4.png)
 
-![](img/渐变5.png)
+![](images/渐变5.png)
 
-![](img/渐变6.png)
+![](images/渐变6.png)
 
-![](img/渐变7.png)
+![](images/渐变7.png)
 
 # 代码
 

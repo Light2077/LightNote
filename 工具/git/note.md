@@ -67,7 +67,7 @@ PowerShell: `$env:LESSCHARSET='utf-8'`
 
   
 
-  ![working-dir](picture\workingdir.png)
+  ![working-dir](images/workingdir.png)
 
 **版本库（Repository）**
 
@@ -75,7 +75,7 @@ PowerShell: `$env:LESSCHARSET='utf-8'`
 
 Git的版本库里存了很多东西，其中最重要的就是称为**stage**（或者叫index）的暂存区，还有Git为我们自动创建的第一个分支`master`，以及指向`master`的一个指针叫`HEAD`。
 
-![git-repo](picture/git-repo.png)
+![git-repo](images/git-repo.png)
 
 分支和`HEAD`的概念我们以后再讲。
 
@@ -160,29 +160,29 @@ Git的版本库里存了很多东西，其中最重要的就是称为**stage**�
 
 初始状态
 
-![branch](picture/branch1.png)
+![branch](images/branch1.png)
 
 创建并切换到一个dev分支
 
 `git switch -c dev`
 
-![branch2](picture/branch2.png)
+![branch2](images/branch2.png)
 
 推进分支（add commit）
 
-![branch](picture/branch3.png)
+![branch](images/branch3.png)
 
 合并分支
 
 `$ git merge dev`
 
-![](picture/branch4.png)
+![](images/branch4.png)
 
 删除dev分支
 
 `$ git branch -d dev`
 
-![](picture/branch5.png)
+![](images/branch5.png)
 
 小结
 
@@ -218,7 +218,7 @@ Git鼓励大量使用分支：
 
 用`git stash`保存dev的工作现场
 
-![](picture/bug2.png)
+![](images/bug2.png)
 
 
 
@@ -347,7 +347,7 @@ git config --global alias.lg "log --color --graph --pretty=format:'%Cred%h%Crese
 
 
 
-![](./picture/git别名.png)
+![](images/git别名.png)
 
 ## [搭建Git服务器](https://www.liaoxuefeng.com/wiki/896043488029600/899998870925664)
 

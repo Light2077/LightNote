@@ -5,6 +5,7 @@ $$
 \begin{aligned}
 u_j^i&=v^Ttanh(W_1e_j+W_2d_i) \\
 p(C_i|C_1,...,C_{i-1},P)&=softmax(u^i)
-\end{aligned}
+\end{aligned}
+
 $$
 attention 源自于凸包的概念，有很多歌点，给定一个序列，可以把所有点包起来

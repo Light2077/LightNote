@@ -13,7 +13,7 @@ https://www.yuque.com/clskmw/uh23d9/10638631
 
 采用了双向注意力机制
 
-![image-20210103220446278](img/BiDAF.png)
+![image-20210103220446278](images/BiDAF.png)
 
 符号说明
 
@@ -63,7 +63,7 @@ t &= \sigma(W_tx+b_t) \\
 y &= tz + (1-t)x 
 \end{aligned}
 $$
-![](img/highway.png)
+![](images/highway.png)
 
 > $x$的一部分是直接进入到下一层的
 >
@@ -87,7 +87,7 @@ $T$和$J$分别是context句子的长度和query句子的长度
 
 接受char与word嵌入向量，用单层双向lstm处理，因此处理之后，矩阵向量维度会翻倍。由 $d$ 变成 $2d$ 
 
-![](img/Contextual-Embedding-Layer.png)
+![](images/Contextual-Embedding-Layer.png)
 
 # 4. Attention Flow Layer
 
@@ -109,7 +109,7 @@ $H_:t$和$U_:j$是列向量，比如$H_:t$表示 $H \in R ^{2d \times T}$ 矩阵
 
 “ ; ”表示矩阵拼接，**注意**，拼接了3个矩阵，所以$w_S$的维度为：$w_S \in R^{6d}$
 
-![](img/相似度矩阵.png)
+![](images/相似度矩阵.png)
 
 ### Context-to-Query Attention(C2Q)
 
@@ -123,20 +123,20 @@ $\sum_ja_{tj}=1$
 
 $a\in R^{T\times J}$
 
-![](img/相似度矩阵2.png)
+![](images/相似度矩阵2.png)
 
 有了这个矩阵之后：
 $$
 \tilde{U}_{:t}=\sum a_{tj}U_{:j}
 $$
-![](img/C2Q.png)
+![](images/C2Q.png)
 $$
 \tilde{U}=U \cdot a^T
 $$
 
 ### Query-to-Context Attention(Q2C)
 
-![](img/Q2C.png)
+![](images/Q2C.png)
 
 对于一个query词，哪个context词与它最相关，一对一的关系。
 $$

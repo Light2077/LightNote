@@ -15,7 +15,7 @@ image = load_sample_image("flower.jpg")
 plt.imshow(image)
 ```
 
-![](./img/flower.png)
+![](images/flower.png)
 
 **图片归一化**
 
@@ -56,4 +56,4 @@ new_image = kmeans.cluster_centers_[labels].reshape([w, h, d])
 plt.imshow(new_image)
 ```
 
-![](./img/flower2.png)
+![](images/flower2.png)

@@ -304,7 +304,7 @@ driver.window_handlers[1]
 
 
 
-![image-20210519154732250](img/image-20210519154732250.png)
+![image-20210519154732250](images/image-20210519154732250.png)
 
 ```python
 import time

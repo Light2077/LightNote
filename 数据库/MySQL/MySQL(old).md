@@ -1223,7 +1223,7 @@ select date_format(now(), '%y-%m-%d %h:%i:%s');
 
 ### 1. UNION 联合查询
 
-![image-20200810115516052](img/union.png)
+![image-20200810115516052](images/union.png)
 
 union操作符用于合并两个或多个select语句的结果集。
 
@@ -1255,7 +1255,7 @@ select student.id, student.name, student.city from student union select * from s
 
 - 只有两边id相等的数据会被合并
 
-![image-20200810120948488](img/inner join.png)
+![image-20200810120948488](images/inner join.png)
 
 ```mysql
 select student.id, student.name, student.city, score.math, score.english from student inner join score;

@@ -145,7 +145,7 @@ player = pygame.image.load('Player.png')
 player_rect = player.get_rect()
 ```
 
-![image-20201206171349365](image-20201206171349365.png)
+![image-20201206171349365](images/image-20201206171349365.png)
 
 矩形对象用于移动和对齐的虚拟属性
 

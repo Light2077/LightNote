@@ -47,7 +47,7 @@ plt.axis("off")
 plt.show()
 ```
 
-![](./img/快速上手.png)
+![](images/快速上手.png)
 
 # 图
 

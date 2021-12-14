@@ -122,7 +122,7 @@ def add_picture(pic_path, max_width=Cm(14.64), title=None):
 
 首先创建一个名为demo的文件夹，然后打开这个链接https://movie.douban.com/photos/photo/2158653283/ 把里面的海报图片保存到demo文件夹内，命名为`monty-truth.png`。这个图片就是官网用到的那张图片，也可以直接保存下面这张图片。
 
-![](img/monty-truth.png)
+![](images/monty-truth.png)
 
 
 
@@ -202,7 +202,7 @@ python demo.py
 
 打开`demo.docx`能看到如下效果的文档
 
-![img](img/example-docx-01.png)
+![img](images/example-docx-01.png)
 
 
 
@@ -236,11 +236,11 @@ document.add_heading('Heading, level 1', level=1)
 
 对应如下两个标题。
 
-![img](img/example-docx-02.png)
+![img](images/example-docx-02.png)
 
 注意，这里的`level=1`是一级标题，`level=0`是大标题，样式会自动对应word中的样式表。如下图
 
-![](img/example-docx-03.png)
+![](images/example-docx-03.png)
 
 ### 增加段落
 
@@ -253,7 +253,7 @@ p.add_run(' and some ')
 p.add_run('italic.').italic = True
 ```
 
-![](img/example-docx-04.png)
+![](images/example-docx-04.png)
 
 以下是应用了不同格式的段落
 
@@ -267,7 +267,7 @@ document.add_paragraph(
 )
 ```
 
-![image-20210918155555477](img/example-docx-05.png)
+![image-20210918155555477](images/example-docx-05.png)
 
 
 
@@ -275,7 +275,7 @@ Intense Quote就是样式表中的**明显引用**样式
 
 List Bullet 和 List Number就是项目符号和项目编号
 
-![image-20210918160001708](img/example-docx-06.png)
+![image-20210918160001708](images/example-docx-06.png)
 
 ### 插入图片
 
@@ -315,7 +315,7 @@ for qty, id, desc in records:
     row_cells[2].text = desc
 ```
 
-![image-20210918160600219](img/example-docx-07.png)
+![image-20210918160600219](images/example-docx-07.png)
 
 插入表格稍微复杂一丢丢，主要掌握：
 

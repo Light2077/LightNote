@@ -29,7 +29,7 @@ subtitle.text = "python-pptx was here!"
 prs.save('test.pptx')
 ```
 
-![../_images/hello-world.png](img/hello-world.png)
+![../_images/hello-world.png](images/hello-world.png)
 
 代码解析：
 
@@ -52,7 +52,7 @@ slide = prs.slides.add_slide(title_slide_layout)  # 创建幻灯片
 
 可见，第一个布局有两个预定义的文本框，分别为主标题和副标题。这里选取第一个布局并创建了一个slide对象。
 
-![image-20211123162022122](img/image-20211123162022122.png)
+![image-20211123162022122](images/image-20211123162022122.png)
 
 接下来分别选中主标题和副标题的文本框并填充文字
 
@@ -101,7 +101,7 @@ p.level = 2
 prs.save('test.pptx')
 ```
 
-![../_images/bullet-slide.png](img/bullet-slide.png)
+![../_images/bullet-slide.png](images/bullet-slide.png)
 
 详解：
 
@@ -112,7 +112,7 @@ bullet_slide_layout = prs.slide_layouts[1]
 slide = prs.slides.add_slide(bullet_slide_layout)
 ```
 
-![image-20211123164356711](img/image-20211123164356711.png)
+![image-20211123164356711](images/image-20211123164356711.png)
 
 选中标题和正文，设置标题文本
 
@@ -173,7 +173,7 @@ p.font.size = Pt(40)
 prs.save('test.pptx')
 ```
 
-![../_images/add-textbox.png](img/add-textbox.png)
+![../_images/add-textbox.png](images/add-textbox.png)
 
 详解：
 
@@ -225,7 +225,7 @@ pic = slide.shapes.add_picture(img_path, left, top, height=height)
 prs.save('test.pptx')
 ```
 
-![../_images/add-picture.png](img/add-picture.png)
+![../_images/add-picture.png](images/add-picture.png)
 
 只设定图片的左上角位置：按照图片原始大小插入图片
 
@@ -275,7 +275,7 @@ for n in range(2, 6):
 prs.save('test.pptx')
 ```
 
-![../_images/add-shape.png](img/add-shape.png)
+![../_images/add-shape.png](images/add-shape.png)
 
 详解：
 
@@ -336,7 +336,7 @@ table.cell(1, 1).text = 'Qux'
 prs.save('test.pptx')
 ```
 
-![../_images/add-table.png](img/add-table.png)
+![../_images/add-table.png](images/add-table.png)
 
 
 

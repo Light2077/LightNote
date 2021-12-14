@@ -28,7 +28,7 @@ $$
 
 # TextCNN网络结构
 
-![img](img/textcnn1.png)
+![img](images/textcnn1.png)
 
 ```
 x            (batch_size, seq_len)
