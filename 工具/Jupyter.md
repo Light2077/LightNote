@@ -199,3 +199,59 @@ jupyter nbconvert --config mycfg.py --to markdown
 
 
 
+## 服务器部署Jupyter Lab
+
+https://blog.csdn.net/weixin_42225122/article/details/113866096
+
+https://jupyter.org/
+
+```
+conda install -c conda-forge jupyterlab=3
+```
+
+开始准备部署
+
+https://jupyter-server.readthedocs.io/en/latest/operators/public-server.html
+
+首先需要查看是否有`jupyter_server_config.py`文件
+
+> - Windows: `C:\Users\USERNAME\.jupyter\jupyter_server_config.py`
+> - OS X: `/Users/USERNAME/.jupyter/jupyter_server_config.py`
+> - Linux: `/home/USERNAME/.jupyter/jupyter_server_config.py`
+
+如果没有，输入以下代码生成`jupyter_server_config.py`文件
+
+```
+jupyter server --generate-config
+```
+
+
+
+生成密码
+
+```
+jupyter server password
+```
+
+在下面弹出的信息中输入密码
+
+```
+Enter password: 
+Verify password: 
+[JupyterPasswordApp] Wrote hashed password to /root/.jupyter/jupyter_server_config.json
+```
+
+
+
+修改`jupyter_server_config.py`的几个配置项
+
+```
+c.ServerApp.ip = '*'  # 使其他网络可以访问
+c.ServerApp.open_browser = False
+c.ServerApp.port = 9999  # 访问的端口
+c.ServerApp.root_dir = "xx/xx"  # 默认启动路径
+```
+
+> 注意
+>
+> 这个配置方案是十分简化的方案，完全没有考虑网络安全性
