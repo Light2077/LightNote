@@ -22,8 +22,8 @@ with conn.cursor() as cur:
 查看某个表的列名
 
 ```python
-sql = "select column_name from information_schema.columns\n" \
-      "where table_name='demo'"
+sql = "SELECT column_name FROM information_schema.columns\n" \
+      "WHERE table_name='demo'"
     
 with conn.cursor() as cur:
     cur.execute(sql)
