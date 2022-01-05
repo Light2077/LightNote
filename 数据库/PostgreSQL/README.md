@@ -75,7 +75,7 @@ select now()+ interval '4 hour';
 
 实现类似python的resample操作
 
-
+按分钟进行聚合
 
 ```sql
 select extract(days from to_timestamp(collect_time))   as d,
@@ -87,5 +87,27 @@ group by d, h, m
 limit 100;
 ```
 
+每3分钟进行聚合
 
+```sql
+select extract(days from to_timestamp(collect_time))   as day,
+       extract(hour from to_timestamp(collect_time))   as hour,
+       floor(extract(minute from to_timestamp(collect_time)) / 3) * 3 as minute,
+       AVG(drawing_speed) as drawing_speed
+from d7_2021_12
+group by day, hour, minute
+limit 10;
+```
+
+
+
+### 间隔x个数据聚合
+
+每隔10个数据求均值
+
+```sql
+select floor(id / 10) as i , avg(price) 
+from selling 
+group by i
+```
 

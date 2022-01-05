@@ -58,7 +58,7 @@ docker rm $(docker ps -aq)
 
 `docker push registry.cn-shenzhen.aliyuncs.com/light2077/covid19sim:xx` xx填版本号
 
-容器拷贝东西：
+从本机传输文件到容器：
 
 把当前目录下的run.sh拷贝到容器的根目录下：`docker cp run.sh 5f578ea1a027:/`
 
