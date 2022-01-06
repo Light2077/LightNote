@@ -80,6 +80,10 @@ https://xiaomark.com/tool
 
 [draw.io](https://draw.io)
 
+技术博客，有许多python后端技术分享
+
+http://twocucao.xyz/archive
+
 ## 知识库整理
 
 怎么整理？
