@@ -1,7 +1,15 @@
+查看可用版本
+
+```
+docker search python
+```
+
+
+
 进入某个容器：
 
 ```
-docker run -it registry.cn-shenzhen.aliyuncs.com/light2077/covid19sim:0.3 /bin/bash
+docker run -it ubuntu /bin/bash
 ```
 
 

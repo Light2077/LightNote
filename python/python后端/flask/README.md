@@ -109,8 +109,16 @@ flask run --host=0.0.0.0
 更改端口
 
 ```
-flask run -port=8000
+flask run --port=8000
 ```
+
+综合
+
+```
+flask run -h 0.0.0.0 -p 5000
+```
+
+
 
 使用环境变量配置
 
