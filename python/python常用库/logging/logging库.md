@@ -6,7 +6,7 @@ https://docs.python.org/3.9/howto/logging.html#logging-basic-tutorial
 
 https://docs.python.org/zh-cn/3.9/howto/logging.html#logging-advanced-tutorial
 
-### 日志的基本使用
+## 日志的基本使用
 
 ```python
 import logging
@@ -25,7 +25,7 @@ ERROR:root:this is a error log.
 CRITICAL:root:this is a critical log.
 ```
 
-### 日志的等级
+## 日志的等级
 
 是以数字来指定的，可以print下面的代码查看不同等级对应的数字。
 
@@ -39,9 +39,11 @@ logging.CRITICAL  # 50
 
 
 
-### 记录日志到文件
+## 记录日志到文件
 
-不加`filemode='w'`则每次执行会在保留之前的日志文件的前提下追加新的日志。默认只会记录`WARNING`及以上的信息。
+默认`level=logging.WARNING`，只会输出`WARNING`及以上等级的日志
+
+默认`filemode='a'`每次在文件最后追加日志
 
 ```python
 import logging
@@ -59,7 +61,7 @@ INFO:root:So should this
 WARNING:root:And this, too
 ```
 
-### 跨模块记录日志
+## 跨模块记录日志
 
 例子如下：
 
@@ -98,7 +100,7 @@ INFO:root:Finished
 
 
 
-### 日志可以传值
+## 日志可以传值
 
 ```python
 import logging
@@ -113,7 +115,7 @@ WARNING:root:Look before you leap!
 
 我暂时觉得这个没什么用，直接.format()会更方便吧
 
-### 更改显示消息的格式
+## 更改显示消息的格式
 
 更完整的信息格式参考 [LogRecord 属性](https://docs.python.org/zh-cn/3/library/logging.html#logrecord-attributes)
 
@@ -140,11 +142,13 @@ import logging
 
 # %m %d %Y 月日年 %H % M %S 时分秒 %p 上午下午
 # %H 24小时制 %I 12小时制
-logging.basicConfig(filename='example.log', 
-                    format='%(asctime)s %(message)s',
-                    datefmt='%m/%d/%Y %H:%M:%S %p',
-                    # level=logging.DEBUG,
-                    filemode='w')
+logging.basicConfig(
+    # filename='example.log', 
+    format='[%(asctime)s][%(levelname)s]:%(name)s:%(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S',
+    level=logging.DEBUG,
+    filemode='a'
+)
 
 logging.debug('This message should go to the log file')
 logging.info('So should this')
@@ -154,9 +158,24 @@ logging.warning('And this, too')
 `example.log`
 
 ```
-11/08/2020 19:44:55 PM This message should go to the log file
-11/08/2020 19:44:55 PM So should this
-11/08/2020 19:44:55 PM And this, too
+[2022-01-11 10:01:47][DEBUG]:root:This message should go to the log file
+[2022-01-11 10:01:47][INFO]:root:So should this
+[2022-01-11 10:01:47][WARNING]:root:And this, too
+```
+
+
+
+常用例子
+
+```python
+import logging
+logging.basicConfig(
+    # filename='example.log', 
+    format='[%(asctime)s][%(levelname)s][%(name)s]:%(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S',
+    level=logging.DEBUG,
+    filemode='a'
+)
 ```
 
 
