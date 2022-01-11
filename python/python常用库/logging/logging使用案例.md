@@ -1,5 +1,24 @@
 # logging使用案例
 
+## 如何使用
+
+
+
+
+
+拷贝下面案例中的`log.py`的内容。在主程序`import log`。
+
+其他程序使用日志时只需要
+
+```python
+import logging
+logger = logging.getLogger(__name__)
+
+logger.info('鸢尾花')
+```
+
+
+
 ## 基础案例
 
 用一个项目来举例
