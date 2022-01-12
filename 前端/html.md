@@ -614,6 +614,8 @@ https://developer.mozilla.org/zh-CN/docs/learn/HTML/Introduction_to_HTML/Advance
 
 ## 文档与网站架构
 
+https://developer.mozilla.org/zh-CN/docs/Learn/HTML/Introduction_to_HTML/Document_and_website_structure
+
 ### 文档的基本组成部分有哪些？
 
 - 页眉：`<header>`
@@ -677,3 +679,24 @@ https://developer.mozilla.org/zh-CN/docs/learn/HTML/Introduction_to_HTML/Advance
 </html>
 ```
 
+### HTML布局元素有哪些？
+
+- `<main>`存放每个页面独有的内容，每个页面只能用一次
+- `<article>`包围的内容即一篇文章，与页面其它部分无关（比如一篇博文）。
+- `<section>`与 `<article>` 类似，但 `<section>` 更适用于组织页面使其按功能（比如迷你地图、一组文章标题和摘要）分块。一般的最佳用法是：以 [标题](https://developer.mozilla.org/en-US/Learn/HTML/Howto/Set_up_a_proper_title_hierarchy) 作为开头；也可以把一篇 `<article>` 分成若干部分并分别置于不同的 `<section>` 中，也可以把一个区段 `<section>` 分成若干部分并分别置于不同的 `<article>` 中，取决于上下文。
+- `<aside>`包含一些间接信息（术语条目、作者简介、相关链接，等等）。或者是文字的目录
+- `<header>`如果它是`<article>`或`<section>`的子元素，它就是这部分的页眉
+- `<nav>`包含页面主导航功能。其中不应包含二级链接等内容。
+- `<footer>`包含了页面的页脚部分。
+
+### 有哪些无语义元素？
+
+`<div>`与`<span>`
+
+- `<div>`：块级无语义元素，应仅用于找不到更好的块级元素时，或者不想增加特定的意义时。
+- `<span>`：内联的（inline）无语义元素
+
+### 如何使用换行和水平分割线？
+
+- `<br>`用于段落中换行
+- `<hr>`水平分割线，表示文本主题的变化。
