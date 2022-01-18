@@ -179,22 +179,22 @@ import logging.handlers
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
 
+# 日志模块配置文件
+LOG_DIR = os.path.join(BASE_PATH, 'logs')
+LOG_FILE_PATH = os.path.join(LOG_DIR, 'output.log')
 
+if not os.path.isdir(LOG_DIR):
+    os.makedirs(LOG_DIR)
+    
 # 文件处理器，保存日志到文件
-log_filedir = './logs'
-log_filename = 'mylog.log'
-log_filepath = os.path.join(log_filedir, log_filename)
-if not os.path.isdir(log_filedir):
-    os.makedirs(log_filedir)
-
 file_handler = logging.handlers.RotatingFileHandler(
-    filename=log_filepath, 
-    maxBytes=10,  # 日志最大为10字节
+    filename=LOG_FILE_PATH, 
+    maxBytes=1024 * 1024,  # 日志最大为1Mb
     backupCount=2,  # 最多备份2个日志
     encoding='utf8'
 )
 
-file_handler.setLevel(logging.DEBUG)
+file_handler.setLevel(logging.INFO)
 
 # 输出日志到终端
 stream_handler = logging.StreamHandler()

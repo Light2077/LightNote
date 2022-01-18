@@ -1,6 +1,6 @@
 # HTML介绍
 
-## 开始学习HTML
+## HTML基础
 
 https://developer.mozilla.org/zh-CN/docs/Learn/HTML/Introduction_to_HTML/Getting_started
 
@@ -28,7 +28,7 @@ HTML的全称是HyperText Markup Language，是一种**标记语言**，它告�
 <p>hello <strong>world</strong></p>
 ```
 
-### 什么是块级元素和内联元素
+### 什么是块级元素和内联元素？
 
 - 块级元素(block level element)：这种元素单独占一行，相当于在头和尾都加了一个换行符。
 - 内联元素(inline level element)：一般放在块级元素内，不会导致文本换行。
@@ -69,9 +69,9 @@ HTML的全称是HyperText Markup Language，是一种**标记语言**，它告�
 - 属性名=属性值
 - 属性值由双引号括起来
 
-### 什么是布尔属性？
+### 布尔属性怎么传值？
 
-这些属性没有值，写值的话也只能和属性名一样。例如[disabled](https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/Input#attr-disabled) 属性，他们可以标记表单输入使之变为不可用(变灰色)，此时用户不能向他们输入任何数据。
+布尔属性没有值，写值的话也只能和属性名一样。例如[disabled](https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/Input#attr-disabled) 属性，该属性可以禁用表单输入。
 
 ```html
 <input type="text" disabled>

@@ -1,4 +1,10 @@
-首先安装python，以python3.8为例
+- docker安装python轻量版
+- docker安装flask
+- 
+
+
+
+首先docker安装python，以python3.8为例
 
 ```
 docker pull python:3.8.12-slim
