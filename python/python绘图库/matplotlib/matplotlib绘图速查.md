@@ -1,3 +1,31 @@
+## 字体设置
+
+具体属性参考 [matplotlib.text.Text](https://matplotlib.org/api/text_api.html#matplotlib.text.Text)
+
+常用：
+
+- `fontfamliy`
+- `fontsize`
+- `fontproperties`
+
+x, y轴标签
+
+```python
+ax.set_xlabels('年份', fontfamily='STSong')
+```
+
+x, y轴刻度
+
+```python
+ax.set_xticklabels(ticks, fontfamily='simsong')
+```
+
+对于图例legend，要使用prop设置字体格式
+
+```python
+ax.legend(prop={'family': 'SimHei'})
+```
+
 
 
 ## 小技巧速查
@@ -49,26 +77,6 @@ ax2 = ax.twinx()
 labels = ax.get_xticklabels()
 plt.setp(labels, rotation=45, horizontalalignment='center')
 ```
-
-### 文本属性的设置
-
-https://matplotlib.org/api/text_api.html#matplotlib.text.Text
-
-常用：`fontfamliy` / `fontsize` / `fontproperties`
-
-```python
-ax.set_xlabels('年份', fontfamily='STSong')
-```
-
-对于legend，要使用prop设置字体比如
-
-```python
-plt.legend(prop={'family': 'SimHei'})
-```
-
-
-
-
 
 ### 使图片显示完整
 
@@ -450,12 +458,12 @@ plt.plot(x, y, marker='o', markevery=10)
 
 ![Filled markers](images/sphx_glr_marker_reference_002.png)
 
-## legend
+## 图例legend
 
 参数1 `loc`，**控制位置**
 
 - 使用`plt.legend()`或`ax.legend()`设置图例
-- 通常情况默认就行了默认`ax.legend(loc="best")`
+- 通常情况默认就行了，默认`ax.legend(loc="best")`
 - 位置设置可以用英文来记
   - 上中下：upper center lower
   - 左中右：left center right
@@ -485,11 +493,11 @@ plt.show()
 ```
 
 
-# 内嵌图
+## 内嵌图
 
 https://zhuanlan.zhihu.com/p/138687299
 
-```text
+```python
 import os
 from PIL import Image
 import matplotlib.pyplot as plt
