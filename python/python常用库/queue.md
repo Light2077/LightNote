@@ -1,8 +1,10 @@
 队列模块`queue`
 
+https://docs.python.org/3/library/queue.html
+
+该模块主要应用于多线程编程
 
 
-# 先进先出队列`Queue`
 
 ```python
 from queue import Queue
@@ -47,7 +49,7 @@ q.put('more', timeout=2)
 
 
 
-不需要同时设置`block=False`和`timeout=2`参数，这样是无意义的。因为`block=False`时，就会立马返回`Full`错误。
+不要同时设置`block=False`和`timeout=2`参数，这样是无意义的。因为`block=False`时，就会立马返回`Full`错误。
 
 
 
@@ -56,5 +58,41 @@ q.put('more', timeout=2)
 ```python
 # 等价于q.put('more', block=False)
 q.put_nowait('more')
+```
+
+## 队列与线程
+
+下面的例子展示了如何使用队列给线程分配任务
+
+```python
+import threading, queue
+import time
+q = queue.Queue()  # 创建一个队列
+
+def worker():
+    while True:
+        item = q.get()
+        print(f'Working on {item}')
+        time.sleep(1)
+        print(f'Finished {item}')
+        q.task_done()
+        
+# 开启一个线程
+threading.Thread(target=worker, daemon=True).start()
+
+# 发送3个任务
+for item in range(3):
+    q.put(item)
+print('All task requests sent')
+
+# 阻塞直到所有任务执行完毕
+q.join()
+print('All work completed')
+```
+
+然后如果想继续增加任务，只需
+
+```python
+q.put(item)
 ```
 

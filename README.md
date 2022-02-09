@@ -40,6 +40,12 @@ Lightnote 是一本笔记，记录在学习过程中遇到的问题和解决方�
 
 优秀网址记录
 
+软件破解下载
+
+http://www.yishimei.cn/
+
+
+
 表情大全
 
 https://www.emojiall.com/zh-hans?amp=
@@ -54,7 +60,7 @@ https://vjudge.net
 
 学习网站
 
-http://c.biancheng.net/
+http://c.biancheng.net/ 不错的编程学习网站，但是部分收费
 
 https://www.code-nav.cn/
 
