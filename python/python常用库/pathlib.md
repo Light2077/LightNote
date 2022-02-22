@@ -4,7 +4,13 @@ https://docs.python.org/zh-cn/3/library/pathlib.html
 
 ```python
 from pathlib import Path
-p = Path('.')
+path = Path('.')
+```
+
+查看目录下所有文件
+
+```python
+list(path.glob("*"))
 ```
 
 查看所有子目录
@@ -12,6 +18,14 @@ p = Path('.')
 ```python
 [x for x in p.iterdir() if x.is_dir()]
 ```
+
+查看父目录
+
+```python
+p.parent
+```
+
+
 
 列出当前目录树下所有python源代码文件
 
