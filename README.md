@@ -90,6 +90,20 @@ https://xiaomark.com/tool
 
 http://twocucao.xyz/archive
 
+教学网址
+
+https://www.geeksforgeeks.org/regression-analysis-and-the-best-fitting-line-using-c/
+
+
+
+python 技巧
+
+https://pyzh.readthedocs.io/en/latest/index.html
+
+
+
+https://python.iswbm.com
+
 ## 知识库整理
 
 怎么整理？

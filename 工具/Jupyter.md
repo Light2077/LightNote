@@ -255,3 +255,18 @@ c.ServerApp.root_dir = "xx/xx"  # 默认启动路径
 > 注意
 >
 > 这个配置方案是十分简化的方案，完全没有考虑网络安全性
+
+## Jupyter Lab 字体设置
+
+Settings > Advanced Settings Editor
+
+修改右侧的User Preferences
+
+```python
+{
+    "codeCellConfig": {
+        "fontFamily": "Fira Code",
+    }
+}
+```
+
