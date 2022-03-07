@@ -113,3 +113,7 @@ https://python.iswbm.com
 pwnable 网络安全刷题？
 
 [PWN入门（从零开始学习PWN）](https://www.jianshu.com/p/187b810e78d2)
+
+百度链接提交：能够缩短被收录的时间
+
+https://ziyuan.baidu.com/linksubmit/url
