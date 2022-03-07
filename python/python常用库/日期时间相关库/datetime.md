@@ -8,6 +8,13 @@ https://docs.python.org/3/library/datetime.html
 - datetime.datetime()
 - datetime.timedelta()
 
+四个类：
+
+- datetime
+- date
+- time
+- timedelta
+
 # 常用操作
 
 时间戳转datetime格式
