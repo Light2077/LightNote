@@ -62,7 +62,7 @@ conda activate tf2
 pip install ipykernel
 ```
 
-3.添加环境
+3.添加环境（要在新环境下，**不要**在base环境执行）
 
 ```
 python -m ipykernel install --user --name tf2
