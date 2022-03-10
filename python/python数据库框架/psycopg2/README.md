@@ -22,9 +22,10 @@ with conn.cursor() as cur:
 查看某个表的列名
 
 ```python
-sql = "SELECT column_name FROM information_schema.columns\n" \
+sql = "SELECT column_name FROM" 
+      "information_schema.columns\n" \
       "WHERE table_name='demo'"
-    
+
 with conn.cursor() as cur:
     cur.execute(sql)
     d = cur.fetchall()
@@ -54,5 +55,20 @@ print(d)
  ('table_name2',),
  ...
 ]
+```
+
+
+
+例：批量执行
+
+```python
+import psycopg2
+
+sql = "INSERT INTO table_name VALUES(%s, %s, %s)"
+with conn.cursor() as cursor:
+    cursor.executemany(sql, values)
+    result = cursor.fetchall()
+    print(result)
+    conn.commit()
 ```
 
