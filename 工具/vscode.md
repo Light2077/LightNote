@@ -26,7 +26,7 @@ https://www.zhihu.com/question/322530705/answer/860418884
 cat ~/id_rsa.pub >> ~/.ssh/authorized_keys
 ```
 
-或者复制`id_rsa.pub`的内容，然后手动粘贴到`authorized_keys`
+或者复制`id_rsa.pub`的内容，然后手动粘贴到远端的`authorized_keys`
 
 
 
