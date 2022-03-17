@@ -69,3 +69,14 @@ ctlr+shift+P 然后输入Python: Select Interpreter，选择虚拟环境的pytho
 直接设置remote ssh 的config绝对路径即可。
 
 ctrl+shift+P  然后输入 remote ssh config file
+
+## 错误
+
+### notebook画图kernel died
+
+https://stackoverflow.com/questions/65734044/kernel-appears-to-have-died-jupyter-notebook-python-matplotlib
+
+```
+conda install --yes freetype=2.10.4
+```
+
