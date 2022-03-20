@@ -1,10 +1,15 @@
+"""
+将某个ipynb文件转换为markdown文件
+
+"""
 import os
+import re
 import json
 import base64
 
 
 class Notebook:
-    def __init__(self, notebook_path, markdown_dir="."):
+    def __init__(self, notebook_path, markdown_dir=".", image_dir_name="images"):
         
         # 读取.ipynb文件数据
         self.cells = list()
@@ -20,7 +25,7 @@ class Notebook:
         self.markdown_dir = markdown_dir
         self.markdown_path = os.path.join(self.markdown_dir, self.markdown_name + ".md")
         
-        self.img_save_dir = os.path.join(self.markdown_dir, 'images')
+        self.img_save_dir = os.path.join(self.markdown_dir, image_dir_name)
         self.img_num = 1
     
     def save_img(self, image):
@@ -59,6 +64,7 @@ class Notebook:
                 f.write(text)
         return text
 
+
 class Cell(dict):
     def __init__(self, notebook, cell_dict):
         super().__init__()
@@ -94,7 +100,7 @@ class Cell(dict):
         for output in self.outputs:
             # print的输出
             if output['output_type'] == 'stream':
-                text = text +  "".join(output['text']) + '\n'
+                text = text +  "".join(output['text'])
                 continue
             
             # 错误的输出
@@ -143,3 +149,11 @@ class Cell(dict):
 notebook = Notebook('demo.ipynb', '/home/study/markdowns')
 res = notebook.to_markdown(save=True)
 """
+
+# 将当前文件夹下的ipynb文件转换为md文件
+if __name__ == "__main__":
+    for file_name in os.listdir():
+        if file_name.split('.')[-1] != 'ipynb':
+            continue
+        notebook = Notebook(file_name)
+        notebook.to_markdown(save=True)

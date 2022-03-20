@@ -1,0 +1,5 @@
+apt install -y curl
+curl -fLO https://raw.githubusercontent.com/bohanyang/debi/master/debi.sh
+chmod a+rx debi.sh
+sudo ./debi.sh --user root --password L帝的私家密码
+sudo shutdown -r now
