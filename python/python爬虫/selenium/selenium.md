@@ -200,7 +200,8 @@ window.scrollTo(0, document.body.scrollHeight)
 
 ```python
 js = 'var q = document.documentElement.scrollTop=10000'
-
+# 下面这个代码好像更有效一些
+# driver.execute_script("window.scrollTo(0,document.body.scrollHeight)")
 driver.execute_script(js)
 
 time.sleep(3)

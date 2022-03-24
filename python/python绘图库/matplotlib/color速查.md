@@ -82,3 +82,10 @@ for cmap_category, cmap_list in cmaps:
 plt.show()
 ```
 
+# 自定义离散cmap
+
+```python
+from matplotlib import colors as c
+cmap = c.ListedColormap(['lightblue','w'])
+```
+
