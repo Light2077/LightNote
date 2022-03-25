@@ -270,3 +270,17 @@ Settings > Advanced Settings Editor
 }
 ```
 
+## magic方法
+
+使用`%lsmagic`可以查看所有magic方法
+
+```
+%lsmagic
+```
+
+```
+|-root
+  |-line
+  |-cell
+```
+
