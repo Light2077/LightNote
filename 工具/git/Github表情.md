@@ -169,7 +169,7 @@ Table of Contents
 | :scissors: `:scissors:` | :pushpin: `:pushpin:` | :paperclip: `:paperclip:` |
 | :black_nib: `:black_nib:` | :pencil2: `:pencil2:` | :straight_ruler: `:straight_ruler:` |
 | :triangular_ruler: `:triangular_ruler:` | :closed_book: `:closed_book:` | :green_book: `:green_book:` |
-| :blue_book: `:blue_book:` | :orange_book: `:orange_book:` | :notebook: `:notebook:` |
+| :blue_book: `:blue_book:` | `:orange_book:` | :notebook: `:notebook:` |
 | :notebook_with_decorative_cover: `:notebook_with_decorative_cover:` | :ledger: `:ledger:` | :books: `:books:` |
 | :bookmark: `:bookmark:` | :name_badge: `:name_badge:` | :microscope: `:microscope:` |
 | :telescope: `:telescope:` | :newspaper: `:newspaper:` | :football: `:football:` |
@@ -215,7 +215,7 @@ Table of Contents
 | :strawberry: `:strawberry:` | :peach: `:peach:` | :melon: `:melon:` |
 | :banana: `:banana:` | :pear: `:pear:` | :pineapple: `:pineapple:` |
 | :sweet_potato: `:sweet_potato:` | :eggplant: `:eggplant:` | :tomato: `:tomato:` |
-| :corn: `:corn:` |
+|| :corn: `:corn:` ||
 
 ## Places ##
 
