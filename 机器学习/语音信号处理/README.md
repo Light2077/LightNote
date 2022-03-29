@@ -1,0 +1,1 @@
+[语音识别技术基础理解](https://www.jianshu.com/p/9888d593f1b1)

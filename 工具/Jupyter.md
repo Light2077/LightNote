@@ -284,3 +284,9 @@ Settings > Advanced Settings Editor
   |-cell
 ```
 
+## Jupyter Lab显示代码运行时间
+
+```
+pip install jupyterlab_execute_time
+```
+
