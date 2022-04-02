@@ -1,0 +1,14 @@
+
+* {
+	padding: 0;
+	border: 0;
+	margin: 0 auto;
+}
+.main {
+/* 	width: 960px; */
+	height: 1080px;
+	margin: 0 auto;
+
+	background-size: cover;
+	background-image: linear-gradient(to right bottom, #377ce5, #3472c5, #3768a5, #3c5d86, #405167);
+}
