@@ -174,3 +174,6 @@ async def regular_broadcast():
     # 设计为每天
 ```
 
+## 设计思路
+
+每天3点提醒饮茶
