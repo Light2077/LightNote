@@ -257,6 +257,15 @@ ax.set_yticks([-1, 1])
 ax.plot(x, y)
 ```
 
+### xy坐标轴刻度等比例
+
+https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_aspect.html#matplotlib.axes.Axes.set_aspect
+
+```python
+
+ax.set_aspect('equal')
+```
+
 
 
 
