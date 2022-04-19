@@ -104,11 +104,27 @@ https://pyzh.readthedocs.io/en/latest/index.html
 
 https://python.iswbm.com
 
+
+
+
+
 ## 知识库整理
 
 怎么整理？
 
 ## 记录
+
+### 学术导航
+
+包括
+
+- 科研查询
+- 在线学习网
+- 办公日常工具等
+
+[![](images/资源-9.png)](https://cnspub.com/)
+
+
 
 pwnable 网络安全刷题？
 
