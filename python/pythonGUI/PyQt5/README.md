@@ -12,7 +12,11 @@ https://www.zhihu.com/question/32703639
 
 https://www.zhihu.com/question/48776632/answer/2336654649
 
+文档
 
+https://doc.qt.io/qtforpython/
+
+https://www.riverbankcomputing.com/static/Docs/PyQt5/sip-classes.html
 
 参考书籍
 
