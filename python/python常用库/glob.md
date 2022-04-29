@@ -4,7 +4,7 @@
 import glob
 
 # 提取当前文件夹下的所有png文件
-print(glob.glob('./*.png))
+print(glob.glob('./*.png'))
 ```
 
 

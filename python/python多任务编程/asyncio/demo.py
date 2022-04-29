@@ -4,7 +4,6 @@ import random
 async def consumer(queue, id):
     print(id, 'start')
     while True:
-
         val = await queue.get()
         queue.task_done()   # indicate complete task
         print('{} get a val: {}'.format(id, val))
