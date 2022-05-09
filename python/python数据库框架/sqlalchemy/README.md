@@ -1,5 +1,13 @@
 [SQLAlchemy tutorial](https://docs.sqlalchemy.org/en/14/tutorial/index.html)
 
+
+
+[SQLAlchemy 真的很赞！适用于Python数据库实战](https://zhuanlan.zhihu.com/p/83664251)
+
+介绍了SQLAlchemy的基础知识，以及Core和ORM的应用场景
+
+
+
 学习目标：
 
 - 了解sqlalchemy的基本搭建方式
