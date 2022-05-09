@@ -229,7 +229,7 @@ redis-cli
 > set name lily
 OK
 > get name
-"apple"
+"lily"
 ```
 
 
