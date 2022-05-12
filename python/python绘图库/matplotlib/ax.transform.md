@@ -33,3 +33,11 @@ ax.add_patch(rect)
 plt.show()
 ```
 
+获取逆变换的transform
+
+```python
+transData_r = ax.transData.inverted()
+# 输入像素点，转换为数据
+transData_r.transform([100, 100])
+```
+
