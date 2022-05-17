@@ -1,6 +1,38 @@
+播种阶段需要造ARPA吗？造多少？
+
+
+调整之后的科技知识消耗
+
+evolve.adjustCosts(evolve.actions.tech.mad).Knowledge()
+
+建4个深空采矿站，为了快速点出超铀理论
+
+
+
+对于包含函数的对象，导出json时获取函数的结果
+
+[你不知道的 JSON.stringify() 的威力](https://segmentfault.com/a/1190000021230185)
+
+```js
+JSON.stringify(evolve.actions.tech.mad, (key, value) => {
+  switch (true) {
+    case typeof value === "function":
+      if (key in evolve.global.resource) {
+        return value();
+      }
+    default:
+      break;
+  }
+  return value;
+})
+```
+
+## 爬虫
+
 ```python
-# with open('tech_htmls.json', 'w', encoding='utf8') as f:
-#     json.dump(htmls, f)
+import requests
+import json
+from lxml import etree
 
 with open('tech_htmls.json', 'r', encoding='utf8') as f:
     htmls = json.load(f)
@@ -49,7 +81,11 @@ for era in htmls:
         techs[d['name']] = d
 with open('techs.json', 'w', encoding='utf8') as f:
     json.dump(techs, f, ensure_ascii=False, indent=2)
-    
+```
+
+## 科技树的构建
+
+```python
 class Graph:
     def __init__(self):
         self.nodes = dict()
@@ -94,13 +130,17 @@ class Node:
     def __repr__(self):
         return self.name
     
+```
+
+查看结果
+
+```python
 nodes = dict()
 # 创建结点
 for name, tech in techs.items():
     nodes[name] = Node(name)
 
 
-techs['共同毁灭原则']
 
 # 创建边
 g = Graph()
@@ -109,9 +149,9 @@ nodes = dict()
 for name, tech in techs.items():
     nodes[name] = Node(name)
     
-layer_limit = 100  # 向上追溯5层
+layer_limit = 10  # 向上追溯5层
 layer = 1  # 当前层数
-q = list([techs['火箭技术']])
+q = list([techs['能量护盾']])
 while q:
     new_q = []
     for tech in q:
@@ -129,55 +169,26 @@ while q:
 print(g.result())
 ```
 
-https://mermaid-js.github.io/mermaid/#/
-
-https://mermaid-js.github.io/mermaid-live-editor/
-
-
-
-面向对象
-
-```python
-class Tech:
-    def __init__(self, key, value):
-        self.name = key
-        self.id_ = value['id']
-        self.title = value['title']
-        self.category = value['category']
-        self.era = value['era']
-        self.reqs = value['reqs']
-        self.grant = value['grant']
-        self.cost = value['cost']
+```
+graph TD
+等离子束[等离子束] -->  能量护盾[能量护盾]
+虚拟现实[虚拟现实] -->  等离子束
+量子计算[量子计算] -->  虚拟现实
+锡烯[锡烯] -->  虚拟现实
+人工智能[人工智能] -->  量子计算
+人工智能 -->  纳米管[纳米管]
+纳米管 -->  量子计算
+激光[激光] -->  人工智能
+高级机器人技术[高级机器人技术] -->  激光
+超铀理论[超铀理论] -->  激光
+火箭技术[火箭技术] -->  高级机器人技术
+超铀开采[超铀开采] -->  超铀理论
+A.R.P.A.[A.R.P.A.] -->  火箭技术
+核裂变[核裂变] -->  A.R.P.A.
+电子学[电子学] -->  核裂变
+铀提取[铀提取] -->  核裂变
 ```
 
-json格式
+然后复制到：https://mermaid-js.github.io/mermaid-live-editor/edit
 
-```json
-{
-  "id": "tech-mad",
-  "title": "共同毁灭原则",
-  "desc": "共同毁灭原则",
-  "category": "special",
-  "era": "globalized",
-  "reqs": {
-    "uranium": 1,
-    "explosives": 3,
-    "high_tech": 7
-  },
-  "not_trait": [
-    "cataclysm"
-  ],
-  "grant": {
-    "mad": 1
-  },
-  "cost": {
-    "Knowledge": 120000,
-    "Oil": 8500,
-    "Uranium": 1250
-  },
-  "effect": "创造一个搭载核弹头的洲际弹道导弹网络，以应对敌人的类似威胁。在军事子面板下解锁。"
-}
-```
-
-
-
+就可以查看可视化结果了。
