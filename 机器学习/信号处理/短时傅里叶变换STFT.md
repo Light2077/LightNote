@@ -1,24 +1,26 @@
-https://zhuanlan.zhihu.com/p/351634228
+[STFT(短时傅里叶变换)的原理与使用](https://zhuanlan.zhihu.com/p/351634228)
+
+[Short Time Fourier Transform)原理及 Python 实现](https://www.cnblogs.com/klchang/p/9280509.html)
 
 ```python
 from scipy.signal import stft
 import numpy as np
 import matplotlib.pyplot as plt
 
-# sampling frequency
-fs = 100
-# 窗函数
-window = 'hann'
-# frame长度
-n = 256
+fs = 100  # 采样率
+window = 'hann'  # 加窗函数
+n = 256  # 帧长
 
-# 构建signal
+# 构建信号
 # 前一段频率为2，后一段频率为10
-signal = np.cos(2*np.pi*200*np.arange(10000)/10000)
-signal = np.append(signal, np.cos(2*np.pi*1000*np.arange(10000)/10000))
+y = np.cos(2*np.pi*200 * np.arange(10000) / 10000 )
+y = np.append(y, np.cos(2*np.pi*1000*np.arange(10000)/10000))
 
 # STFT
-f, t, Z = stft(singal, fs=fs, window=window, nperseg=n)
+# f -- 纵轴(频率)
+# t -- 横轴(时间)
+# Z -- 多帧的傅里叶变换结果 幅值 + i相位
+f, t, Z = stft(y, fs=fs, window=window, nperseg=n)
 # 求幅值
 Z = np.abs(Z)
 # 如下图所示

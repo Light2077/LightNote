@@ -1,2 +1,5 @@
 从一个 EXCEL 小白到 EXCEL 高手一般需要多久？
 https://www.zhihu.com/question/278522570
+
+Excel VBA智能提示，实现快速输入
+https://zhuanlan.zhihu.com/p/34375207
