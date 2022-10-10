@@ -123,7 +123,7 @@ HINT:  Use DROP ... CASCADE to drop the dependent objects too.
 
 因为模式不为空，里面有表格
 
-根据上面的提示
+根据上面的提示，删除schema及其下属的所有表。
 
 ```sql
 DROP SCHEMA fruit_shop CASCADE;

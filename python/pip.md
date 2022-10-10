@@ -2,6 +2,8 @@
 
 https://pip.pypa.io/en/stable/cli/pip_download/
 
+
+
 ## 换源
 
 比如需要在一台新虚拟机部署环境，若该虚拟机可以联网，则更换默认的pip源，加快下载包的速度。
@@ -86,6 +88,20 @@ pip install --no-index --find-links=<pkgs_dir>/<pkg_name>
 pip install --no-index --find-links=<pkgs_dir>/ -r requirements.txt
 ```
 
+### 下载特定python版本的包
+
+使用参数`--python-version`
+
+```
+pip download -d ./pkgs psycopg2-binary --python-version 3.6 --no-deps
+```
+
+必须要加`--no-deps`否则会报错
+
+```
+ERROR: When restricting platform and interpreter constraints using --python-version, --platform, --abi, or --implementation, either --no-deps must be set, or --only-binary=:all: must be set and --no-binary must not be set (or must be set to :none:).
+```
+
 
 
 ## requirements
@@ -101,6 +117,8 @@ pip freeze > requirements.txt
 ```
 pip install -r requirements.txt 
 ```
+
+
 
 ## 下载特定平台的包
 

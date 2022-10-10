@@ -2,15 +2,7 @@ https://www.zhihu.com/question/322530705/answer/860418884
 
 ## 常用快捷键
 
-**变量重命名**：`F2`（会自动对其他文件里引用的该变量进行重命名）
-
-**设置python解释器**：
-
-- 输入快捷键`ctrl + shift + P`，在界面顶端弹出**搜索窗**
-- 在搜索窗中输入`>python select interpreter`，回车
-- 选择自动搜索到的python解释器路径，或手动输入路径。
-
-**代码跳转后回退**：`alt + ←`
+**查看函数参数提示**：`ctrl+shift+space`
 
 **键盘快捷方式修改**：先按`ctrl+k`再按`ctrl+s`
 
@@ -20,9 +12,21 @@ https://www.zhihu.com/question/322530705/answer/860418884
 
 **上/下方另起一行**：上方`ctrl+shift+enter`，下方`ctrl+enter`
 
-**参数提示**：`ctrl+shift+space`
 
 
+**设置python解释器**：
+
+- 输入快捷键`ctrl + shift + P`，在界面顶端弹出**搜索窗**
+- 在搜索窗中输入`>python select interpreter`，回车
+- 选择自动搜索到的python解释器路径，或手动输入路径。
+
+
+
+已经熟练：
+
+**变量重命名**：`F2`（会自动对其他文件里引用的该变量进行重命名）
+
+**代码跳转后回退**：`alt + ←`
 
 ## 免密登录
 

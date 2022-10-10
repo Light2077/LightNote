@@ -92,3 +92,49 @@ DROP TABLE company, department;
 Did not find any relations.
 ```
 
+## 更新数据
+
+```sql
+UPDATE student set name='李华' where sid=1;
+```
+
+某一列包含1-3，要求映射到1-苹果、2-梨、3-香蕉
+
+```sql
+drop table if exists fruit;
+create table fruit (
+   num text
+);
+
+insert into fruit values ('1'), ('2'), ('2'), ('1'), ('3')
+
+select * from fruit
+```
+
+```
+1
+2
+2
+1
+3
+```
+
+修改后：
+
+```sql
+update fruit set num=(
+    case num 
+    when '1' then '苹果' 
+    when '2' then '香蕉'
+    else '其他' end)
+select * from fruit
+```
+
+```
+苹果
+香蕉
+香蕉
+苹果
+其他
+```
+

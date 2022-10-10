@@ -1,11 +1,16 @@
 播种阶段需要造ARPA吗？造多少？
 
-
 调整之后的科技知识消耗
 
+```js
 evolve.adjustCosts(evolve.actions.tech.mad).Knowledge()
+```
 
-建4个深空采矿站，为了快速点出超铀理论
+获取科技的消耗：如共同毁灭原则的石油消耗
+
+```js
+evolve.actions.tech.mad.cost.Oil() 
+```
 
 
 
@@ -14,7 +19,7 @@ evolve.adjustCosts(evolve.actions.tech.mad).Knowledge()
 [你不知道的 JSON.stringify() 的威力](https://segmentfault.com/a/1190000021230185)
 
 ```js
-JSON.stringify(evolve.actions.tech.mad, (key, value) => {
+a = JSON.stringify(evolve.actions.tech.mad, (key, value) => {
   switch (true) {
     case typeof value === "function":
       if (key in evolve.global.resource) {
@@ -26,6 +31,59 @@ JSON.stringify(evolve.actions.tech.mad, (key, value) => {
   return value;
 })
 ```
+
+城市
+
+```js
+a = JSON.stringify(evolve.actions.city)
+```
+
+
+
+保存字符串到本地
+
+```js
+
+
+function exportRaw(name, data) {
+            var urlObject = window.URL || window.webkitURL || window;
+            var export_blob = new Blob([data]);
+            var save_link = document.createElementNS("http://www.w3.org/1999/xhtml", "a")
+            save_link.href = urlObject.createObjectURL(export_blob);
+            save_link.download = name;
+            fakeClick(save_link);
+        }
+function fakeClick(obj) {
+            var ev = document.createEvent("MouseEvents");
+            ev.initMouseEvent("click", true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+            obj.dispatchEvent(ev);
+        }
+
+exportRaw('evolve.txt', a);
+```
+
+```js
+a = JSON.stringify(evolve.actions, (key, value) => {
+    switch (true) {
+        case typeof value === "function":
+            if ('name' in value){ 
+                if (value.name === "title") {
+                    try {
+                        return value();
+                    }
+                    catch(err) {
+                        break;
+                    }
+                }
+            }
+        default:
+            break;
+    }
+    return value;
+})
+```
+
+
 
 ## 爬虫
 
@@ -192,3 +250,16 @@ A.R.P.A.[A.R.P.A.] -->  火箭技术
 然后复制到：https://mermaid-js.github.io/mermaid-live-editor/edit
 
 就可以查看可视化结果了。
+
+## 脚本读取
+
+```python
+import json
+import pandas as pd
+with open('脚本备份.txt') as f:
+    s = json.load(f)
+triggers = s['triggers']
+triggers = pd.DataFrame(triggers)
+# json.loads(triggers.to_json(orient='records'))[0]  # 还原回json
+```
+

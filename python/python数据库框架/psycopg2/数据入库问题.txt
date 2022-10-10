@@ -1,0 +1,8 @@
+# https://blog.csdn.net/weixin_44778883/article/details/111237003
+# https://blog.csdn.net/weixin_44731100/article/details/102677927
+
+# 解决None不显示的问题
+# https://www.geeksforgeeks.org/python-psycopg2-insert-multiple-rows-with-one-query/
+
+# NaN 替换为 None
+# https://blog.csdn.net/m0_64336020/article/details/123197144

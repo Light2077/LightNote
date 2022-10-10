@@ -1,0 +1,177 @@
+https://blog.51cto.com/abcd/5171761
+
+基础语句
+
+```sql
+with recursive 名字 as (
+    A.初始条件语句(非递归部分)
+    
+    union [all] 
+    
+    B.递归部分语句
+) [SELECT | INSERT | UPDATE | DELETE]
+```
+
+前半部分A为初始条件语句，后半部分B为要进行的递归语句
+
+先执行A语句，然后将A语句的结果作为B语句的条件，如果需要对查询结果去重则使用union进行连接，否则使用union all进行连接
+
+
+
+- 通过UNION拆分成上下两部分
+- 上半部分只执行一次，下半部分执行多次
+
+示例
+
+```sql
+DROP TABLE IF EXISTS "rbac_menu";
+CREATE TABLE "rbac_menu" (
+  "id" int8 NOT NULL,  -- ID
+  "pid" int8,  -- 父ID
+  "menu_name" varchar(255) COLLATE "pg_catalog"."default"
+);
+
+INSERT INTO "rbac_menu" VALUES
+(100101, 1001, '权限管理'),
+(10010101, 100101, '菜单管理'),
+(10010102, 100101, '用户管理'),
+(10010103, 100101, '角色管理'),
+(1001010101, 10010101, '设置角色'),
+(1001010102, 10010101, '设置用户'),
+(1001010301, 10010103, '查看'),
+(1001010302, 10010103, '新增'),
+(1001010303, 10010103, '修改'),
+(1001010304, 10010103, '删除');
+
+ALTER TABLE "rbac_menu" ADD CONSTRAINT "rbac_menu_pkey" PRIMARY KEY ("id");
+```
+
+根据父节点获取所有子节点信息
+
+
+
+```sql
+with recursive temp_table as (
+    -- 初始语句,仅执行一次
+    select "id", pid, "menu_name" from rbac_menu where pid = 1001
+    
+    -- 使用union连接结果集(去重,不去重请使用"union all")
+    union
+    
+    -- 递归语句
+    select a."id", a.pid, a."menu_name" from rbac_menu a,temp_table b where a.pid = b."id"
+) 
+select * from temp_table
+order by pid, "id";
+```
+
+根据父节点获取所有子节点信息(控制递归层数).
+
+```sql
+with recursive temp_table as (
+    -- 初始语句,仅执行一次,设置一个变量 number=1
+    select
+        1 number, "id", pid, "menu_name"
+    from
+        rbac_menu
+    where
+        pid = 1001
+    
+    -- 使用union连接结果集(去重,不去重请使用"union all")
+    union
+    
+    -- 递归语句,执行number次,控制number,即可控制递归的层次
+    select
+        (number+1) as n, a."id", a.pid, a."menu_name"
+    from
+        rbac_menu a, temp_table b
+    where
+        a.pid = b."id"
+        and number < 2  -- 递归2层
+) 
+select * from temp_table
+order by pid, "id";
+```
+
+根据子节点获取所有父节点信息
+
+```sql
+with recursive temp_table as (
+  SELECT "id", "pid", "menu_name" FROM rbac_menu WHERE "id"=1001010303
+  UNION
+  SELECT a."id", a."pid", a."menu_name" FROM rbac_menu a, temp_table b
+  WHERE a."id"=b."pid"
+  
+)
+SELECT * FROM temp_table
+order by "pid", "id"
+```
+
+## 例2
+
+```sql
+DROP TABLE IF EXISTS demo;
+CREATE TABLE demo (
+  name text,
+  direct text,
+  name2 text
+);
+
+insert into demo VALUES
+('A', '出', 'B'),
+('A', '出', 'C'),
+('B', '出', 'A'),
+('B', '出', 'D'),
+('B', '出', 'E'),
+('C', '出', 'D'),
+('C', '出', 'F'),
+('D', '出', 'G'),
+('E', '出', 'G'),
+('G', '出', 'E');
+
+-- select * from demo
+
+WITH RECURSIVE temp_table as (
+  SELECT name, direct, name2 FROM  demo
+	WHERE name2='G'
+	
+	UNION
+	
+	SELECT t1.name, t1.direct, t1.name2 FROM demo t1, temp_table t2
+	WHERE t1.name2 = t2.name and t2.name2 != t1.name
+
+)
+select * from temp_table
+order by name
+```
+
+## 获取一段时间内的关联交易
+
+```sql
+sql = """
+WITH RECURSIVE temp_table as (
+    SELECT * FROM 其他交易明细
+    WHERE 
+        交易卡号='6214867557972966' 
+        and (交易时间 between '2021-08-01' and '2021-09-21')
+        and 收付标志='出'
+    
+    UNION
+    
+    SELECT t1.* FROM 其他交易明细 t1, temp_table t2
+    WHERE 
+        t1.交易对手账卡号 = t2.交易卡号 
+        and (t1.交易时间 between '2021-08-01' and '2021-09-21')
+        and t1.收付标志='出'
+)
+select * from temp_table
+where 交易金额 >= 1000
+order by 交易时间
+"""
+```
+
+## 限制查询层数
+
+
+
+https://blog.51cto.com/abcd/5171761

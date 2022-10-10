@@ -106,7 +106,9 @@ https://python.iswbm.com
 
 
 
+本站取名 **r2coding**，即 **Road To Coding**，意为「编程自学之路」，是自学编程以来所用资源和分享内容的大聚合。
 
+https://r2coding.com
 
 ## 知识库整理
 
@@ -122,7 +124,7 @@ https://python.iswbm.com
 - 在线学习网
 - 办公日常工具等
 
-[![](images/资源-9.png)](https://cnspub.com/)
+[cns学术导航](https://cnspub.com/)
 
 
 

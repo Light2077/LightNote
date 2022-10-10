@@ -377,7 +377,7 @@ zincrby rank 5 a
 
 `pip3 install redis`
 
-redis模块的核心是名为redis的类，该类的对象代表一鸽redis客户端，通过该客户端可以向redis服务器发送命令并获取执行的结果。上面我们在redis客户端中使用的命令基本上就是redis对象可以接收的消息，所以如果了解了redis的命令就可以在python中玩转redis
+redis模块的核心是名为redis的类，该类的对象代表一个redis客户端，通过该客户端可以向redis服务器发送命令并获取执行的结果。上面我们在redis客户端中使用的命令基本上就是redis对象可以接收的消息，所以如果了解了redis的命令就可以在python中玩转redis
 
 ```python
 import redis

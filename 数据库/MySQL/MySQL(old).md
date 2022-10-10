@@ -123,7 +123,13 @@ centos：
 
 ## 连接数据库
 
-语法：`mysql -hlocalhost -uroot -p123456 -P3306`
+```
+mysql -hlocalhost -uroot -p123456 -P3306
+```
+
+
+
+语法：``
 
 - -h host(ip地址) localhost = 127.0.0.1
 - -u 用户名

@@ -2,10 +2,6 @@
 
 ## 如何使用
 
-
-
-
-
 拷贝下面案例中的`log.py`的内容。在主程序`import log`。
 
 其他程序使用日志时只需要
@@ -230,9 +226,16 @@ logger.debug('日志初始化完毕')
 
 - `maxBytes`参数设置成了10字节，如果一行超过10字节，也会完整记录一行
 
+# 快速实践
 
+## 日志写入文件
 
+DEBUG级别及以上的日志会被保存
 
+```python
+import logging
+logging.basicConfig(filename='example.log', level=logging.DEBUG, filemode='w')
+```
 
 
 
