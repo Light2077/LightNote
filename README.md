@@ -110,6 +110,20 @@ https://python.iswbm.com
 
 https://r2coding.com
 
+
+
+配色网站
+
+https://color.adobe.com
+
+图片素材网
+
+https://easyicon.net 图标网站
+
+https://pixabay.com 高清版权图片
+
+https://visiocafe.com 主流厂商LOGO IT设备图示
+
 ## 知识库整理
 
 怎么整理？
@@ -135,3 +149,20 @@ pwnable 网络安全刷题？
 百度链接提交：能够缩短被收录的时间
 
 https://ziyuan.baidu.com/linksubmit/url
+
+## 实用网页
+
+信用信息公示系统www.gsxt.gov.cn/index.html
+
+合同示范文本库https://cont.12315.cn
+
+标准地图服务 https://bzdt.ch.mnr.gov.cn/index.html
+
+终身教育平台 https://le.ouchn.cn/home
+
+外译发布平台 https://tppckte.org.cn/
+
+中国纪录片网 https://docuchina.cn
+
+国家数字图书馆网 http://www.nlc.cn/
+

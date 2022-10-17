@@ -415,15 +415,15 @@ hhh我做出来了，分析技巧在于分而治之，如何统计个位数的1�
 
 #### [171. Excel表列序号](https://leetcode-cn.com/problems/excel-sheet-column-number/)
 
-（再做）虽然简单，但我第一次的写法不是最优的。
+:cheese:虽然简单，但我第一次的写法不是最优的。
 
 #### [172. 阶乘后的零](https://leetcode-cn.com/problems/factorial-trailing-zeroes/)
 
-（再做）虽然做了很多次，但每次重新做的时候会忘了怎么分析的
+:cheese:虽然做了很多次，但每次重新做的时候会忘了怎么分析的
 
 #### [69. x 的平方根](https://leetcode-cn.com/problems/sqrtx/)
 
-（再做）思路：想方设法构建一个函数$f(x)$使得当$f(x)=0$时，求出题目要求的解。
+:cheese:思路：想方设法构建一个函数$f(x)$使得当$f(x)=0$时，求出题目要求的解。
 
 #### [50. Pow(x, n)](https://leetcode-cn.com/problems/powx-n/)
 

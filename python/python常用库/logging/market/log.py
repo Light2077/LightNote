@@ -66,8 +66,8 @@ logger.addHandler(stream_handler)
 
 # 异常捕获
 def error_callback(exc_type, exc_value, exc_traceback):
-    logging.error("", exc_info=(
-        exc_type, exc_value, exc_traceback))
+    logger.error("", exc_info=(
+       exc_type, exc_value, exc_traceback))
 
 
 sys.excepthook = error_callback
