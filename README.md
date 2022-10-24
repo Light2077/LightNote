@@ -150,6 +150,14 @@ pwnable 网络安全刷题？
 
 https://ziyuan.baidu.com/linksubmit/url
 
+### 游戏AI
+
+http://ai.berkeley.edu/contest.html  吃豆人
+
+https://www.zhihu.com/question/24711491/answer/2726596500
+
+
+
 ## 实用网页
 
 信用信息公示系统www.gsxt.gov.cn/index.html
