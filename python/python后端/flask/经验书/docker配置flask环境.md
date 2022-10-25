@@ -1,18 +1,19 @@
+步骤：
+
 - docker安装python轻量版
 - docker安装flask
-- 
 
 
 
 首先docker安装python，以python3.8为例
 
-```
+```sh
 docker pull python:3.8.12-slim
 ```
 
 进入docker的python环境
 
-```
+```sh
 docker run -it python:3.8.12-slim /bin/bash
 ```
 
@@ -24,7 +25,7 @@ pip install flask=2.0.2
 
 退出该容器
 
-```
+```sh
 exit
 ```
 
@@ -32,7 +33,7 @@ exit
 
 查看刚刚运行的容器的id
 
-```
+```sh
 docker ps -a
 ```
 
@@ -43,13 +44,13 @@ bc6742b7f8e7   python:3.8.12-slim ...
 
 创建一个新的镜像
 
-```
+```sh
 docker commit bc6742b7f8e7 flask-demo
 ```
 
 查看镜像列表，确认创建成功
 
-```
+```sh
 docker images
 ```
 
@@ -65,7 +66,7 @@ python        3.8.12-slim   23a6a071a881   2 weeks ago     122MB
 
 创建并进入一个目录
 
-```
+```sh
 mkdir flask_web
 cd flask_web
 ```
@@ -125,4 +126,4 @@ ens33: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
 
 发现ip地址为 192.168.22.129
 
-访问http://192.168.22.129:5000 即可查看hello world页面
+在宿主机访问http://192.168.22.129:5000 即可看到hello world页面
