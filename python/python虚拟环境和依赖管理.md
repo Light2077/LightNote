@@ -30,7 +30,7 @@ deactivate
 
 https://zhuanlan.zhihu.com/p/486778776
 
-
+pip-tools Github: https://github.com/jazzband/pip-tools
 
 我之前一直觉得有requirements就够了
 
@@ -45,7 +45,7 @@ https://zhuanlan.zhihu.com/p/486778776
 
 这里使用pip-tools试试看。
 
-Github: https://github.com/jazzband/pip-tools
+
 
 官方文档：
 
@@ -173,3 +173,4 @@ pip-compile --upgrade-package django --upgrade-package requests
 pip-compile --upgrade-package django --upgrade-package requests==2.0.0
 ```
 
+### 开发环境与生产环境切换
