@@ -489,6 +489,8 @@ request.host_url
 request.base_url
 request.url
 request.url_root
+
+
 ```
 
 例如：获取查询字符串
@@ -720,6 +722,33 @@ def index():
 def hello():
     return redirect(url_for('index'))
 ```
+
+登录前想访问`/admin`页面，但是由于没登录，自动跳转到登录界面了。如何在用户完成登录后自动跳转到`/admin`页面？
+
+```python
+# 定义一个返回函数
+def redirect_back(default='/', **kwargs):
+    for target in request.args.get('next'), request.referrer:
+        if target:
+            return redirect(target)
+    return redirect(url_for(default, **kwargs))
+
+# 管理视图
+@app.route('/admin')
+def admin():
+    if requests.cookies.get('login') is None:
+        return redirect(url_for('login'), next=request.full_path)
+    
+# 登录视图
+@app.route('/login')
+def login():
+    # do something...
+    return redirect_back()
+```
+
+
+
+
 
 ### 响应错误
 
@@ -1036,3 +1065,872 @@ with app.text_request_context('/hello'):
 ```
 
 ### 上下文钩子
+
+`teardown_appcontext`钩子，使用它注册的回调函数会在程序上下文被销毁时调用，而且通常也会在请求上下文被销毁时调用。
+
+比如你需要在每个请求处理结束后销毁数据库连接：
+
+```python
+@app.teardonw_appcontext
+def teardown_db(exception):
+    db.close()
+```
+
+使用`app.teardown_appcontext`装饰器注册的回调函数需要接收异常对象作为参数， 当请求被正常处理时这个参数值将是 None ，这个函数的返回值将被忽略。
+
+## HTTP进阶实践
+
+> 进阶实践就表示初学可以不见。
+
+### 重定向回上一个页面
+
+浏览某个文章时，需要登录才能查看全文。登录后自动跳回文章页面
+
+#### 1.获取上一个页面的URL
+
+两种方式
+
+```python
+request.referrer
+```
+
+或在URL中手动加入一个新的参数，一般用`next`命名
+
+例如
+
+```python
+@app.route('/foo')
+def foo():
+    return url_for('do_something', next=request.full_path)
+
+@app.route('/bar')
+def bar():
+    return url_for('do_something', next=request.full_path)
+```
+
+然后在do_something视图内获取next
+
+```python
+return redirect(request.args.get('next'))
+```
+
+为了避免为空，也要添加备选项
+
+```python
+return redirect(request.args.get('next'), url_for('hello'))
+```
+
+两种方法的结合，封装一个新的函数
+
+```python
+def redirect_back(default='hello', **kwargs):
+    for target in request.args.get('next'), request.referrer:
+        if target:
+            return redirect(target)
+    return redirect(url_for(default, **kwargs))
+```
+
+这时，只需要
+
+```python
+return redirect_back()
+```
+
+#### 2.对URL进行安全验证
+
+referer和next很容易被篡改，如果不对这些值进行验证，会形成开放重定向（open redirect）漏洞。
+
+比如：如果访问下面的URL
+
+http://localhost:5000/do-something?next=http://badsite.com
+
+你就会重定向到http://badsite.com这个网站，而这个网站如果是钓鱼网站，就有可能盗取你的账号密码。
+
+验证URL安全性的例子
+
+```python
+from urllib.parse import urlparse, urljoin
+from flask import request
+
+def is_safe_url(target):
+    ref_url = urlparse(request.host_url)
+    test_url = urlparse(urljoin(request.host_url, target))
+    return test_url.scheme in ('http', 'https') and \
+        ref_url.netloc == test.url.netloc
+```
+
+
+
+该函数接收目标URL为参数，并通过`request.host_url`获取程序内的主机URL，然后用`urljoin()`将目标URL转换为绝对URL。接着，分别使用 urlparse 模块提供的 urlparse()函数解析两个 URL，最后对目标 URL 的URL 模式和主机地址进行验证，确保只有属于程序内部的 URL 才会被返回。
+
+之后，先验证重定向网站，再返回
+
+```python
+def redirect_back(default='hello', **kwargs):
+    for target in request.args.get('next'), request.referrer:
+        if not target:
+            continue
+        if is_safe_url(target):
+            return redirect(target)
+    return redirect(url_for(default, **kwargs))
+```
+
+### 使用AJAX技术发送异步请求
+
+AJAX基于XMLHttpRequest(https://xhr.spec.whatwg.org/)，实现不重载页面的情况下和服务器进行数据交换。
+
+收到响应数据后局部更新页面。
+
+具体的jquery代码部分略
+
+简单来说，在flask服务端的操作很简单，只需要如常，或返回json数据即可。
+
+```python
+@app.route('/add_user/<int:user_id>')
+def add_user(user_id):
+    ...
+    return jsonify(username=username, user_id=user_id)
+```
+
+### HTTP服务器端推送
+
+经典例子聊天室，群A里有甲乙丙三人，甲发言，传到服务器，服务器需要向乙和丙推送新消息。
+
+常用的服务器端推送（HTTP Server Push）技术如下：
+
+| 名称                    | 说明                                                         |
+| ----------------------- | ------------------------------------------------------------ |
+| 传统轮询                | 特定时间间隔内，客户端使用AJAX技术不断向服务器发起HTTP请求，然后获取新的数据并更新页面 |
+| 长轮询                  | 和传统轮询类似，但是如果服务器端没有返回数据，那就保持连接一直开启，直到有数据时才返回。取回数据后再次发送另一个请求 |
+| Server-Sent Events(SSE) | SSE通过HTML5中的EventSource API实现。SSE会在客户端和服务器端建立一个单向通道，客户端监听来自服务器端的数据，而服务器端可以在任意时间发送数据，两者建立类似订阅/发布的通信模式 |
+
+除此之外，还有WebSocket协议，实时性更强，可以实现双向通信。
+
+这篇文章有这几种方式的详细说明:https://stackoverflow.com/a/12855533/5511849
+
+### Web安全防范
+
+SQL注入、XSS攻击（cross-site scripting）、CSRF攻击等
+
+这些将来需要好好了解
+
+# 模板
+
+https://jinja.palletsprojects.com/en/3.0.x/templates/
+
+http://jinja.pocoo.org/docs/2.10/templates/#for
+
+## 模板基本用法
+
+模板中可以用特定的定界符标记 Jinja2 的语句和变量，有三种常用定界符：
+
+- `{{ ... }}` 变量。
+- `{% ... %}` 条件控制语句，如 if、for。
+- `{# ... #}` 注释。
+
+
+
+### 变量
+
+模板支持用`.`的方式调用python字典的键值，例如python数据如下：
+
+```python
+user = {
+    'name': 'Light',
+    'teacher': True
+}
+```
+
+使用模板
+
+```jinja2
+<title>{{ user.name }}</title>
+```
+
+### if语句
+
+下面的代码展示了对教师和学生不同的显示方式
+
+```jinja2
+{% if user.teacher %}
+    <h1>TEACHER: {{ user.name }}</h1>
+{% else %}
+    <h1>STUDENT: {{ user.name }}</h1>
+{% endif %}
+```
+
+
+
+### for语句
+
+例如，创建了一个python对象如下
+
+```python
+students = [
+    {'name': 'Lucy', 'age': 22},
+    {'name': 'David', 'age': 19},
+    {'name': 'Lily', 'age': 21},
+]
+```
+
+采用如下语句遍历`students`
+
+```jinja2
+<ul>
+    {% for stu in students %}  {# 迭代 movies 变量 #}
+    <li>{{ stu.name }} - {{ stu.age }}</li> 
+    {% endfor %}  {# 使用 endfor 标签结束 for 语句 #}
+</ul>
+```
+
+
+
+### 循环特殊变量
+
+常用的for循环特殊变量
+
+| 变量名           | 说明                         |
+| ---------------- | ---------------------------- |
+| `loop.index`     | 当前迭代数（从1开始）        |
+| `loop.index0`    | 当前迭代数（从0开始）        |
+| `loop.revindex`  | 当前反向迭代数（从1开始）    |
+| `loop.revindex0` | 当前反向迭代数（从0开始）    |
+| `loop.first`     | 如果是第一个元素，则为True   |
+| `loop.last`      | 如果是最后一个元素，则为True |
+| `loop.previtem`  | 上一个迭代的条目             |
+| `loop.nextitem`  | 下一个迭代的条目             |
+| `loop.length`    | 序列包含的元素数量           |
+
+直接在循环体内使用即可，比如
+
+```jinja2
+{% for stu in students %}
+    <li>{{ stu.name }} - {{ stu.age }}</li>
+    {% if loop.last %}
+        <p> {{ loop.nextitem.name }} </p>
+    {% endif %}
+{% endfor %}
+```
+
+
+
+> 提示
+>
+> * 使用 [Faker](https://github.com/joke2k/faker) 可以实现自动生成虚拟数据，它支持丰富的数据类型，比如时间、人名、地名、随机字符等。
+> * 除了过滤器，Jinja2 还在模板中提供了一些测试器、全局函数可以使用；除此之外，还有更丰富的控制结构支持，有一些我们会在后面学习到，更多的内容则可以访问 [Jinja2 文档](http://jinja.pocoo.org/docs/2.10/templates/)学习。
+
+### flask中使用模板
+
+使用渲染函数`render_template()`
+
+```python
+from flask import Flask, render_template
+user = {
+    'name': 'Light',
+    'teacher': True
+}
+
+students = [
+    {'name': 'Lucy', 'age': 22},
+    {'name': 'David', 'age': 19},
+    {'name': 'Lily', 'age': 21},
+]
+@app.route('/students')
+def student():
+    return render_template('students.html', students=students, user=user)
+```
+
+在templates文件夹下创建`students.html`
+
+```jinja2
+{% if user.teacher %}
+    <h1>TEACHER: {{ user.name }}</h1>
+{% else %}
+    <h1>STUDENT: {{ user.name }}</h1>
+{% endif %}
+
+<p> 一共有{{ students|length }}个学生 </p>
+<ul>
+    {% for stu in students %}  {# 迭代 movies 变量 #}
+    <li>{{ loop.index }} {{ stu.name }} - {{ stu.age }}</li> 
+    {% endfor %}  {# 使用 endfor 标签结束 for 语句 #}
+</ul>
+```
+
+注：竖线是过滤器，可以调用python对象的属性，后面会详细介绍
+
+`{{ students|length }} `就相当于`len(students)`
+
+
+
+## 模板辅助工具
+
+### 自定义模板变量
+
+将变量定义为数据
+
+```jinja2
+{% set name = 'Lucy' %}
+
+{# 使用该变量 #}
+<h1> {{ name }} </h1>
+```
+
+将变量定义为模板数据，需要用endset标签声明结束。
+
+```jinja2
+{% set hello %}
+    <p> hello </p>
+    <p> world! </p>
+{% endset %}
+
+{# 使用该变量 #}
+{{ hello }}
+```
+
+### 内置上下文变量
+
+| 变量    | 说明                 |
+| ------- | -------------------- |
+| config  | 当前配置对象         |
+| request | 当前请求对象         |
+| session | 当前会话对象         |
+| g       | 与请求绑定的全局变量 |
+
+### 自定义上下文
+
+作用：如果多个模板都要使用同一个变量
+
+模板上下文处理函数：统一传入变量
+
+```python
+@app.context_processor
+def inject_foo():
+    return dict(name='Lucy', age='22')
+```
+
+调用`render_template()`函数渲染任何模板时，所有使用`app.context_processor`装饰注册的模板上下文处理函数都会被执行。
+
+在模板中可以直接使用name、age变量。
+
+### jinja内置全局函数
+
+https://jinja.palletsprojects.com/en/3.1.x/templates/#list-of-global-functions
+
+常用
+
+**range**
+
+同python
+
+```jinja2
+<ul>
+    {% for i in range(1, 10, 2) %}
+    <li>{{ i }}</li>
+    {% endfor %}
+</ul>
+```
+
+**生成随机文本**
+
+默认生成5段文本，每段包含20~100个单词
+
+```jinja2
+{{ lipsum(n=5, html=True, min=20, max=100) }}
+```
+
+**dict函数**
+
+同python
+
+```jinja
+{% set user=dict(name='lily', age=22) %}
+
+<h1> {{ user.name }} - {{ user.age }} </h1>
+```
+
+
+
+### flask内置全局函数
+
+生成URL，需要主程序中定义了相应的端点
+
+```jinja2
+{{ url_for('student') }}
+```
+
+用于获取flash消息
+
+```jinja2
+{{ get_flashed_messages() }}
+```
+
+### 自定义全局函数
+
+两种方法
+
+```python
+# 方式1
+@app.template_global()
+def get_name():
+    return 'lily'
+
+# 方式2
+@app.context_processor
+def global_func():
+    def get_name():
+        return 'lily2'
+    return {'get_name2':get_name}
+```
+
+模板中
+
+```jinja2
+<h1> get_name: {{ get_name() }} </h1>
+
+<h1> get_name2: {{ get_name2() }} </h1>
+```
+
+### 过滤器的用法
+
+过滤器的两种用法
+
+用法1：竖线连接`|`
+
+```jinja2
+{{ name|upper }}
+```
+
+相当于`name.upper()`
+
+用法2：用于一部分模板数据
+
+```jinja2
+{% filter upper %}
+    hello world
+{% endfilter %}
+```
+
+会把filter包裹的文字转换为大写
+
+### 内置过滤器
+
+| 过滤器                                                       | 说明                                                         |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| `default(value, default_value=u'', boolean=False)`           | 设置默认值，默认值作为参数传入，别名为d                      |
+| `escape(s)`                                                  | 转义HTML文本，别名为e                                        |
+| `first(seq)`                                                 | 返回序列的第一个元素                                         |
+| `last(seq)`                                                  | 返回序列的最后一个元素                                       |
+| `length(object)`                                             | 返回变量长度                                                 |
+| `random(seq)`                                                | 返回序列中的随机元素                                         |
+| `save(value)`                                                | 将变量值标记为安全，避免转义，意味着可以直接嵌入标签。用Markup也能达到同样的效果。 |
+| `trim(value)`                                                | 清楚变量值前后的空格                                         |
+| `max(value, case_sensitive=False, attribute=None)`           | 返回序列中的最大值                                           |
+| `min(value, case_sensitive=False, attribute=None)`           | 返回序列中的最小值                                           |
+| `unique(value, case_sensitive=False, attribute=None)`        | 返回序列中的不重复的值                                       |
+| `striptags(value)`                                           | 清除变量值内的HTML标签                                       |
+| `urlize(value, trim_url_limt=None, nofollow=False, target=None, rel=None)` | 将URL文本转换为可点击的HTML链接                              |
+| `wordcount(s)`                                               | 计算单词数量                                                 |
+| `tojson(value, indent=None)`                                 | 将变量值转换为JSON格式                                       |
+| `truncate(s, length=255, killwords=False, end=‘...’, leeway=None)` | 截断字符串，常用于显示文章摘要，lenght参数设置截断的长度，killwords参数设置是否截断单词，end参数设置结尾的符号。 |
+
+使用方法
+
+```jinja2
+<h1>hello, {{name|default('陌生人') }} </h1>
+```
+
+如果name不存在就用默认值
+
+### 自定义过滤器
+
+```python
+@app.template_filter()
+def double_length(s):
+    return len(s) * 2
+```
+
+模板中
+
+```jinja2
+{% set word='hello' %}
+<h1>word: {{ word }}</h1>
+<h1>double length: {{ word|double_length }}</h1>
+```
+
+### 测试器
+
+用于判断变量或表达式是True还是False
+
+比如
+
+```jinja2
+{# {% set age=22 %} #}
+{% set age='adf' %}
+
+{% if age is number %}
+    {{ age + 1}}
+{% else %}
+    无效的数字
+{% endif %}
+```
+
+内置测试器如下
+
+| 测试器               | 说明                                  |
+| -------------------- | ------------------------------------- |
+| callable(object)     | 判断对象是否可被调用                  |
+| defined(value)       | 判断变量是否已定义                    |
+| undefined(value)     | 判断变量是否未定义                    |
+| none(value)          | 判断变量是否为None                    |
+| number(value)        | 判断变量是否是数字                    |
+| sequence(value)      | 判断变量是否是序列                    |
+| string(value)        | 判断变量是否是字符串                  |
+| iterable(value)      | 判断变量是否可迭代                    |
+| mapping(value)       | 判断变量是否是匹配对象，比如字典      |
+| sameas(value, other) | 判断变量是否与other指向相同的内存地址 |
+
+
+
+samas使用方式如下：
+
+```jinja
+{% if foo is sameas(bar) %}
+```
+
+自定义测试器
+
+```python
+@app.template_test()
+def good(score):
+    if score >= 90:
+        return True
+    return False
+```
+
+模板文件中
+
+```jinja2
+{% set score=97 %}
+
+{% if score is good %}
+    <h1>Good</h1>
+{% else %}
+    <h1>加油!</h1>
+{% endif %}
+```
+
+### 模板环境对象
+
+用途：控制模板渲染的方方面面
+
+比如：
+
+可以通过修改模板环境对象来修改**定界符**
+
+```python
+app = Flask(__name__)
+app.jinja_env.variable_start_string = '[['
+app.jinja_env.variable_end_string = ']]'
+```
+
+可以直接添加自定义全局对象
+
+```python
+def hello():
+    return 'hello world'
+name = 'lily'
+
+app.jinja_env.globals['hello'] = hello
+app.jinja_env.globals['name'] = 'lily'
+```
+
+直接添加自定义过滤器
+
+```python
+def double_length(s):
+    return len(s) * 2
+
+app.jinja_env.filters['double_length'] = double_length
+```
+
+直接添加自定义测试器
+
+```python
+def good(score):
+    if score >= 90:
+        return True
+    return False
+
+app.jinja_env.tests['good'] = good
+```
+
+> 参考文档：https://jinja.palletsprojects.com/en/3.1.x/api/#jinja2.Environment
+
+## 模板结构组织
+
+作用：减少重复代码
+
+### 局部模板
+
+作用：只包含部分代码，通常用于嵌入到其他模板内。
+
+比如，可以制作一个顶部提示条局部模板`_banner.html`。在各个页面都展示
+
+引入：
+
+```jinja
+{% include '_banner.html' %}
+```
+
+### 宏
+
+作用：把一部分模板代码封装到宏内，通过传递不同的参数可以构建不同的内容。
+
+通常命名为`macros.html`或`_macros.html`
+
+示例：
+
+```jinja2
+{# macros.html #}
+{% macro qux(amount=1) %}
+    {% if amount == 1 %}
+        I am qux.
+    {% elif amount > 1 %}
+        We are quxs.
+    {% endif %}
+{% endmacro %}
+```
+
+使用时
+
+```jinja2
+{% from 'macros.html' import qux %}
+{{ qux{amount=5} }}
+```
+
+### include 与 import的区别
+
+> 暂时没看懂
+
+另外，在使用宏时我们需要注意上下文问题。在Jinja2 中，出于性能的考虑，并且为了让这一切保持显式，默认情况下包含（include）一个局部模板会传递当前上下文到局部模板中，但导入（ import ）却不会。具体来说，当我们使用render_template()函数渲染一个foo.html 模板时，
+这个foo.html 的模板上下文中包含下列对象：
+
+- Flask 使用内置的模板上下文处理函数提供的g、session、config、request。
+
+- 扩展使用内置的模板上下文处理函数提供的变量。
+
+- 自定义模板上下文处理器传入的变量。
+
+- 使用render_template()函数传入的变量。
+
+- Jinja2 和Flask内置及自定义全局对象。
+
+- Jinja2 内置及自定义过滤器。
+
+- Jinja2 内置及自定义测试器。
+
+使用include 标签插入的局部模板（ 比如＿banner.html ）同样可以使用上述上下文中的变量和函数。而导人另一个并非被直接渲染的模板（比如macros.html ）时，这个模板仅包含下列这些对象：
+
+- Jinja2 和Fla s k 内置的全局函数和自定义全局函数。
+- Jinja2 内置及自定义过滤器。
+- Jinja2 内置及自定义测试器。
+
+
+
+因此，如果我们想在导人的宏中使用第一个列表中的2 、3、4 项，就需要在导入时显式地使用with context 声明传入当前模板的上下文：
+```jinja2
+{% from "macros.html" import foo with context %}
+```
+
+### 模板继承
+
+通常定义一个基模板`base.html`，把网页上的导航栏、页脚等通用内容放到里面。
+
+子模板就不需要管这些通用内容了。结构如下
+
+基模板
+
+```jinja2
+{# 基模板固定内容 #}
+{% block content %}
+{% endblock %}
+{# 基模板固定内容 #}
+```
+
+子模板
+
+```jinja2
+{% extends 'base.html' %}
+{% block content %}
+{# 子模板内容 #}
+{% endblock %}
+```
+
+块的结束条件也可以使用块名
+
+```jinja2
+{% block body %}
+...
+{% endblock body %}
+```
+
+#### 编写基模板
+
+```jinja2
+<!DOCTYPE html>
+<html>
+<head>
+    {% block head %}
+        <meta charset="utf-8">
+        <title>{% block title %}Template - HelloFlask{% endblock %}</title>
+        <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+        {% block styles %}
+            <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css' ) }}">
+        {% endblock %}
+    {% endblock %}
+</head>
+<body>
+<nav>
+    <ul><li><a href="{{ url_for('index') }}">Home</a></li></ul>
+</nav>
+
+<main>
+    {% for message in get_flashed_messages() %}
+        <div class="alert">{{ message }}</div>
+    {% endfor %}
+    {% block content %}{% endblock %}
+</main>
+<footer>
+    {% block footer %}
+        <small> &copy; 2018 <a href="http://greyli.com" title="Written by Grey Li">Grey Li</a> /
+            <a href="https://github.com/greyli/helloflask" title="Fork me on GitHub">GitHub</a> /
+            <a href="http://helloflask.com" title="A HelloFlask project">HelloFlask</a>
+        </small>
+    {% endblock %}
+</footer>
+{% block scripts %}{% endblock %}
+</body>
+</html>
+```
+
+
+
+里面定义了四个块
+
+```jinja2
+{% block head %}
+{% block styles %}
+{% block content %}
+{% block footer %}
+```
+
+这些块的内容都可以重写
+
+#### 编写子模板
+
+可以看到，子模板就简洁了很多
+
+注意：extends必须是子模板的第一个标签
+
+```jinja2
+{% extends 'base.html' %}
+{% from 'macros.html' import qux %}
+
+{% block content %}
+{% set name='baz' %}
+<h1>Template</h1>
+<ul>
+    <li><a href="{{ url_for('watchlist') }}">Watchlist</a></li>
+    <li>Filter: {{ foo|musical }}</li>
+    <li>Global: {{ bar() }}</li>
+    <li>Test: {% if name is baz %}I am baz.{% endif %}</li>
+    <li>Macro: {{ qux(amount=1) }}</li>
+    <li><a href="{{ url_for('watchlist_with_static') }}">Watchlist with image and styles.</a></li>
+    <li><a href="{{ url_for('just_flash') }}">Flash something</a></li>
+</ul>
+{% endblock %}
+```
+
+**子模板覆盖**：默认情况下直接给块编写内容会覆盖父模板的内容
+
+**子模板追加**：使用`super()`函数可以父模板块已有的基础上追加内容，比如
+
+```jinja2
+{% block styles %}
+{{ super() }}
+...
+{% endblock styles %}
+```
+
+## 模板进阶实践
+
+### 加载静态文件
+
+静态文件可以用`url_for()`函数来获取URL，默认端点值为`static`。
+
+默认的URL匹配规则为
+
+```
+/static/<path:filename>
+```
+
+`filename`是相对于static文件夹根目录的文件路径
+
+比如
+
+```jinja2
+<img src="{{ url_for('static', filename='avatar.jpg') }}">
+```
+
+通常使用css框架来快速美化页面。
+
+比如Bootstrap (http://getbootstrap.com)
+
+使用宏来快速切换本地资源/CDN资源
+
+```jinja2
+{% macro static_file(type, filename_or_url, local=True) %}
+    {% if local -%}
+        {% set filename_or_url = url_for('static', filename=filename_or_url) %}
+    {%- endif %}
+    {% if type == 'css' -%}
+        <link rel="stylesheet" href="{{ filename_or_url }}" type="text/css">
+    {%- elif type == 'js' -%}
+        <script type="text/javascript" src="{{ filename_or_url }}"></script>
+    {%- elif type == 'icon' -%}
+        <link rel="icon" href="{{ filename_or_url }}">
+    {%- endif %}
+{% endmacro %}
+```
+
+### 消息闪现
+
+作用：比如在用户登录成功后显示“欢迎回来”
+
+实现方式：在session中存储flask()函数存储的消息，然后在**模板**中使用`get_flashed_messages()`显示出来。
+
+案例
+
+```python
+@app.route('/flash')
+def just_flash():
+    flash('welcome!')
+    return redirect(url_for('index'))
+```
+
+在模板内
+
+```jinja2
+<main>
+    {% for msg in get_flashed_messages() %}
+        <div class="alert">{{ msg}}</div>
+    {% endfor %}
+</main>
+```
+
+> 注意：flash展示的格式还要由css文件来设置
+
+### 自定义错误页面
+
+可以自己编写一个`404.html`文件
