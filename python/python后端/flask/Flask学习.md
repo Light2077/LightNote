@@ -1934,3 +1934,916 @@ def just_flash():
 ### 自定义错误页面
 
 可以自己编写一个`404.html`文件
+
+# 表单
+
+python有个非常好用的表单库——`WTForms`
+
+参考资料
+
+- `WTForms`
+  - 主页：https://github.com/wtforms/wtforms
+  - 文档：https://wtforms.readthedocs.io/en/latest
+- `Flask-WTF`
+  - 主页：https://github.com/lepture/flask-wtf
+  - 文档：https://flask-wtf.readthedocs.io/en/latest/
+- `Flask-CKEditor`
+  - 主页：https://github.com/greyli/flask-ckeditor
+  - 文档：https://flask-ckeditor.readthedocs.io/
+
+## HTML表单介绍
+
+[表单参考](../../../前端/1.HTML/6.表单标签.md)
+
+下面这个就是一个表单
+
+```html
+<form action="https://www.baidu.com/s" method="get">
+    <input type="text" name="wd"/> <br>
+    <input type="submit" value="搜索一下"/>
+</form>
+```
+
+![image-20221028094158615](images/表单基础.png)
+
+点击搜索一下，会跳转到：https://www.baidu.com/s?wd=Flask
+
+常见属性的解释：
+
+- `action`：提交表单后跳转的页面`action="#"`则表示提交给当前页面
+- `method`：表单以何种请求方式提交
+- `name`：通常用在input标签中，会拼接到URL链接的末尾
+- `type`：通常用在input标签中，可以改变`type`来切换不同的控件
+
+## Flask-WTF
+
+```
+pip install flask-wtf
+```
+
+使用前需要定义`secret_key`
+
+```python
+app.secret_key = 'abc123'
+```
+
+
+
+
+
+### WTForms表单类
+
+```python
+from flask_wtf import FlaskForm
+# from wtforms import Form
+from wtforms import StringField, PasswordField, BooleanField, SubmitField
+from wtforms.validators import DataRequired, Length
+
+class LoginForm(FlaskForm):
+    username = StringField('Username', validators=[DataRequired()])
+    password = PasswordField('Password', validators=[DataRequired(), Length(8, 128)])
+    remember = BooleanField('Remember me')
+    submit = SubmitField('Log in')
+```
+
+> 一般在flask中，直接继承FlaskForm类，要测试的话可以继承wtforms.Form类。
+
+常用的WTForms字段
+
+| 字段类              | 说明                            | 对应的HTML                                    |
+| ------------------- | ------------------------------- | --------------------------------------------- |
+| StringField         | 文本字段                        | `<input type="text">`                         |
+| DateField           | 文本字段，值为datetime.date     | `<input type="text">`                         |
+| DateTimeField       | 文本字段，值为datetime.datetime | `<input type="text">`                         |
+| FloatField          | 浮点数字段，值为float           | `<input type="text">`                         |
+| IntegerField        | 整数字段，值为int               | `<input type="text">`                         |
+| FileField           | 文件上传字段                    | `<input type="file">`                         |
+| BooleanField        | 复选框，值为True/False          | `<input type="checkbox">`                     |
+| RadioField          | 单选按钮                        | `<input type="radio">`                        |
+| SelectField         | 下拉列表                        | `<select><opiton></option></select>`          |
+| SelectMultipleField | 多选下拉列表                    | `<select multiple><opiton></option></select>` |
+| SubmitField         | 提交按钮                        | `<input type="submit">`                       |
+| HiddenField         | 隐藏文本字段                    | `<input type="hidden">`                       |
+| PasswordField       | 密码文本字段                    | `<input type="password">`                     |
+| TextAreaField       | 多行文本字段                    | `<textarea></textarea>`                       |
+
+字段类构造方法常用参数
+
+| 参数       | 说明                                                         |
+| ---------- | ------------------------------------------------------------ |
+| label      | 字段标签`<label>`的值，渲染后显示在输入字段前的值            |
+| render_kw  | 字典，用于设置`<input>`标签的属性。如传入`{'placeholder': 'input name'}`，则`<input>`标签对应的`placeholder`属性为`input name` |
+| validators | 一个列表，包含一系列验证器，会在表单提交后被逐一调用以验证表单数据 |
+| default    | 字符串或可调用对象，用来为表单字段设置默认值                 |
+
+常用的WTForms验证器
+
+| 验证器                                                | 说明                           |
+| ----------------------------------------------------- | ------------------------------ |
+| `DataRequired(message=None)`                          | 验证数据是否有效               |
+| `Email(message=None)`                                 | 验证Email地址                  |
+| `EqualTo(fieldname, message=None)`                    | 验证两个字段值是否相同         |
+| `InputRequired(message=None)`                         | 验证是否有数据                 |
+| `Length(min=-1, max=-1, message=None)`                | 验证输入值长度是否在给定范围内 |
+| `NumberRange(min=None, max=None, message=None)`       | 验证输入数字是否在给定范围内   |
+| `Optional(strip_whitespace=True)`                     | 允许输入值为空，并跳过其他验证 |
+| `Regexp(regex, flags=0, message=None)`                | 使用正则表达式验证输入值       |
+| `URL(require_tld=True, message=None)`                 | 验证URL                        |
+| `AnyOf(values, message=None, values_formatter=None)`  | 确保输入值在可选值列表中       |
+| `NoneOf(values, message=None, values_formatter=None)` | 确保输入值不在可选列表中       |
+
+> 其中，message参数是自定义错误消息文本，若没有设置则使用默认的英文错误消息
+
+### 输出HTML代码
+
+input元素
+
+```python
+form = LoginForm()
+print(form.username())
+```
+
+```
+<input id="username" name="username" required type="text" value="">
+```
+
+label元素
+
+```python
+print(form.username().label())
+```
+
+```
+<label for="username">Username</label>
+```
+
+一般情况下还需要添加额外的属性，比如`class`属性来指定特定的css样式，或者`placeholder`属性来显示提示输入文本。
+
+添加额外属性的方式有以下2种
+
+1.使用`render_kw`属性
+
+```python
+username = StringField('Username', render_kw={'placeholder': 'your name'})
+```
+
+2.调用字段时传入
+
+```python
+print(form.username(class_='username'))
+```
+
+```
+<input class="username" id="username" name="username" required type="text" value="">
+```
+
+### 在模板中渲染表单
+
+方式：把表单类实例传入模板。
+
+```python
+from forms import LoginForm
+
+@app.route('/')
+def index():
+    form = LoginForm()
+    return render_template('index.html', form=form)
+```
+
+在模板中
+
+```jinja2
+<form method="post">
+    {{ form.csrf_token }} <!-- 渲染CSRF令牌隐藏字段 -->
+    {{ form.username.label }} {{ form.username }} <br>
+    {{ form.password.label }} {{ form.password }} <br>
+    {{ form.remember }} {{ form.remember.label }} <br>
+    {{ form.submit }}<br>
+</form>
+```
+
+> `form.csrf_token`是Flask-WTF为表单类自动创建的CSSRF令牌字段。
+
+![image-20221028135354716](images/flask应用wtform.png)
+
+### 应用Bootstrap的表单
+
+bootstrap下载地址:https://v4.bootcss.com/docs/getting-started/download/
+
+把里面的` bootstrap.min.css `复制到`./static/css/bootstrap.min.css`
+
+然后编写代码
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+</head>
+<body>
+    <form method="post">
+        {{ form.csrf_token }}
+        <div class="form-group">
+            {{ form.username.label }}
+            {{ form.username(class='form-control') }}
+        </div>
+        <div class="form-group">
+            {{ form.password.label }}
+            {{ form.password(class='form-control') }}
+        </div>
+        <div class="form-check">
+            {{ form.remember(class='form-check-input') }}
+            {{ form.remember.label }}
+        </div>
+        {{ form.submit(class='btn btn-primary') }}
+    </form>
+</body>
+```
+
+![image-20221028140630156](images/渲染bootstrap表单.png)
+
+## 表单数据处理
+
+大致有以下步骤：
+
+1. 解析请求，获取表单数据
+2. 数据转换，例如勾选框的值转换为python的布尔值
+3. 验证数据，同时验证CSRF令牌
+4. 若验证未通过，生成错误信息并显示在模板中
+5. 若验证通过，将数据保存至数据库或进一步处理
+
+`Flask-WTF`和`WTForms`可以极大简化上述步骤。
+
+![](./images/表单处理流程图.drawio.svg)
+
+### 提交表单
+
+当页面中的submit按钮被点击后，就会发送一个包含表单字段信息的请求给服务器。
+
+HTML表单中控制提交行为的属性如下：
+
+- `action`，默认为当前URL，表单提交时发送请求的目标URL。
+- `method`，默认为GET，是提交表单的HTTP方法，GET或POST
+- `enctype`，默认为`application/x-www-form-urlencoded`，表单数据的编码类型，当表单中包含文件上传字段时，需要设为`multipart/form-data`，还可以设为纯文本类型：`text/plain`
+
+一般用POST提交表单
+
+### 验证表单数据
+
+
+
+例：注册时要求用户名必填，加入`required`属性来做限制：
+
+```html
+<input type="text" name="username" required>
+```
+
+用wtform加入`required`：
+
+```jinja2
+{{ form.username(required='') }}
+```
+
+
+
+WTForms主要通过传入`validators`对象来验证。
+
+案例
+
+```python
+# from flask_wtf import FlaskForm
+from wtforms import Form
+from wtforms import StringField, PasswordField, BooleanField, SubmitField
+from wtforms.validators import DataRequired, Length
+
+class LoginForm(Form):
+    username = StringField('Username', validators=[DataRequired()])
+    password = PasswordField('Password', validators=[DataRequired(), Length(8, 128)])
+```
+
+在python shell中执行
+
+```
+>>> form = LoginForm(username='', password='123')
+>>> form.data  # 表单数据字典
+{'username': '', 'password': '123'}
+>>> form.validate()
+False
+>>> form.errors # 错误消息字典
+{'username': ['This field is required.'], 'password': ['Field must be between 8 and 128 characters long.']}
+```
+
+
+
+> 在Flask中可以通过request.form获得请求对象的表单数据
+
+在视图函数中验证表单
+
+如果请求方式是GET，只是渲染该页面，如果是POST，则处理表单请求，比如保存到数据库之类的
+
+```python
+from flask import request
+
+@app.route('/', methods=['GET', 'POST'])
+def index():
+    form = LoginForm()
+    # 处理POST请求
+    if request.method == 'POST' and form.validate():
+        print(request.form)
+        return f"username: {username} 登录成功！"
+    # 处理GET请求
+    return render_template('index.html', form=form)
+```
+
+可以用`Flask-WTF`提供的`validate_on_submit()`方法合并这两个操作
+
+```python
+@app.route('/', methods=['GET', 'POST'])
+def index():
+    form = LoginForm()
+    if form.validate_on_submit():
+        username = form.username.data
+        return f"username: {username} 登录成功！"
+    # 处理GET请求
+    return render_template('index.html', form=form)
+```
+
+> 除了POST方法，PUT、PATCH、DELETE方法，`validate_on_submit()`也会验证表单数据
+
+如果`form.validate_on_submit()`返回True，则可以在这个if语句内获取表单数据
+
+> 由于提交表单后会发送POST请求，当F5刷新时，默认是发送上一个请求，这就会弹出一个询问用户是否要再次提交表单的确认窗口。
+>
+> 因此，处理表单后最好返回一个重定向响应，让浏览器重新发送一个新的GET请求
+>
+> 这被称为PRG模式（POST/Redirect/GET）
+
+### 在模板中渲染错误消息
+
+若`form.validate_on_submit()`返回False，WTForms会把错误消息添加到表单类的errors属性中。
+
+可以用这个属性来返回错误信息
+
+```jinja2
+<form method="POST">
+    {{ form.csrf_token }}
+    {{ form.username_label }} <br>
+    {{ form.username() }} <br>
+    {% for msg in form.username.errors %}
+        <small class="error">{{ message }}</small><br>
+    {% endfor %}
+    {{ form.password.label }}<br>
+    {{ form.password }}<br>
+    {% for msg in form.password.errors %}
+        <small class="error">{{ message }}</small><br>
+    {% endfor %}
+    {{ form.remember }} {{ form.remember.label }} <br>
+    {{ form.submit }}<br>
+</form>
+```
+
+## 表单进阶实践
+
+### 设置内置错误消息为中文
+
+```python
+from flask_wtf import FlaskForm
+
+app = Flask(__name__)
+app.config['WTF_I18N_ENABLED'] = False
+
+class BaseForm(FlaskForm):
+    class Meta:
+        locales = ['zh']
+
+class LoginForm(BaseForm):
+    ...
+```
+
+### 使用宏渲染表单
+
+作用：简化每个字段的重复定义工作
+
+```jinja2
+{% macro form_field(field) %}
+    {{ field.label }} <br>
+    {{ field(**kwargs) }} <br>
+    {% if field.errors %}
+        {% for error in field.errors %}
+            <small class="error">{{ error }}</small> <br>
+        {% endfor %}
+    {% endif %}
+{% endmacro %}
+```
+
+简化后的模板
+
+```jinja2
+{% from 'macros.html' import form_field %}
+
+<form method="POST">
+    {{ form.csrf_token }}
+    {{ form_field(form.username) }} <br>
+    {{ form_field(form.password) }} <br>
+</form>
+```
+
+### 自定义验证器
+
+行内验证器
+
+```python
+from wtforms import IntegerField, SubmitField
+from wtforms.validators import ValidationError
+
+class FortyTwoForm(FlaskForm):
+    answer = IntegerField('The Number')
+    submit = SubmitField()
+    
+    def validate_answer(form, field):
+        if field.data != 42:
+            raise ValidationError('Must be 42.')
+```
+
+注意：
+
+- 表单类中`validate_字段属性名`命名的方法，在验证字段数据时会调用该方法，因此在命名方法时要注意。
+
+全局验证器
+
+可重用的通用验证器。
+
+```python
+from wtforms.validators import ValidationError
+def is_42(form, field):
+    if field.data != 42:
+        raise ValidationError('Must be 42')
+        
+class FortyTwoForm(FlaskForm):
+    answer = IntegerField('The Number', validators=[is_42])
+    submit = SubmitField()
+```
+
+简单的验证函数就传两个参数就行
+
+复制的验证函数需要用工厂函数实现
+
+```python
+from wtforms.validators import ValidationError
+
+def is_42(message=None):
+    if message is None:
+        message = 'Must be 42.'
+    
+    def func(form, field):
+        if field.data != 42:
+            raise ValidationError(message)
+    return func
+
+class FortyTwoForm(FlaskForm):
+    answer = IntegerField('The Number', validators=[is_42()])
+    submit = SubmitField()
+```
+
+
+
+### 文件上传
+
+HTML的文件上传标签如下
+
+```html
+<input type="file">
+```
+
+文件上传防范：
+
+- 验证文件类型
+- 验证文件大小
+- 过滤文件名
+
+#### 定义上传表单
+
+```python
+from flask_wtf.file import FileField, FileRequired, FileAllowed
+class UploadForm(FlaskForm):
+    photo = FileField('Upload Image', validators=[FileRequired(), FileAllowed(['jpg', 'png'])])
+    submit = SubmitField()
+```
+
+也可以使用`accept`属性在客户端实现类型过滤，在打开的文件窗口会自动过滤掉accept之外的文件类型，但是用户还是可以选择其他类型的文件。
+
+```html
+<input type="file" id="profile_pic" name="profile_pic" accept=".jpg, .png"
+```
+
+文件大小限制，限制为文件大小最大为3m
+
+```python
+app.config['MAX_CONTENT_LENGTH'] = 3 * 1024 * 1024
+```
+
+#### 渲染上传表单
+
+```python
+@app.route('/upload', methods=['GET', 'POST'])
+def upload():
+    form = UploadForm()
+    ...
+    return render_template('upload.html', form=form)
+```
+
+模板
+
+```jinja2
+<form method="POST" enctype="multipart/form-data">
+    {{ form.csrf_token }}
+    {{ form_field(form.photo) }}
+    {{ form.submit }}
+</form>
+```
+
+> 如果不加enctype属性，浏览器只会把文件名作为表单数据提交
+
+#### 处理上传文件
+
+通过`request.file`获取上传文件。这个属性是`ImmutableMultiDict`字典对象。
+
+```
+ImmutableMultiDict([('photo', <FileStorage: u'xxx.jpg' ('image/jepg')>)])
+```
+
+获取文件对象
+
+```python
+request.files.get('photo')
+```
+
+使用Flask-WTF时，它会自动获取对应的文件对象，使用data属性即可获取文件对象。
+
+```python
+import os
+
+app.config['UPLOAD_PATH'] = os.path.join(app.root_path, 'uploads')
+
+@app.route('/upload', methods=['GET', 'POST'])
+def upload():
+    form = UploadForm()
+    if form.validate_on_submit():
+        f = form.photo.data
+        filename = random_filename(f.filename)
+        f.save(os.path.join(app.config['UPLOAD_PATH'], filename))
+        flash('Upload success.')
+        session['filenames'] = [filename]
+        return redirect(url_for('show_images'))
+    return render_template('upload.html', form=form)
+```
+
+三种文件名处理方式
+
+为什么要处理：因为有人可能恶意修改文件名，比如`../../../home/xx/.bashrc`，如果表示上级路径的`..`数量正确，文件就会覆盖掉系统文件。
+
+```python
+# 1. 原文件名
+filename = f.filename
+
+# 2.使用过滤后的文件名
+from werkzeug import secure_filename
+# 过滤掉文件名中的非ASCII支付
+secure_filename(f.filename)
+
+# 统一重命名
+def random_filename(filename):
+    ext = os.path.splitext(filenmae)[1]
+    new_name = uuid.uuid4().hex + ext
+    return new_name
+```
+
+查看上传的文件
+
+```python
+from flask import send_from_directory
+@app.route('/uploads/<path:filename>')
+def get_file(filename):
+    return send_from_directory(app.config['UPLOAD_PATH'], filename)
+```
+
+#### 多文件上传
+
+Flask-WTF(0.14.2)未添加多文件上传的渲染和验证支持，因此需要手动操作。
+
+使用multiple属性开启多文件上传选项
+
+```html
+<input type="file" id="file" name="file" multiple>
+```
+
+表单类创建
+
+```python
+from wtforms import MultipleFileField
+class MultiUploadForm(FlaskForm):
+    photo = MultipleFileField('Upload Image', validators=[DataRequired()])
+    submit = SubmitField()
+```
+
+使用`request.files.getlist()`获取所有上传文件对象的列表。
+
+```python
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
+
+@app.route('/multi-upload', methods=['GET', 'POST'])
+def multi_upload():
+    form = MultiUploadForm()
+
+    if request.method == 'POST':
+        filenames = []
+
+        # check csrf token
+        try:
+            validate_csrf(form.csrf_token.data)
+        except ValidationError:
+            flash('CSRF token error.')
+            return redirect(url_for('multi_upload'))
+
+        photos = request.files.getlist('photo')
+        # check if user has selected files. If not, the browser
+        # will submit an empty file part without filename
+        if not photos[0].filename:
+            flash('No selected file.')
+            return redirect(url_for('multi_upload'))
+
+        for f in photos:
+            # check the file extension
+            if f and allowed_file(f.filename):
+                filename = random_filename(f.filename)
+                f.save(os.path.join(
+                    app.config['UPLOAD_PATH'], filename
+                ))
+                filenames.append(filename)
+            else:
+                flash('Invalid file type.')
+                return redirect(url_for('multi_upload'))
+        flash('Upload success.')
+        session['filenames'] = filenames
+        return redirect(url_for('show_images'))
+    return render_template('upload.html', form=form)
+```
+
+### Flask-CKEditor
+
+文档：https://flask-ckeditor.readthedocs.io/en/latest/plugins.html
+
+富文本编辑器，类似发帖的时候下面的一堆调整字体字号的功能。
+
+[CKEditor](http://ckeditor.com/)就是一个开源的富文本编辑器。
+
+```
+pip install flask-ckeditor
+```
+
+
+
+加载CKEditor
+
+```python
+from flask_ckeditor import CKEditor
+ckeditor = CKEditor(app)
+```
+
+
+
+#### 配置选项和说明
+
+https://flask-ckeditor.readthedocs.io/en/latest/configuration.html
+
+```python
+# 设为True会使用内置的本地资源
+CKEDITOR_SERVE_LOCAL = False
+
+# CKEditor包类型，可选basic, standard, full
+CKEDITOR_PKG_TYPE = 'standard'
+
+# 界面语言，传入ISO639格式的语言码
+CKEDITOR_LANGUAGE = ''
+
+# 编辑器高度
+CKEDITOR_HEIGHT = ''
+
+# 编辑器宽度
+CKEDITOR_WIDTH = ''
+
+# 如何修改
+app.config['CKEDITOR_SERVE_LOCAL'] = True
+```
+
+#### 渲染富文本编辑器
+
+富文本编辑器表单模板
+
+```python
+from flask_ckeditor import CKEditorField
+class RichTextForm(FlaskForm):
+    title = StringField('Title', validators=[DataRequired(), Length(1, 50)])
+    body = CKEditorField('Body', validators=[DataRequired()])
+    submit = SubmitField('Publish')
+```
+
+模板
+
+```jinja2
+{% extends 'base.html' %}
+{% from 'macros.html' import form_field %}
+
+{% block content %}
+    <h2>Integrate <a href="https://ckeditor.com">CKEditor</a> with <a href="https://github.com/greyli/flask-ckeditor">Flask-CKEditor</a>
+    </h2>
+    <form method="post">
+        {{ form.csrf_token }}
+        {{ form_field(form.title) }}
+        {{ form_field(form.body) }}
+        {{ form.submit }}
+    </form>
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    {{ ckeditor.load() }}
+    {{ ckeditor.config(name='body') }}
+{% endblock %}
+
+```
+
+### 单个表单多个提交按钮
+
+比如写文章时，一个按钮是发布，另一是保存为草稿
+
+form定义如下
+
+```python
+class NewPostForm(FlaskForm):
+    title = StringField('Title', validators=[DataRequired(), Length(1, 50)])
+    body = TextAreaField('Body', validators=[DataRequired()])
+    save = SubmitField('Save')
+    publish = SubmitField('Publish')
+```
+
+哪个按钮被点击，`requst.form`字典就包含哪个按钮。
+
+`form.<按钮名>`就是True或False
+
+视图函数如下
+
+```python
+@app.route('/two-submits', methods=['GET', 'POST'])
+def two_submits():
+    form = NewPostForm()
+    if form.validate_on_submit():
+        if form.save.data:
+            # save it...
+            flash('You click the "Save" button.')
+        elif form.publish.data:
+            # publish it...
+            flash('You click the "Publish" button.')
+        return redirect(url_for('index'))
+    return render_template('2submit.html', form=form)
+```
+
+### 单个页面多个表单
+
+需要额外进行处理，区分提交字段，比如
+
+```python
+class SigninForm(FlaskForm):
+    username = StringField('Username', validators=[DataRequired(), Length(1, 20)])
+    password = PasswordField('Password', validators=[DataRequired(), Length(8, 128)])
+    submit1 = SubmitField('Sign in')
+
+
+class RegisterForm(FlaskForm):
+    username = StringField('Username', validators=[DataRequired(), Length(1, 20)])
+    email = StringField('Email', validators=[DataRequired(), Email(), Length(1, 254)])
+    password = PasswordField('Password', validators=[DataRequired(), Length(8, 128)])
+    submit2 = SubmitField('Register')
+```
+
+视图函数中
+
+```python
+@app.route('/multi-form', methods=['GET', 'POST'])
+def multi_form():
+    signin_form = SigninForm()
+    register_form = RegisterForm()
+
+    if signin_form.submit1.data and signin_form.validate():
+        username = signin_form.username.data
+        flash('%s, you just submit the Signin Form.' % username)
+        return redirect(url_for('index'))
+
+    if register_form.submit2.data and register_form.validate():
+        username = register_form.username.data
+        flash('%s, you just submit the Register Form.' % username)
+        return redirect(url_for('index'))
+
+    return render_template('2form.html', signin_form=signin_form, register_form=register_form)
+```
+
+模板中
+
+```python
+<form method="post">
+    {{ signin_form.csrf_token }}
+    {{ form_field(signin_form.username) }}
+    {{ form_field(signin_form.password) }}
+    {{ signin_form.submit1 }}
+</form>
+<h3>Register Form</h3>
+<form method="post">
+    {{ register_form.csrf_token }}
+    {{ form_field(register_form.username) }}
+    {{ form_field(register_form.email) }}
+    {{ form_field(register_form.password) }}
+    {{ register_form.submit2 }}
+</form>
+```
+
+
+
+另一种更简介的方案是多视图处理
+
+使用一个视图渲染
+
+```python
+@app.route('/multi-form-multi-view')
+def multi_form_multi_view():
+    signin_form = SigninForm2()
+    register_form = RegisterForm2()
+    return render_template('2form2view.html', signin_form=signin_form, register_form=register_form)
+```
+
+另外两个视图处理
+
+```python
+@app.route('/handle-signin', methods=['POST'])
+def handle_signin():
+    signin_form = SigninForm2()
+    register_form = RegisterForm2()
+
+    if signin_form.validate_on_submit():
+        username = signin_form.username.data
+        flash('%s, you just submit the Signin Form.' % username)
+        return redirect(url_for('index'))
+
+    return render_template('2form2view.html', signin_form=signin_form, register_form=register_form)
+
+
+@app.route('/handle-register', methods=['POST'])
+def handle_register():
+    signin_form = SigninForm2()
+    register_form = RegisterForm2()
+
+    if register_form.validate_on_submit():
+        username = register_form.username.data
+        flash('%s, you just submit the Register Form.' % username)
+        return redirect(url_for('index'))
+    return render_template('2form2view.html', signin_form=signin_form, register_form=register_form)
+```
+
+表单提交请求的目标URL通过action属性修改。
+
+```jinja2
+<h3>Login Form</h3>
+<form method="post" action="{{ url_for('handle_signin') }}">
+    {{ signin_form.csrf_token }}
+    {{ form_field(signin_form.username) }}
+    {{ form_field(signin_form.password) }}
+    {{ signin_form.submit }}
+</form>
+
+<h3>Register Form</h3>
+<form method="post" action="{{ url_for('handle_register') }}">
+    {{ register_form.csrf_token }}
+    {{ form_field(register_form.username) }}
+    {{ form_field(register_form.email) }}
+    {{ form_field(register_form.password) }}
+    {{ register_form.submit }}
+</form>
+```
+
+问题：如果验证未通过，需要将错误消息的form.errors字典传入入模板中。在处理表单的视图中传入表单错误信息，就意味着需要再次渲染模板，但是如果视图函数中还涉及大量要传人模板的变量操作， 那么这种方式会带来大量的重复。
+
+对于这个问题，一般的解决方式是通过其他方式传递错误消息， 然后统一重定向到渲染表单页面的视图。比如，使用flash() 函数迭代form.errors 字典发送错误消息（ 这个字典包含字段名称与错误消息列表的映射），然后重定向到用来渲染表单的multi form multi v iew 视图。下面是一个使用flash()函数来发送表单错误消息的便利函数：
+
+```python
+def flash_errors(form):
+    for field, errors in form.errors.items():
+        for error in errors:
+            flash(u"Error in the %s field - %s" % (
+                getattr(form, field).label.text,
+                error
+            ))
+```
+
+如果你希望像往常一样在表单字段下渲染错误消息，可以直接将错误消息字典form.errors存储到se s s ion 中， 然后重定向到用来渲染表单的multi_form_multi_ view 视图。在模板中渲染表单字段错误时添加一个额外的判断，从session 中获取并迭代错误消息。
