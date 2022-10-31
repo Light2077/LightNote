@@ -2847,3 +2847,22 @@ def flash_errors(form):
 ```
 
 如果你希望像往常一样在表单字段下渲染错误消息，可以直接将错误消息字典form.errors存储到se s s ion 中， 然后重定向到用来渲染表单的multi_form_multi_ view 视图。在模板中渲染表单字段错误时添加一个额外的判断，从session 中获取并迭代错误消息。
+
+# 数据库
+
+Flask涉及的相关python包
+
+- SQLAlchemy
+  - 主页：http://www.sqlalchemy.org/
+  - 文档：http://docs.sqlalchemy.org/en/latest/
+- Flask-SQLAlchemy
+  - 主页：https://github.com/mitsuhiko/flask-sqlalchemy
+  - 文档：http://flask-sqlalchemy.pocoo.org/2.3/
+- Alembic
+  - 主页：https://bitbucket.org/zzzeek/alembic
+  - 文档：http://alembic.zzzcoputing.com/en/latest/
+- Flask-Migrate
+  - 主页：https://github.com/miguelgrinberg/Flask-Migrate
+  - 文档：https://flask-migrate.readthedocs.io/en/latest/
+
+## Flask-SQLAlchemy
