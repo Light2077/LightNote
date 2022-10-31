@@ -4,7 +4,7 @@
 
 第一版下载：[【百度云】](https://pan.baidu.com/s/1PkV54TnQmhaTlOTA5QpjTA?pwd=aj5u) [【勘误表】](https://docs.helloflask.com/book/1/errata/1-1/)
 
-
+https://www.12factor.net/zh_cn/
 
 
 感觉学习需要一个框架，不然每次过了很久再回来重新学，都要重新看教材，太麻烦了啊。关键这个我自己也总结不好，挺头疼的。
@@ -275,6 +275,16 @@ FLASK_ENV=development
 解释：
 
 - `FLASK_ENV`，默认为生产环境（production），开发过程中可以设置为development。
+
+> 'FLASK_ENV' is deprecated and will not be used in Flask 2.3. Use 'FLASK_DEBUG' instead.
+
+2.3版本以后使用
+
+```
+FLASK_DEBUG = True
+```
+
+
 
 ### 调试和重载
 
@@ -2847,3 +2857,685 @@ def flash_errors(form):
 ```
 
 如果你希望像往常一样在表单字段下渲染错误消息，可以直接将错误消息字典form.errors存储到se s s ion 中， 然后重定向到用来渲染表单的multi_form_multi_ view 视图。在模板中渲染表单字段错误时添加一个额外的判断，从session 中获取并迭代错误消息。
+
+# 数据库
+
+## Flask-SQLAlchemy
+
+### 基本配置
+
+安装
+
+```
+pip install flask-sqlalchemy
+```
+
+使用
+
+```python
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+
+app = Flask(__name__)
+db = SQLAlchemy(app)
+```
+
+常见的数据库URI格式
+
+```python
+# PostgreSQL
+uri = 'postgresql://username:password@host/databasename'
+
+# MySQL
+uri = 'mysql://username:password@host/databasename'
+
+# Oracle
+uri = 'oracle://username:password@host:port/sidname'
+
+# SQLite(UNIX)
+uri = 'sqlite:////absolute/path/to/xx.db'
+
+# SQLite(Windows)
+uri = 'sqlite:///absolute\\path\\to\\xx.db'
+
+# SQLite(内存)
+uri = 'sqlite:///:memory:'
+```
+
+配置方式
+
+```python
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///' + os.path.join(app.root_path, 'data.db'))
+```
+
+### 定义数据库模型
+
+```python
+class Note(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    body = db.Column(db.Text)
+```
+
+常用字段
+
+| 字段        | 说明                               |
+| ----------- | ---------------------------------- |
+| Integer     |                                    |
+| String      | 字符串，可用参数length设置最大长度 |
+| Text        | 较长的Unicode文本                  |
+| Date        | datetime.date                      |
+| Time        | datetime.time                      |
+| DateTime    | datetime.datetime                  |
+| Interval    | datetime.timedelta                 |
+| Float       |                                    |
+| Boolean     |                                    |
+| PickleType  | 存储Pickle列化的Python对象         |
+| LargeBinary | 存储任意二进制数据                 |
+
+常用字段参数
+
+| 参数名      | 说明                         |
+| ----------- | ---------------------------- |
+| primary_key | bool, 是否为主键             |
+| unique      | bool, 是否不允许重复值       |
+| index       | bool, 是否创建索引           |
+| nullable    | bool, 默认True, 是否能为空值 |
+| default     | 字段默认值                   |
+
+
+
+字符串长度的约束标准
+
+```
+英文名 70
+中文名 20
+电子邮件 254
+网址 255
+用户名 36
+```
+
+默认情况下表名根据模型类名来转换
+
+```
+Message -> message
+FooBar -> foo_bar
+```
+
+也可以定义`__tablename__`属性自定义表名。
+
+### 创建数据库和表
+
+在app.py内
+
+```python
+import os
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+
+app = Flask(__name__)
+
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv(
+    'DATABASE_URL',
+    'sqlite:///' + os.path.join(app.root_path, 'data.db')
+)
+
+db = SQLAlchemy(app)
+
+class Note(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    body = db.Column(db.Text)
+```
+
+使用flask shell进行测试
+
+```
+flask shell
+```
+
+```
+>>> from app import db
+>>> db.create_all()
+>>> from sqlalchemy.schema import CreateTable
+>>> print(CreateTable(Note.__table__))  
+
+CREATE TABLE note (
+        id INTEGER NOT NULL,
+        body TEXT,
+        PRIMARY KEY (id)
+)
+
+
+>>>
+```
+
+删除所有表
+
+```
+>>> db.drop_all()
+```
+
+
+
+也可以自定义flask命令创建数据库
+
+```python
+import click
+
+@app.cli.command()
+def initdb():
+    db.create_all()
+    click.echo('Initialized database.')
+```
+
+命令行下
+
+```
+flask initdb
+```
+
+## 数据库操作
+
+以下操作在flask shell中进行
+
+### 创建数据
+
+```python
+from app import db, Note
+note1 = Note(body='hello1')
+note2 = Note(body='hi')
+note3 = Note(body='good')
+db.session.add(note1)
+db.session.add(note2)
+db.session.add(note3)
+db.session.commit()
+```
+
+这就创建并插入了3条数据
+
+也可以使用`add_all()`一次添加所有对象
+
+```python
+add_all([note1, note2, note3])
+```
+
+### 查看数据
+
+参考文档：http://docs.sqlalchemy.org/en/latest/orm/query.html
+
+https://docs.sqlalchemy.org/en/20/orm/queryguide/query.html
+
+常用查询方法
+
+| 方法                  | 说明                                             |
+| --------------------- | ------------------------------------------------ |
+| all()                 | 查询所有                                         |
+| first()               | 查询的第一条记录，不存在返回None                 |
+| one()                 | 返回第一条记录，若记录数不为1，则报错            |
+| get(ident)            | 返回指定主键值的记录，不存在返回None             |
+| count()               | 返回查询结果的数量                               |
+| one_or_none()         | 类似one()，如果结果数量不为1，返回None           |
+| first_or_404()        | 返回第一条记录，不能存在返回404                  |
+| get_or_404(ident)     |                                                  |
+| paginate()            | 返回一个paination对象，可以对记录进行分页处理    |
+| with_parent(instance) | 传入模型类实例作为参数，返回和这个实例相关的对象 |
+
+查看所有数据
+
+```python
+Note.query.all()
+```
+
+```
+[<Note 1>, <Note 2>, <Note 3>]
+```
+
+查看第一条数据
+
+```python
+Note.query.first()
+```
+
+```
+<Note 1>
+```
+
+查看指定主键的数据
+
+```python
+Note.query.get(2)
+```
+
+```
+<Note 2>
+```
+
+查看记录数量
+
+```python
+Note.query.count()
+```
+
+```
+3
+```
+
+常用过滤方法
+
+| 过滤器名称  | 说明                       |
+| ----------- | -------------------------- |
+| filter()    | 使用指定的规则过滤记录     |
+| filter_by() | 以关键字表达形式           |
+| order_by()  | 排序                       |
+| limit(n)    | 限制返回记录数量           |
+| group_by()  | 根据指定条件对记录进行分组 |
+| offset(n)   | 偏移查询结果               |
+
+```python
+Note.query.filter(Note.body=='good').first()
+```
+
+```
+<Note 3>
+```
+
+直接print可以查看对应的SQL
+
+```python
+print(Note.query.filter(Note.body=='good'))
+```
+
+```
+SELECT note.id AS note_id, note.body AS note_body 
+FROM note
+WHERE note.body = ?
+```
+
+其他查询操作符
+
+```python
+# like
+Note.query.filter(Note.body.like('%go%'))
+# in
+Note.query.filter(Note.body.in_(['a', 'good']))
+# not in
+Note.query.filter(~Note.body.in_(['a', 'good']))
+
+# and (逗号分隔)
+Note.query.filter(Note.body=='good', Note.body=='a')
+# and (使用 sqlalchemy.and_)
+from sqlalchemy import and_
+Note.query.filter(and_(Note.body=='a', Note.body=='b'))
+# and (叠加多个filter/filter_by)
+Note.query.filter(Note.body=='good').filter(Note.body=='b')
+
+# OR
+from sqlalchemy import or_
+Note.query.filter(or_(Note.body=='good', Note.body=='b'))
+```
+
+使用filter_by可以省略类名，比如
+
+```python
+Note.query.filter_by(body='good').first()
+```
+
+### 更新数据
+
+```python
+note = Note.query.get(2)
+note.body = 'ok'
+db.session.commit()
+```
+
+### 删除数据
+
+```python
+note = Note.query.get(1)
+db.session.delete(note)
+db.session.commit()
+```
+
+## 定义关系
+
+### 配置shell上下文
+
+```python
+# app.py
+@app.shell_context_processor
+def make_shell_context():
+    return dict(db=db, Note=Note)
+```
+
+这样，打开flask shell就能直接使用db和Note了。
+
+```
+>>> Note
+<class 'app.Note'>
+```
+
+### 一对多
+
+作者与文章
+
+```python
+class Author(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(70), unique=True)
+    # 定义关系属性
+    articles = db.relationship('Article')
+class Article(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(50), index=True)
+    body = db.Column(db.Text)
+    # 外键
+    author_id = db.Column(db.Integer, db.ForeignKey('author.id'))
+    author = db.relationship('Author', back_populates='articles')
+```
+
+一般在**多**的那边定义外键，在一的那边定义关系属性
+
+在shell中演示如下
+
+```python
+tom = Author(name='tom')
+a1 = Article(title='a1')
+a2 = Article(title='a2')
+db.session.add_all([tom, a1, a2])
+db.session.commit()
+# 建立关系
+# 方式1，直接赋值
+# a1.author_id = 1
+
+# 方式2，操作关系属性
+tom.articles.append(a1)
+tom.articles.append(a2)
+db.session.commit()
+```
+
+解除关系
+
+```python
+tom.articles.remove(a1)
+db.session.commit()
+```
+
+也可以用`pop()`解除最后一个对象的关系
+
+使用backref简化关系定义
+
+```python
+class Author(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(70), unique=True)
+    phone = db.Column(db.String(20))
+    # 定义关系属性
+    articles = db.relationship('Article', backref='author')
+class Article(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(50), index=True)
+    body = db.Column(db.Text)
+    # 外键
+    author_id = db.Column(db.Integer, db.ForeignKey('author.id'))
+    # author = db.relationship('Author', back_populates='articles')
+```
+
+可以省略一行，不过一般还是建议显示定义使用`back_populates`这样更便于理解
+
+### 一对一
+
+一个国家只有一个首都，一个首都对应一个国家
+
+```python
+class Country(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(30), unique=True)
+    capital = db.relationship('Capital', uselist=False)
+    
+class Capital(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(30), unique=True)
+    country_id = db.Column(db.Integer, db.ForeignKey('country.id'))
+    country = db.relationship('Country')
+```
+
+设置`uselist=False`后，就只能存储单个记录了
+
+```python
+china = Country(name='China')
+beijing = Capital(name='Beijing')
+db.session.add(china)
+db.session.add(beijing)
+db.session.commit()
+
+china.capital = beijing
+db.session.commit()
+```
+
+### 多对多
+
+学生与老师模型
+
+需要创建一个关联表来表示多对多模型
+
+```python
+association_table = db.Table(
+    'association', 
+    db.Column('student_id', db.Integer, db.ForeignKey('student.id')),
+    db.Column('teacher_id', db.Integer, db.ForeignKey('teacher.id'))
+)
+
+class Student(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(30), unique=True)
+    teachers = db.relationship('Teacher', secondary=association_table, back_populates='students')
+
+class Teacher(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(30), unique=True)
+    students = db.relationship('Student', secondary=association_table, back_populates='teachers')
+```
+
+
+
+## 更新数据库表
+
+### 删除后重建
+
+```python
+db.drop_all()
+db.create_all()
+```
+
+命令实现
+
+```python
+@app.cli.command()
+@click.option('--drop', is_flag=True, help='Creat after drop.')
+def initdb(drop):
+    if drop:
+        click.confirm('this operation will delete the database, do you want to continue?', abort=True)
+        db.drop_all()
+        click.echo('drop tables.')
+    db.create_all()
+    click.echo('initialized databases.')
+```
+
+### 使用Flask-Migrate
+
+http://alembic.zzzcomputing.com/en/latest/tutuorial.html
+
+```
+pip install flask-migrate
+```
+
+初始化
+
+```python
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
+
+app = Flask(__name__)
+db = SQLAlchemy(app)
+migrate = Migrate(app, db)
+```
+
+创建迁移环境
+
+这会在项目根目录下创建`migrations`文件夹
+
+```
+flask db init
+```
+
+生成迁移脚本
+
+`-m`表示添加迁移备注信息
+
+```
+flask db migrate -m "add note timestamp"
+```
+
+更新数据库
+
+```
+flask db upgrade
+```
+
+回滚迁移
+
+会撤销最后一次迁移在数据库中的改动
+
+```
+flask db downgrade
+```
+
+
+
+## 数据库进阶实践
+
+### 级联操作
+
+### 事件监听
+
+SQLAlchemy提供了一个listen_for()装饰器，接收两个参数：
+
+- target，监听对象，可以是模型类、类实例、类属性。
+- identifier，被监听事件标识符，比如`set`、`append`、`remove`、`init_scalar`、`init_collection`等
+
+
+
+比如下面这个草稿模型，每次修改正文以后，修改次数+1
+
+```python
+class Draft(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    body = db.Column(db.Text)
+    edit_count = db.Column(db.Integer, default=0)
+```
+
+编写事件监听函数
+
+```python
+# app.py
+@db.event.listens_for(Draft.body, 'set')
+def increment_edit_count(target, value, oldvalue, initiator):
+    if target.edit_count is not None:
+        target.edit_count += 1
+```
+
+- target：触发事件的模型类实例
+- value：被设置的值
+- oldvalue：被取代的旧值
+
+# 电子邮件
+
+## Flask-Mail
+
+```
+pip install flask-mail
+```
+
+初始化
+
+```python
+from flask_mail import Mail
+
+app = Flask(__name__)
+mail = Mail(app)
+```
+
+### 配置Flask-Mail
+
+```python
+# 用于发送右键的SMTP服务器
+MAIL_SERVER = 'localhost'
+
+MAIL_PORT = 25
+
+# 是否使用STARTTLS
+# MAIL_PORT = 587
+MAIL_USE_TLS = False
+
+# 是否使用SSL/TLS
+# MAIL_PORT = 465
+MAIL_USE_SSL = False
+
+# 发信服务器的用户名
+MAIL_USERNAME = None
+
+# 发信服务器的密码
+MAIL_PASSWORD = None
+
+# 默认发信人
+MAIL_DEFAULT_SENDER = None
+```
+
+常用电邮服务提供商的SMTP配置
+
+```python
+# Gmail
+MAIL_SERVER = 'smtp.gmail.com'
+MAIL_PASSWORD = '<邮箱密码>'
+
+# qq
+MAIL_SERVER = 'smtp.qq.com'
+MAIL_PASSWORD = '<授权码>'
+
+# 新浪
+MAIL_SERVER = 'smtp.sina.com'
+MAIL_PASSWORD = '<邮箱密码>'
+
+# 163
+MAIL_SERVER = 'smtp.163.com'
+MAIL_PASSWORD = '<授权码>'
+
+# outlook
+MAIL_SERVER = 'smtp.office365.com'
+MAIL_PASSWORD = '<邮箱密码>'
+```
+
+### 构建邮件数据
+
+```python
+from flask_mail import Message
+from app import mail
+
+message = Message(
+    subject='Hello, world!',
+    recipients=['Zorn <zorn@example.com>'],
+    body='hello world'
+)
+```
+
+### 发送邮件
+
+```python
+mail.send(message)
+```
+
+## 使用事务邮件服务SendGird
+
+- Mailgun：https://www.mailgun.com/
+- SendGrid：https://sendgrid.com/
+
