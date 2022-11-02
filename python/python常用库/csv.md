@@ -1,3 +1,5 @@
+在python中创建并保存csv文件
+
 ```python
 import csv
 
@@ -7,9 +9,20 @@ lines = [["lily", 16, "girl"],
 
 with open("demo.csv", mode='w', encoding='utf8', newline="") as f:
     for line in lines:
-        writer = csv.writer(f, delimiter="\t")
+        writer = csv.writer(f, delimiter=",")
         writer.writerow(line)
 ```
+
+文件内容
+
+```
+lily,16,girl
+alex,15,boy
+jack,13,boy
+
+```
+
+
 
 
 
