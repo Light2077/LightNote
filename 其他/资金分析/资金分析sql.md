@@ -152,3 +152,117 @@ update 收款卡交易明细 set 收付标志=(
 )
 ```
 
+## 建表语句
+
+### 交易明细表
+
+```sql
+-- DROP TABLE IF EXISTS "xx"."交易明细";
+CREATE TABLE "xx"."交易明细" (
+  "交易卡号" text COLLATE "pg_catalog"."default",
+  "交易账号" text COLLATE "pg_catalog"."default",
+  "查询反馈结果原因" text COLLATE "pg_catalog"."default",
+  "交易户名" text COLLATE "pg_catalog"."default",
+  "交易证件号码" text COLLATE "pg_catalog"."default",
+  "交易时间" timestamp(6),
+  "交易金额" float8,
+  "交易余额" float8,
+  "收付标志" text COLLATE "pg_catalog"."default",
+  "交易对手账卡号" text COLLATE "pg_catalog"."default",
+  "现金标志" text COLLATE "pg_catalog"."default",
+  "对手户名" text COLLATE "pg_catalog"."default",
+  "对手身份证号" text COLLATE "pg_catalog"."default",
+  "对手开户银行" text COLLATE "pg_catalog"."default",
+  "摘要说明" text COLLATE "pg_catalog"."default",
+  "交易币种" text COLLATE "pg_catalog"."default",
+  "交易网点名称" text COLLATE "pg_catalog"."default",
+  "交易发生地" text COLLATE "pg_catalog"."default",
+  "交易是否成功" text COLLATE "pg_catalog"."default",
+  "传票号" text COLLATE "pg_catalog"."default",
+  "IP地址" text COLLATE "pg_catalog"."default",
+  "MAC地址" text COLLATE "pg_catalog"."default",
+  "对手交易余额" float8,
+  "交易流水号" text COLLATE "pg_catalog"."default",
+  "日志号" text COLLATE "pg_catalog"."default",
+  "凭证种类" text COLLATE "pg_catalog"."default",
+  "凭证号" text COLLATE "pg_catalog"."default",
+  "交易柜员号" text COLLATE "pg_catalog"."default",
+  "备注" text COLLATE "pg_catalog"."default",
+  "商户名称" text COLLATE "pg_catalog"."default",
+  "商户代码" text COLLATE "pg_catalog"."default",
+  "交易类型" text COLLATE "pg_catalog"."default"
+)
+;
+
+-- ----------------------------
+-- Indexes structure for table 其他交易明细
+-- ----------------------------
+CREATE INDEX "idx1" ON "xx"."交易明细" USING btree (
+  "交易卡号" COLLATE "pg_catalog"."default" "pg_catalog"."text_ops" ASC NULLS LAST
+);
+CREATE INDEX "idx2" ON "xx"."交易明细" USING btree (
+  "交易对手账卡号" COLLATE "pg_catalog"."default" "pg_catalog"."text_ops" ASC NULLS LAST
+);
+CREATE INDEX "idx3" ON "xx"."交易明细" USING btree (
+  "交易户名" COLLATE "pg_catalog"."default" "pg_catalog"."text_ops" ASC NULLS LAST
+);
+```
+
+### 账户信息表
+
+```sql
+
+-- ----------------------------
+-- Table structure for 账户信息
+-- ----------------------------
+-- DROP TABLE IF EXISTS "xx"."账户信息";
+CREATE TABLE "xx"."账户信息" (
+  "账户开户名称" text COLLATE "pg_catalog"."default",
+  "开户人证件号码" text COLLATE "pg_catalog"."default",
+  "交易卡号" text COLLATE "pg_catalog"."default",
+  "交易账号" text COLLATE "pg_catalog"."default",
+  "账号开户时间" timestamp(6),
+  "账户余额" float4,
+  "可用余额" float4,
+  "币种" text COLLATE "pg_catalog"."default",
+  "开户网点代码" text COLLATE "pg_catalog"."default",
+  "开户网点" text COLLATE "pg_catalog"."default",
+  "账户状态" text COLLATE "pg_catalog"."default",
+  "炒汇标志名称" text COLLATE "pg_catalog"."default",
+  "销户日期" timestamp(6),
+  "账户类型" text COLLATE "pg_catalog"."default",
+  "开户联系方式" text COLLATE "pg_catalog"."default",
+  "通信地址" text COLLATE "pg_catalog"."default",
+  "联系电话" text COLLATE "pg_catalog"."default",
+  "代理人" text COLLATE "pg_catalog"."default",
+  "代理人电话" text COLLATE "pg_catalog"."default",
+  "备注" text COLLATE "pg_catalog"."default",
+  "开户省份" text COLLATE "pg_catalog"."default",
+  "开户城市" text COLLATE "pg_catalog"."default",
+  "账号开户银行" text COLLATE "pg_catalog"."default",
+  "客户代码" text COLLATE "pg_catalog"."default",
+  "法人代表" text COLLATE "pg_catalog"."default",
+  "客户工商执照号码" text COLLATE "pg_catalog"."default",
+  "法人代表证件号码" text COLLATE "pg_catalog"."default",
+  "住宅地址" text COLLATE "pg_catalog"."default",
+  "邮政编码" text COLLATE "pg_catalog"."default",
+  "代办人证件号码" text COLLATE "pg_catalog"."default",
+  "邮箱地址" text COLLATE "pg_catalog"."default",
+  "关联资金账户" text COLLATE "pg_catalog"."default",
+  "地税纳税号" text COLLATE "pg_catalog"."default",
+  "单位电话" text COLLATE "pg_catalog"."default",
+  "代办人证件类型" text COLLATE "pg_catalog"."default",
+  "住宅电话" text COLLATE "pg_catalog"."default",
+  "法人代表证件类型" text COLLATE "pg_catalog"."default",
+  "国税纳税号" text COLLATE "pg_catalog"."default",
+  "单位地址" text COLLATE "pg_catalog"."default",
+  "工作单位" text COLLATE "pg_catalog"."default",
+  "销户网点" text COLLATE "pg_catalog"."default",
+  "最后交易时间" timestamp(6),
+  "账户销户银行" text COLLATE "pg_catalog"."default",
+  -- "卡号类型" text COLLATE "pg_catalog"."default"
+  "账卡号标签" text COLLATE "pg_catalog"."default"
+);
+```
+
+> “卡号类型”改为“账卡号标签”，可以用来自行标记该卡的标签。

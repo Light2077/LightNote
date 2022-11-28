@@ -156,7 +156,7 @@ http://ai.berkeley.edu/contest.html  吃豆人
 
 https://www.zhihu.com/question/24711491/answer/2726596500
 
-
+数据源导航网 https://hao.199it.com/
 
 ## 实用网页
 
@@ -174,3 +174,8 @@ https://www.zhihu.com/question/24711491/answer/2726596500
 
 国家数字图书馆网 http://www.nlc.cn/
 
+### 大文件传输
+
+https://www.wenshushu.cn/
+
+代码显示板 https://carbon.now.sh/
