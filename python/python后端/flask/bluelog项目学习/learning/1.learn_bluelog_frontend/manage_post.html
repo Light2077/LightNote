@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>index</title>
+  <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/5.1.1/css/bootstrap.min.css">
+  <!-- 最新的 Bootstrap5 核心 JavaScript 文件 -->
+  <script src="https://cdn.staticfile.org/twitter-bootstrap/5.1.1/js/bootstrap.bundle.min.js"></script>
+  <link rel="stylesheet" href="static/style.css">
+</head>
+
+<body>
+  <!-- 导航栏 -->
+  <nav class="navbar navbar-expand-sm bg-primary navbar-dark mb-3">
+    <div class="container">
+      <a class="navbar-brand" href="index.html">Blog</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#collapsibleNavbar">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="collapsibleNavbar">
+        <!-- 【导航栏左侧】Bluelog / Home / About -->
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link active" href="#">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">About</a>
+          </li>
+        </ul>
+
+        <!-- 【导航栏右侧】New▽ / Manage▽ / Settings -->
+        <ul class="navbar-nav ms-auto">
+          <!-- New▽ -->
+          <li class="nav-item dropdown">
+            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button">
+              New
+            </a>
+            <div class="dropdown-menu">
+              <a class="dropdown-item" href="new_post.html">Post</a>
+              <a class="dropdown-item" href="new_category.html">Category</a>
+              <a class="dropdown-item" href="new_link.html">Link</a>
+            </div>
+          </li>
+          <!-- Manage▽ -->
+          <li class="nav-item dropdown">
+            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button">
+              Manage
+              <span class="badge bg-success">new</span>
+            </a>
+            <div class="dropdown-menu">
+              <a class="dropdown-item" href="manage_post.html">Post</a>
+              <a class="dropdown-item" href="manage_category.html">Category</a>
+              <a class="dropdown-item" href="manage_comment.html">Comment
+                <span class="badge bg-success">50</span>
+              </a>
+              <a class="dropdown-item" href="manage_link.html">Link</a>
+            </div>
+          </li>
+          <!-- Settings -->
+          <a class="nav-item nav-link " href="settings.html">Settings</a>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+
+  <!-- 核心内容 -->
+  <main class="container">
+    <!-- 消息提示 -->
+    <div class="alert alert-success alert-dismissible">
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      <strong>欢迎!</strong> 点击右侧的x关闭提示。
+    </div>
+    <div class="row">
+      <!-- header -->
+      <div class="page-header">
+        <h1>Posts
+          <small class="text-muted">50</small>
+          <span class="float-end"><a class="btn btn-primary btn-sm" href="new_post.html">New Post</a></span>
+        </h1>
+      </div>
+      <!-- 操作表格 -->
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>No.</th>
+            <th>Title</th>
+            <th>Category</th>
+            <th>Date</th>
+            <th>Comments</th>
+            <th>Words</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td><a href="/post/34">Join body understand firm now visit cultural health.</a></td>
+            <td><a href="/category/1">Default</a></td>
+            <td>November 2, 2022</td>
+            <td><a href="/post/34#comments">11</a></td>
+            <td>1983</td>
+            <td>
+              <form class="inline" method="post" action="#">
+                <input type="hidden" name="csrf_token" value="xx">
+                <button type="submit" class="btn btn-warning btn-sm">
+                  Disable Comment
+                </button>
+              </form>
+              <a class="btn btn-info btn-sm" href="/admin/post/34/edit">Edit</a>
+              <form class="inline" method="post" action="#">
+                <input type="hidden" name="csrf_token" value="xx">
+                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?');">Delete
+                </button>
+              </form>
+            </td>
+          </tr>
+
+          <tr>
+            <td>2</td>
+            <td><a href="/post/44">Series age maintain talk thank weight home only.</a></td>
+            <td><a href="/category/1">Default</a>
+            </td>
+            <td>October 23, 2022</td>
+            <td><a href="/post/44#comments">12</a></td>
+            <td>1944</td>
+            <td>
+              <form class="inline" method="post" action="#">
+                <input type="hidden" name="csrf_token" value="xx">
+                <button type="submit" class="btn btn-warning btn-sm">
+                  Disable Comment
+                </button>
+              </form>
+              <a class="btn btn-info btn-sm" href="/admin/post/44/edit">Edit</a>
+              <form class="inline" method="post" action="#">
+                <input type="hidden" name="csrf_token" value="xx">
+                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?');">Delete
+                </button>
+              </form>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <!-- 分页器 -->
+      <nav>
+        <ul class="pagination ">
+          <li class="page-item disabled"> <a class="page-link" href="#">«</a> </li>
+          <li class="page-item active"> <a class="page-link" href="#">1</a> </li>
+          <li class="page-item"> <a class="page-link" href="#">2</a> </li>
+          <li class="page-item"> <a class="page-link" href="#">3</a> </li>
+          <li class="page-item"> <a class="page-link" href="#">4</a> </li>
+          <li class="page-item "><a class="page-link" href="#">»</a> </li>
+        </ul>
+      </nav>
+      <!-- 页脚 -->
+      <footer>
+
+        <p class="float-start">
+          <small> &copy; 2018 <a href="#" title="Written by Grey Li">Grey Li</a> -
+            <a href="#" title="Fork me on GitHub">GitHub</a> -
+            <a href="#" title="A HelloFlask project">HelloFlask</a>
+          </small>
+        </p>
+        <p class="float-end">
+          <small>
+            <!-- 如果未登录，隐藏下面这行 -->
+            <a href="#">Logout</a>
+            <!-- 如果已登录，隐藏下面这行 -->
+            <!-- <a href="#">Login</a> -->
+          </small>
+        </p>
+      </footer>
+    </div>
+  </main>
+</body>
+
+</html>

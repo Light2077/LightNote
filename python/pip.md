@@ -10,16 +10,42 @@ https://pip.pypa.io/en/stable/cli/pip_download/
 
 https://mirrors.tuna.tsinghua.edu.cn/help/pypi/
 
-临时使用
+### 临时使用
 
 ```
 pip install -i https://pypi.tuna.tsinghua.edu.cn/simple some-package
 ```
 
-设为默认
+### 设为默认
 
 ```
 pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
+```
+
+### 配置多个镜像源
+
+如果您想配置多个镜像源平衡负载，可在已经替换 `index-url` 的情况下通过以下方式继续增加源站：
+
+```
+pip config set global.extra-index-url "<url1> <url2>..."
+```
+
+请自行替换引号内的内容，源地址之间需要有空格
+
+可用的 `pypi` 源列表（校园网联合镜像站）：https://mirrors.cernet.edu.cn/list/pypi
+
+### 文件位置
+
+` C:\Users\<username>\AppData\Roaming\pip\pip.ini `
+
+
+
+## 更新pip
+
+```
+python -m pip install --upgrade pip
+# 如果速度较慢，使用
+python -m pip install -i https://pypi.tuna.tsinghua.edu.cn/simple --upgrade pip
 ```
 
 
@@ -104,20 +130,6 @@ ERROR: When restricting platform and interpreter constraints using --python-vers
 
 
 
-## requirements
-
-导出requirements文件
-
-```
-pip freeze > requirements.txt
-```
-
-依照requirements安装包
-
-```
-pip install -r requirements.txt 
-```
-
 
 
 ## 下载特定平台的包
@@ -188,6 +200,20 @@ https://imshuai.com/python-pip-install-package-offline-tensorflow
 得知，最好的解决方法还是pyenv + docker来下载包，然后拷贝到离线环境中去。
 
 
+
+## requirements的导出和使用
+
+导出requirements文件
+
+```
+pip freeze > requirements.txt
+```
+
+依照requirements安装包
+
+```
+pip install -r requirements.txt 
+```
 
 
 

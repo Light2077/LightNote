@@ -100,7 +100,7 @@ python 技巧
 
 https://pyzh.readthedocs.io/en/latest/index.html
 
-
++
 
 https://python.iswbm.com
 
@@ -124,9 +124,9 @@ https://pixabay.com 高清版权图片
 
 https://visiocafe.com 主流厂商LOGO IT设备图示
 
-## 知识库整理
+## 
 
-怎么整理？
+
 
 ## 记录
 
@@ -174,8 +174,42 @@ https://www.zhihu.com/question/24711491/answer/2726596500
 
 国家数字图书馆网 http://www.nlc.cn/
 
+[中国专利全文打包下载](https://www.drugfuture.com/cnpat/cn_patent.asp)
+
+在这个网站能搜到的图书，大部分都能下载到。
+
+http://www.ucdrs.superlib.net/
+
 ### 大文件传输
 
 https://www.wenshushu.cn/
 
 代码显示板 https://carbon.now.sh/
+
+
+
+### 图标素材网
+
+日式图标
+
+http://flat-icon-design.com/
+
+游戏图标素材
+
+https://game-icons.net/1x1/lorc/all-for-one.html
+
+爱给网
+
+https://www.aigei.com/
+
+https://icons8.com/icons
+
+https://iconstore.co/?s=minister
+
+
+
+## 创作相关
+
+地图生成 https://watabou.github.io/
+
+像素风PS：Aseprite（软件）

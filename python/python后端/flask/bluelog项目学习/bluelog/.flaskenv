@@ -1,0 +1,3 @@
+FLASK_APP=bluelog
+FLASK_DEBUG=true
+FLASK_CONFIG=development

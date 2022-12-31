@@ -4,7 +4,5 @@ https://greasyfork.org/zh-CN/scripts/437349-%E5%85%A8%E5%9B%BD%E5%9B%BE%E4%B9%A6
 
 
 
-在这个网站能搜到的图书，大部分都能下载到。
 
-http://www.ucdrs.superlib.net/
 

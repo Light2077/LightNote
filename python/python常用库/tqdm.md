@@ -109,3 +109,10 @@ while cum < td.seconds:
 
 
 
+不显示进度条
+
+```python
+for path in tqdm(paths, disable=not verbose)
+    ...
+```
+

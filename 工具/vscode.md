@@ -46,13 +46,15 @@ cat ~/id_rsa.pub >> ~/.ssh/authorized_keys
 
 ### 编辑ssh config
 
-ctlr+shift+P 然后输入
+在vscode界面中按快捷键：ctlr+shift+P 
+
+然后输入
 
 ```
 Remote-SSH Open SSH Configuration File...
 ```
 
-不用完全输入，输一点就可以看到自动补全的结果了，然后回车进去选择要编辑config文件
+不用完全输入，输一点就可以看到自动补全的结果了，然后回车进去编辑config文件
 
 一般路径是
 
@@ -64,11 +66,11 @@ c:\users\<用户名>\.ssh\config
 
 ```
 Host your_host_name1
-    HostName 192.168.12.321
+    HostName 12.33.44.55
     User root
 
 Host your_host_name2
-    HostName 119.3.145.185
+    HostName 12.33.44.56
     User root
 ```
 
