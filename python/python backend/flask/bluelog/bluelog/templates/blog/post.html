@@ -50,106 +50,106 @@
   <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#postLinkModal">Share
   </button>
 
-  <!-- 分享模态框 -->
-  <div class="modal fade" id="postLinkModal">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <!-- 模态框头部 -->
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Permalink</h5>
-          <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">×</span>
-          </button>
-        </div>
-        <!-- 模态框内容 -->
-        <div class="modal-body">
-          <div class="form-group">
-            <input type="text" class="form-control" value="http://fake-share-url.com" readonly="">
-          </div>
+<!-- 分享模态框 -->
+<div class="modal fade" id="postLinkModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <!-- 模态框头部 -->
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Permalink</h5>
+        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">×</span>
+        </button>
+      </div>
+      <!-- 模态框内容 -->
+      <div class="modal-body">
+        <div class="form-group">
+          <input type="text" class="form-control" value="http://fake-share-url.com" readonly="">
         </div>
       </div>
     </div>
   </div>
+</div>
 
-  <!-- 评论区 -->
-  <div class="comments" id="comments">
-    <h3>2 Comments
-      <small>
-        <a href="/post/34?page=1#comments">
-          latest</a>
-      </small>
-      <form class="float-end" method="post" action="#">
-        <input type="hidden" name="csrf_token" value="xxx">
-        <button type="submit" class="btn btn-warning btn-sm">
-          Disable Comment
-        </button>
-      </form>
-    </h3>
-    <ul class="list-group">
-      <!-- 第1条评论 -->
-      <li class="list-group-item list-group-item-action flex-column">
-        <!-- 评论人 评论时间 -->
-        <div class="d-flex w-100 justify-content-between">
-          <h5 class="mb-1"><a href="#" target="_blank">Charles Norton</a></h5>
-          <small>a year ago</small>
-        </div>
-        <!-- 评论内容 -->
-        <p class="mb-1">Of such age.</p>
-        <!-- 通用的代码 按钮 Reply / Email / Delete -->
-        <div class="float-end">
-          <a class="btn btn-light btn-sm" href="/reply/comment/366">Reply</a>
-          <a class="btn btn-light btn-sm" href="#">Email</a>
-          <form class="inline" method="post" action="#">
-            <input type="hidden" name="csrf_token" value="xxx">
-            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?');">Delete
-            </button>
-          </form>
-        </div>
-      </li>
-      <!-- 第二条评论 -->
-      <li class="list-group-item list-group-item-action flex-column">
-        <div class="d-flex w-100 justify-content-between">
-          <h5 class="mb-1"><a href="#" target="_blank">Timothy Holmes</a></h5>
-          <small>10 months ago</small>
-        </div>
-        <p class="mb-1">Personal mouth interest prove learn think positive name.</p>
+<!-- 评论区 -->
+<div class="comments" id="comments">
+  <h3>2 Comments
+    <small>
+      <a href="/post/34?page=1#comments">
+        latest</a>
+    </small>
+    <form class="float-end" method="post" action="#">
+      <input type="hidden" name="csrf_token" value="xxx">
+      <button type="submit" class="btn btn-warning btn-sm">
+        Disable Comment
+      </button>
+    </form>
+  </h3>
+  <ul class="list-group">
+    <!-- 第1条评论 -->
+    <li class="list-group-item list-group-item-action flex-column">
+      <!-- 评论人 评论时间 -->
+      <div class="d-flex w-100 justify-content-between">
+        <h5 class="mb-1"><a href="#" target="_blank">Charles Norton</a></h5>
+        <small>a year ago</small>
+      </div>
+      <!-- 评论内容 -->
+      <p class="mb-1">Of such age.</p>
+      <!-- 通用的代码 按钮 Reply / Email / Delete -->
+      <div class="float-end">
+        <a class="btn btn-light btn-sm" href="/reply/comment/366">Reply</a>
+        <a class="btn btn-light btn-sm" href="#">Email</a>
+        <form class="inline" method="post" action="#">
+          <input type="hidden" name="csrf_token" value="xxx">
+          <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?');">Delete
+          </button>
+        </form>
+      </div>
+    </li>
+    <!-- 第二条评论 -->
+    <li class="list-group-item list-group-item-action flex-column">
+      <div class="d-flex w-100 justify-content-between">
+        <h5 class="mb-1"><a href="#" target="_blank">Timothy Holmes</a></h5>
+        <small>10 months ago</small>
+      </div>
+      <p class="mb-1">Personal mouth interest prove learn think positive name.</p>
 
-        <div class="float-end">
-          <a class="btn btn-light btn-sm" href="/reply/comment/440">Reply</a>
-          <a class="btn btn-light btn-sm" href="#">Email</a>
-          <form class="inline" method="post" action="#">
-            <input type="hidden" name="csrf_token" value="xxx">
-            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?');">Delete
-            </button>
-          </form>
-        </div>
-      </li>
-    </ul>
+      <div class="float-end">
+        <a class="btn btn-light btn-sm" href="/reply/comment/440">Reply</a>
+        <a class="btn btn-light btn-sm" href="#">Email</a>
+        <form class="inline" method="post" action="#">
+          <input type="hidden" name="csrf_token" value="xxx">
+          <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?');">Delete
+          </button>
+        </form>
+      </div>
+    </li>
+  </ul>
 
-  </div>
+</div>
 
-  <!-- 评论区分页器 -->
-  <nav aria-label="Page navigation">
-    <ul class="pagination ">
-      <li class="page-item disabled">
-        <a class="page-link" href="##comments">«</a>
-      </li>
+<!-- 评论区分页器 -->
+<nav aria-label="Page navigation">
+  <ul class="pagination ">
+    <li class="page-item disabled">
+      <a class="page-link" href="##comments">«</a>
+    </li>
 
-      <li class="page-item active">
-        <a class="page-link" href="#">1 <span class="visually-hidden">(current)</span></a>
-      </li>
+    <li class="page-item active">
+      <a class="page-link" href="#">1 <span class="visually-hidden">(current)</span></a>
+    </li>
 
-      <li class="page-item disabled">
-        <a class="page-link" href="##comments">»</a>
-      </li>
-    </ul>
-  </nav>
+    <li class="page-item disabled">
+      <a class="page-link" href="##comments">»</a>
+    </li>
+  </ul>
+</nav>
 
-  <!-- 评论回复提示框 -->
-  <div class="alert alert-dark">
-    Reply to <strong>Charles Norton</strong>:
-    <a class="float-end" href="/post/34">Cancel</a>
-  </div>
+<!-- 评论回复提示框 -->
+<div class="alert alert-dark">
+  Reply to <strong>Charles Norton</strong>:
+  <a class="float-end" href="/post/34">Cancel</a>
+</div>
 
   <!-- 评论回复表单 -->
   <!-- <div id="comment-form">
