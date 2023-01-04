@@ -4,7 +4,7 @@
   {% block head %}
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>index</title>
+  <title>{% block title %}{% endblock %}</title>
   <!-- bootstrap -->
   <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/5.1.1/css/bootstrap.min.css">
   <link rel="stylesheet" href="static/style.css">
@@ -13,7 +13,6 @@
 
 <body>
   <!-- 导航栏 -->
-
   <nav class="navbar navbar-expand-sm bg-primary navbar-dark mb-3">
     {% block nav %}
     <div class="container">
@@ -40,7 +39,6 @@
   </nav>
   <!-- 核心内容 -->
   <main class="container">
-
     <div class="row">
       {% block content %}
       {% endblock content %}

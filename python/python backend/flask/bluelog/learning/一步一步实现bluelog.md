@@ -357,7 +357,7 @@ FLASK_CONFIG=development
   |-base.html
 ```
 
-## 构建base.html
+## base.html
 
 ### 主要框架
 
@@ -887,7 +887,7 @@ footer {
 
 > 不过base页面还不算完全搞好了，还有一些细节会在后面修改
 
-## 构建index.html
+## index.html
 
 ### index页面框架
 
@@ -1107,6 +1107,792 @@ def index():
 </div>
 ```
 
+## category.html
+
+category.html与index.html类似，差别在于标题和文章数量
+
+创建`templates/blog/category.html`
+
+```html
+{% extends 'base.html' %}
+{% block content %}
+<!-- header -->
+<div class="page-header">
+  <h1>Category: apple</h1>
+  <h4 class="text-muted">2 posts</h4>
+</div>
+
+<!-- 文章版块 -->
+<div class="col-sm-8">
+  <!-- 文章 -->
+  {% include 'blog/_posts.html' %}
+
+  <!-- 文章分页器 -->
+  {% include 'blog/_pagination.html' %}
+</div>
+
+<!-- 侧边栏 -->
+<div class="col-sm-4 sidebar">
+  {% include 'blog/_sidebar.html' %}
+</div>
+{% endblock %}
+```
+
+在`blueprints/blog.py`内，添加：
+
+```python
+@blog_bp.route('/category')
+def show_category():
+    return render_template("blog/category.html")
+```
+
+访问：http://127.0.0.1:5000/category
+
+![image-20230104105051095](images/逐步实现bluelog_文章类别页.png)
+
+## about.html
+
+创建`templates/blog/about.html`
+
+```html
+{% extends 'base.html' %}
+{% block title %}About{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>About</h1>
+</div>
+
+<div class="col-sm-8">
+  this is about page
+</div>
+
+<div class="col-sm-4 sidebar">
+  {% include "blog/_sidebar.html" %}
+</div>
+{% endblock %}
+```
+
+在`blueprints/blog.py`内，添加：
+
+```python
+@blog_bp.route('/about')
+def about():
+    return render_template('blog/about.html')
+```
+
+## post.html
+
+文章显示页面
+
+### 框架
+
+```html
+{% extends 'base.html' %}
+{% block title %}文章标题{% endblock %}
+{% block content %}
+
+<!-- 文章标题栏: 包括文章类别、撰写时间。如果是登录状态、还有编辑和修改按钮-->
+<div class="page-header"></div>
+
+<!-- 文章正文、评论区 -->
+<div class="col-sm-8">
+  <!-- 正文部分 -->
+  <article></article>
+  <hr>
+  <!-- 分享按钮 点击会弹出一个模态框modal -->
+  <button></button>
+  <!-- 分享模态框 -->
+  <div></div>
+  <!-- 评论区 -->
+  <div></div>
+  <!-- 评论区分页器 -->
+  <div></div>
+  <!-- 评论回复提示框 -->
+  <div></div>
+  <!-- 评论回复表单 -->
+  <div></div>
+</div>
+
+<!-- 侧边栏 -->
+<div class="col-sm-4 sidebar">
+  {% include 'blog/_sidebar.html' %}
+</div>
+{% endblock content %}
+```
+
+### 文章标题栏
+
+```html
+<!-- 文章标题栏: 包括文章类别、撰写时间。如果是登录状态、还有编辑和修改按钮-->
+<div class="page-header">
+  <!-- 文章标题 -->
+  <h1>Join body understand firm now visit cultural health.
+    <span class="float-end">
+      <!-- 编辑按钮 -->
+      <a class="btn btn-primary btn-sm" href="#">Edit</a>
+      <!-- 删除按钮 -->
+      <form class="inline" method="post" action="#">
+        <input type="hidden" name="csrf_token" value="x">
+        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?');">Delete
+        </button>
+      </form>
+    </span>
+  </h1>
+
+  <!-- 文章类别和日期 -->
+  <small>
+    Category: <a href="/category/1">Default</a><br>
+    Date: November 2, 2022
+  </small>
+</div>
+```
+
+需要编辑`style.css`文件，否则edit和delete会不在同一行
+
+```css
+.inline {
+    display: inline;
+}
+```
+
+### 正文部分
+
+填文章内容即可
+
+```html
+<!-- 正文部分 -->
+<article>
+  Grow read speak find son heavy. Reality win possible statement similar. Whatever skin high feeling job.
+  Clear
+  these like oil give. Three enough personal. Important crime study same. Wrong increase discussion move
+  administration hope doctor. Information deep model last. Ever lawyer treatment still. Official your thousand
+  rule against support benefit with. As dark tax another four officer heart education. Mention window body.
+  Report what someone big. Admit pressure top catch part receive. Beautiful probably address one no wife.
+  Human one need outside. Forget board realize remain tax. Yes agency daughter indeed. Car order parent break
+  great American approach. Describe writer democratic only agency process. Heart market once likely find treat
+  itself. Education industry after decision. Wrong clearly majority despite everybody you. Herself around
+  project easy guy space whom either. Move add push. Piece pressure word. Article pattern my find air might
+  history. Money wish medical watch thousand mean special training. In before under research half home.
+  Occur market few you position safe. Meeting executive husband weight. Dark best report fish trial third.
+  Number do wish anything century more sign. Wind now imagine after. Start college much model green.
+  East add get former force it believe. Science major own piece full perform. Individual piece state worry.
+  Entire wide player again unit reduce year I.
+</article>
+```
+
+### 分享按钮和模态框
+
+![image-20230104150434487](images/分享按钮与模态框.png)
+
+```html
+<!-- 分享按钮 点击会弹出一个模态框modal -->
+<button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#postLinkModal">Share
+</button>
+
+<!-- 分享模态框 -->
+<div class="modal fade" id="postLinkModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <!-- 模态框头部 -->
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Permalink</h5>
+        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">×</span>
+        </button>
+      </div>
+      <!-- 模态框内容 -->
+      <div class="modal-body">
+        <div class="form-group">
+          <input type="text" class="form-control" value="http://fake-share-url.com" readonly="">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+模态框的用法可以参考：[bootstrap5-modal](https://www.runoob.com/bootstrap5/bootstrap5-modal.html)
+
+
+
+使用 `.fade` 类可以设置模态框弹出或关闭的效果
+
+### 评论区
+
+![image-20221209231415511](images/评论区.png)
+
+```html
+<!-- 评论区 -->
+<div class="comments" id="comments">
+  <h3>2 Comments
+    <small>
+      <a href="/post/34?page=1#comments">
+        latest</a>
+    </small>
+    <form class="float-end" method="post" action="#">
+      <input type="hidden" name="csrf_token" value="xxx">
+      <button type="submit" class="btn btn-warning btn-sm">
+        Disable Comment
+      </button>
+    </form>
+  </h3>
+  <ul class="list-group">
+    <!-- 第1条评论 -->
+    <li class="list-group-item list-group-item-action flex-column">
+      <!-- 评论人 评论时间 -->
+      <div class="d-flex w-100 justify-content-between">
+        <h5 class="mb-1"><a href="#" target="_blank">Charles Norton</a></h5>
+        <small>a year ago</small>
+      </div>
+      <!-- 评论内容 -->
+      <p class="mb-1">Of such age.</p>
+      <!-- 通用的代码 按钮 Reply / Email / Delete -->
+      <div class="float-end">
+        <a class="btn btn-light btn-sm" href="/reply/comment/366">Reply</a>
+        <a class="btn btn-light btn-sm" href="#">Email</a>
+        <form class="inline" method="post" action="#">
+          <input type="hidden" name="csrf_token" value="xxx">
+          <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?');">Delete
+          </button>
+        </form>
+      </div>
+    </li>
+    <!-- 第二条评论 -->
+    <li class="list-group-item list-group-item-action flex-column">
+      <div class="d-flex w-100 justify-content-between">
+        <h5 class="mb-1"><a href="#" target="_blank">Timothy Holmes</a></h5>
+        <small>10 months ago</small>
+      </div>
+      <p class="mb-1">Personal mouth interest prove learn think positive name.</p>
+
+      <div class="float-end">
+        <a class="btn btn-light btn-sm" href="/reply/comment/440">Reply</a>
+        <a class="btn btn-light btn-sm" href="#">Email</a>
+        <form class="inline" method="post" action="#">
+          <input type="hidden" name="csrf_token" value="xxx">
+          <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?');">Delete
+          </button>
+        </form>
+      </div>
+    </li>
+  </ul>
+
+</div>
+```
+
+评论区应用了自定义样式
+
+```css
+.comments {
+    margin: 20px 0;
+}
+```
+
+含义是设置为上下边距20px
+
+
+
+**`.list-group-item-action`类的作用是什么？**
+
+鼠标悬停、点击时，列表项的颜色加深。
+
+
+
+**`.flex-column`类的作用是什么？** 
+
+我试了一下，把这个类删掉，不会影响样式。
+
+具体怎么使用可以参考 [bs5: flex direction](https://v5.bootcss.com/docs/5.1/utilities/flex/#direction)
+
+### 评论区分页器
+
+```html
+<!-- 评论区分页器 -->
+<nav aria-label="Page navigation">
+  <ul class="pagination ">
+    <li class="page-item disabled">
+      <a class="page-link" href="##comments">«</a>
+    </li>
+
+    <li class="page-item active">
+      <a class="page-link" href="#">1 <span class="visually-hidden">(current)</span></a>
+    </li>
+
+    <li class="page-item disabled">
+      <a class="page-link" href="##comments">»</a>
+    </li>
+  </ul>
+</nav>
+```
+
+分页器的使用可以参考：[bootstrap5-pagination](https://www.runoob.com/bootstrap5/bootstrap5-pagination.html)
+
+
+
+这里用`<nav>`标签包裹了分页器，其实用`<div>`标签也是一样的。
+
+用`<nav>`是为了更方便地应用自定义样式`static/style.css`
+
+```css
+nav {
+    margin-bottom: 20px;
+}
+```
+
+
+
+**`.visually-hidden`类有什么用？**
+
+在bs4中，这个类为`.sr-only`全称是 screen reader only,意为:(仅供)屏幕阅读器。
+
+在bs5中，这个类名被重名为`.visually-hidden`了。参考：https://v5.bootcss.com/docs/5.1/migration/#helpers
+
+### 评论回复表单
+
+这部分的逻辑稍微有点复杂
+
+在评论区的首部，有一个按钮“Disable Comment”。点击后会对这篇文章禁用回复评论表单。
+
+在每条评论都有一个按钮“Reply”。点击后会在回复评论表单上方添加提示。
+
+![](images/评论回复表单.png)
+
+#### 回复信息提示
+
+```css
+<!-- 评论回复信息提示框 -->
+<div class="alert alert-dark">
+  Reply to <strong>Charles Norton</strong>:
+  <a class="float-end" href="/post/34">Cancel</a>
+</div>
+```
+
+信息提示框的使用可以参考：[bootstrap5-alerts](https://www.runoob.com/bootstrap5/bootstrap5-alerts.html)
+
+#### 回复评论表单
+
+```html
+<!-- 评论回复表单 -->
+<div id="comment-form">
+  <form action="#" method="post" class="form" role="form">
+    <input id="author" name="author" type="hidden" value="Mima Kirigoe">
+    <input id="email" name="email" type="hidden" value="">
+    <input id="site" name="site" type="hidden" value="/">
+    <input id="csrf_token" name="csrf_token" type="hidden" value="xxx">
+    <div class="mb-3 required"><label class="form-control-label" for="body">Comment</label>
+      <textarea class="form-control" id="body" name="body" required=""></textarea>
+    </div>
+    <input class="btn btn-secondary" id="submit" name="submit" type="submit" value="Submit">
+  </form>
+</div>
+```
+
+#### 游客评论表单
+
+作为游客评论时，还需要填写自己的姓名、邮箱等数据，因此游客评论表单的样式和登录状态下的评论表单样式是不一样的。
+
+```html
+<div id="comment-form">
+  <form action="#" method="post" class="form" role="form">
+    <input id="csrf_token" name="csrf_token" type="hidden" value="xxx">
+    <div class="mb-3 required"><label class="form-control-label" for="author">Name</label>
+      <input class="form-control" id="author" name="author" required="" type="text" value="">
+    </div>
+    <div class="mb-3 required"><label class="form-control-label" for="email">Email</label>
+      <input class="form-control" id="email" name="email" required="" type="text" value="">
+    </div>
+    <div class="mb-3"><label class="form-control-label" for="site">Site</label>
+      <input class="form-control" id="site" name="site" type="text" value="">
+    </div>
+    <div class="mb-3 required"><label class="form-control-label" for="body">Comment</label>
+      <textarea class="form-control" id="body" name="body" required=""></textarea>
+    </div>
+    <input class="btn btn-secondary" id="submit" name="submit" type="submit" value="Submit">
+  </form>
+</div>
+```
+
+
+
+#### 禁用评论时
+
+如果要禁用评论，将`<div id="comment-form">`标签替换为
+
+```html
+<div class="tip"><h5>Comment disabled.</h5></div>
+```
+
+然后添加自定义样式
+
+```css
+.tip { /* from github.com */
+    color: black !important;
+    position: relative;
+    padding: 40px;
+    text-align: center;
+    background-color: #fafbfc;
+    border: 1px solid #e1e4e8;
+    border-radius: 3px;
+    box-shadow: inset 0 0 10px rgba(27, 31, 35, 0.05);
+}
+```
+
+## 小结
+
+这里仅构建了blog视图的相关前端代码，而且这里只是用来展示，还不能展示数据库的内容。
+
+后续还会进行修改。
+
+# 数据库构建
+
+最近看到的一篇好文章：https://mp.weixin.qq.com/s/LvsHDIY9qTWF61Bt2CZaNg
+
+首先先阅读一下原版代码，先解决我个人的几个问题。
+
+## 数据库加载过程
+
+使用flask_sqlalchemy时，导包的顺序有点乱，具体顺序是怎样的？
+
+在bluelog项目中，首先阅读`__init__.py`，第一次用到数据库的代码应该出现在视图函数里。也就是这一行
+
+```python
+from bluelog.blueprints.admin import admin_bp
+```
+
+进入admin视图发现，是通过`extensions.py`加载数据库的
+
+```python
+# blueprints/admin.py
+from bluelog.extensions import db
+```
+
+进入`extensions.py`，可以看到，代码通过这两行加载数据库
+
+```python
+# extensions.py
+from flask_sqlalchemy import SQLAlchemy
+db = SQLAlchemy()
+```
+
+回到`__init__.py`同样可以发现，这里的db也是通过`extensions.py`获得的。
+
+接着就是数据库对象的相关定义，`models.py`脚本的工作就是完成表定义等一系列工作。
+
+再回到`__init__.py`，可以看到，最后在`register_extensions()`函数中注册了数据库
+
+```python
+db.init_app(app)
+```
+
+**小结**
+
+总体来说，db对象的经历就是
+
+- 被定义：`db = SQLAlchemy()`
+- 初始化：在`models.py`中初始化各个数据表
+- 注册：`db.init_app(app)`
+
+## db对象是同一个吗
+
+在上面的过程中，我们可以看到，db对象在各个库中都有加载到，那每个包加载的db对象是同一个吗？其实是的，可以做如下测试
+
+在任意空文件夹创建三个文件
+
+```
+|-tmp
+  |-db.py
+  |-views.py
+  |-main.py
+```
+
+分别填入如下的代码
+
+`db.py`：这个脚本文件创建了一个数据库对象，接下来这个对象会被其他两个脚本导入。
+
+```python
+class DataBase:
+    def __init__(self):
+        self.name = 'apple'
+db = DataBase()
+```
+
+`views.py`：这个脚本导入了db对象，并且定义了一个函数，用于输出db对象的名称
+
+```python
+from db import db
+def show_dbname():
+    print("views.py db.name:", db.name)
+```
+
+`main.py`：首先加载views和db，然后展示db.name，修改db.name后再展示一次。
+
+```python
+from views import show_dbname
+from db import db
+
+show_dbname()
+
+print('main.py change db.name...')
+db.name = 'banana'
+
+show_dbname()
+```
+
+最后运行`__init__.py`文件
+
+```
+python __init__.py
+```
+
+```
+views.py db.name: apple
+main.py change db.name...
+views.py db.name: banana
+```
+
+可以看到，我们调用的是views里面的函数，但是是在`__init__.py`里修改db对象的名字，views里面的db也跟着一起发生改变了。
+
+## bluelog数据库设计
+
+首先思考一下数据库包含哪些表：
+
+- 用户表Admin：因为是私人博客，所以只有管理员表
+- 文章类别表Category：通过文章类别可以一次性索引该类别下的多篇文章。
+- 文章表Post：存储文章标题正文等信息
+- 评论表Comment：文章评论表。
+- 扩展链接表Link：右侧导航栏上半部分的链接信息。
+
+然后思考每个表的字段有哪些。
+
+> 首先，每个表都应该有`id`这个主键。
+>
+> 然后个人认为两个通用的字段是“**创建时间**”和“**更新时间**”，不过这个项目只有文章表和评论表有**创建时间**字段。
+
+![](images/bluelog_database.png)
+
+## flask_sqlalchemy的使用
+
+### 定义表和字段
+
+```python
+class MyTable(db.Model):
+    # 整型字段
+    id = db.Column(db.Integer, primary_key=True)
+    # 字符串
+    username = db.Column(db.String(20))
+    # text
+    content = db.Column(db.Text)
+    # 布尔
+    id_delete = db.Column(db.Boolean, default=False)
+    # 时间戳
+    create_time = db.Column(db.DateTime, default=datetime.utcnow, index=True)
+```
+
+### 一对多
+
+文章与类别：每篇文章都会属于一个类别，一个类别下有多篇文章
+
+```python
+class Post(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    category_id = db.Column(db.Integer, db.ForeignKey('category.id'))
+    category = db.relationship('Category', back_populates='posts')
+    
+class Category(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    posts = db.relationship('Post', back_populates='category')
+```
+
+`_id`定义在**一**的那边。
+
+`db.relationship`定义在**多**的那边
+
+这样，就可以通过`Post.category`找到文章对应的类别，也可以通过`Category.posts`找到这个类别下的所有文章。
+
+写法是成对的
+
+```python
+category = db.relationship('Category', back_populates='posts')
+posts = db.relationship('Post', back_populates='category')
+```
+
+### 自己一对自己多
+
+文章评论和评论回复关系。在文章下可以留下评论，同时这条评论也有可能被其他评论回复。
+
+```python
+class Comment(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    replied_id = db.Column(db.Integer, db.ForeignKey('comment.id'))
+    replies = db.relationship('Comment', back_populates='replied', cascade='all, delete-orphan')
+    replied = db.relationship('Comment', back_populates='replies', remote_side=[id])
+```
+
+
+
+replied_id就表示这条评论回复的评论的id
+
+repiled表这条评论回复的评论
+
+replies表示所有回复这条评论的评论
+
+
+
+例：tom评论文章“very good”，lily评论tom的这条评论“I agree”，jack也评论道“Yes”
+
+```python
+tom_comment.id = 1
+tom_comment.replies = [lily_comment, jack_comment]
+tom_comment.replied = None  # 因为tom评论的是文章
+
+lily_comment.id = 2
+lily_comment.replied_id = 1
+lily_comment.replied = tom_comment
+
+jack_comment.id = 3
+jack_comment.replied_id = 1
+jack_comment.replied = tom_comment
+```
+
+### 创建单条数据
+
+```python
+category = Category(name='Default')
+db.session.add(category)
+db.session.commit()
+```
+
+### 创建多条数据
+
+```python
+twitter = Link(name='Twitter', url='#')
+facebook = Link(name='Facebook', url='#')
+linkedin = Link(name='LinkedIn', url='#')
+google = Link(name='Google+', url='#')
+db.session.add_all([twitter, facebook, linkedin, google])
+db.session.commit()
+```
+
+### 获取数据
+
+```python
+Category.query.get(1)
+Admin.query.first()
+
+Category.query.filter_by(name=field.data).first()
+
+Post.query.get_or_404(post_id)
+
+# 获取并排序
+Category.query.order_by(Category.name).all()
+```
+
+### 分页器
+
+```python
+Post.query.order_by(Post.timestamp.desc()).paginate(
+        page, per_page=current_app.config['BLUELOG_MANAGE_POST_PER_PAGE'])
+
+Post.query.with_parent(category).order_by(Post.timestamp.desc()).paginate(page, per_page)
+
+Post.query.order_by(Post.timestamp.desc()).paginate(page, per_page=per_page)
+```
+
+
+
+调用`paginate`方法会返回一个`Pagination`类实例，包含分页信息。
+
+`Pagination.items`以列表形式返回对应页的记录。
+
+`Pagination`类属性
+
+```python
+pagination.items  # 当前页面的记录
+pagination.page  # 当前页数
+pagination.per_page  # 每页的记录数
+pagination.pages  # 总页数
+pagination.total  # 记录总数
+pagination.next_num  # 下一页的页数
+pagination.prev_num  # 上一页的页数
+pagination.has_next  # 如果存在下一页，返回True
+pagination.has_prev  # 如果存在上一页，返回True
+pagination.query  # 分页的源查询
+pagination.prev()  # 上一页的分页对象
+pagination.next()  # 下一页的分页对象
+
+# 迭代一个页数列表。
+# left_edge 表示最左边的页数
+# left_current 表示当前页数左边的页数
+# right_edge 表示最右边的页数
+# right_current 表示当前页数左边的页数
+# 假设总共20页，默认设置迭代的页数列表为
+# 1, 2, None, 8, 9, 10, 11, 12, 13, 14, 15, None, 19, 20
+pagination.iter_pages(left_edge=2, left_current=2, right_current=5, right_edge=2)
+```
+
+
+
+
+
+## faker库
+
+由于创建好的数据库是空的，为了能看到网页的效果，可以使用faker库生成一些假数据
+
+在bluelog项目中，使用了Faker库来生成假数据，这里总结了项目中Faker库的使用场景
+
+
+
+### 安装faker
+
+```
+pip install faker
+```
+
+这也是项目中第一个安装的包。
+
+### 使用faker
+
+下面列举的项目中用到的faker库的用法
+
+```python
+from faker import Faker
+fake = Faker()
+
+print('单词:', fake.word())
+print('一句话:', fake.sentence())
+print('指定字符数量的一段话:', fake.text())
+print('时间戳:', fake.date_time_this_year())
+
+print('姓名:', fake.name())
+print('邮箱:', fake.email())
+print('链接:', fake.url())
+```
+
+生成一个随机单词
+
+```
+单词: animal
+一句话: Order sound coach activity far particularly bad.
+指定字符数量的一段话: Sound able right full. Along reveal eat too.
+Yes do opportunity help top. Effect others east employee now laugh.
+Evening who tend Mrs stage. Car reveal program as maintain.
+时间戳: 2022-09-25 18:18:02
+姓名: Brent Thomas
+邮箱: enguyen@example.org
+链接: https://www.anderson.com/
+```
+
+### 指定语言
+
+在初始化的时候可以指定生成的语言，比如改为中文，这样生成的内容就是全是中文了。
+
+```python
+fake = Faker('zh-cn')
+```
+
+
+
 
 
 # 后端构建
@@ -1117,7 +1903,7 @@ def index():
 
 在后端构建的部分，尽量就不要放前端的代码了，同时在构建前端的时候，也尽量不要放后端的代码。
 
-# 
+
 
 # 其他
 

@@ -1,0 +1,198 @@
+{% extends 'base.html' %}
+{% block title %}文章标题{% endblock %}
+{% block content %}
+
+<!-- 文章标题: 包括文章类别、撰写时间。如果是登录状态、还有编辑和修改按钮-->
+<div class="page-header">
+  <!-- 文章标题 -->
+  <h1>Join body understand firm now visit cultural health.
+    <span class="float-end">
+      <!-- 编辑按钮 -->
+      <a class="btn btn-primary btn-sm" href="#">Edit</a>
+      <!-- 删除按钮 -->
+      <form class="inline" method="post" action="#">
+        <input type="hidden" name="csrf_token" value="x">
+        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?');">Delete
+        </button>
+      </form>
+    </span>
+  </h1>
+
+  <!-- 文章类别和日期 -->
+  <small>
+    Category: <a href="/category/1">Default</a><br>
+    Date: November 2, 2022
+  </small>
+</div>
+
+<!-- 文章正文、评论区 -->
+<div class="col-sm-8">
+  <!-- 正文部分 -->
+  <article>
+    Grow read speak find son heavy. Reality win possible statement similar. Whatever skin high feeling job.
+    Clear
+    these like oil give. Three enough personal. Important crime study same. Wrong increase discussion move
+    administration hope doctor. Information deep model last. Ever lawyer treatment still. Official your thousand
+    rule against support benefit with. As dark tax another four officer heart education. Mention window body.
+    Report what someone big. Admit pressure top catch part receive. Beautiful probably address one no wife.
+    Human one need outside. Forget board realize remain tax. Yes agency daughter indeed. Car order parent break
+    great American approach. Describe writer democratic only agency process. Heart market once likely find treat
+    itself. Education industry after decision. Wrong clearly majority despite everybody you. Herself around
+    project easy guy space whom either. Move add push. Piece pressure word. Article pattern my find air might
+    history. Money wish medical watch thousand mean special training. In before under research half home.
+    Occur market few you position safe. Meeting executive husband weight. Dark best report fish trial third.
+    Number do wish anything century more sign. Wind now imagine after. Start college much model green.
+    East add get former force it believe. Science major own piece full perform. Individual piece state worry.
+    Entire wide player again unit reduce year I.
+  </article>
+  <hr>
+  <!-- 分享按钮 点击会弹出一个模态框modal -->
+  <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#postLinkModal">Share
+  </button>
+
+<!-- 分享模态框 -->
+<div class="modal fade" id="postLinkModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <!-- 模态框头部 -->
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Permalink</h5>
+        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">×</span>
+        </button>
+      </div>
+      <!-- 模态框内容 -->
+      <div class="modal-body">
+        <div class="form-group">
+          <input type="text" class="form-control" value="http://fake-share-url.com" readonly="">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 评论区 -->
+<div class="comments" id="comments">
+  <h3>2 Comments
+    <small>
+      <a href="/post/34?page=1#comments">
+        latest</a>
+    </small>
+    <form class="float-end" method="post" action="#">
+      <input type="hidden" name="csrf_token" value="xxx">
+      <button type="submit" class="btn btn-warning btn-sm">
+        Disable Comment
+      </button>
+    </form>
+  </h3>
+  <ul class="list-group">
+    <!-- 第1条评论 -->
+    <li class="list-group-item list-group-item-action flex-column">
+      <!-- 评论人 评论时间 -->
+      <div class="d-flex w-100 justify-content-between">
+        <h5 class="mb-1"><a href="#" target="_blank">Charles Norton</a></h5>
+        <small>a year ago</small>
+      </div>
+      <!-- 评论内容 -->
+      <p class="mb-1">Of such age.</p>
+      <!-- 通用的代码 按钮 Reply / Email / Delete -->
+      <div class="float-end">
+        <a class="btn btn-light btn-sm" href="/reply/comment/366">Reply</a>
+        <a class="btn btn-light btn-sm" href="#">Email</a>
+        <form class="inline" method="post" action="#">
+          <input type="hidden" name="csrf_token" value="xxx">
+          <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?');">Delete
+          </button>
+        </form>
+      </div>
+    </li>
+    <!-- 第二条评论 -->
+    <li class="list-group-item list-group-item-action flex-column">
+      <div class="d-flex w-100 justify-content-between">
+        <h5 class="mb-1"><a href="#" target="_blank">Timothy Holmes</a></h5>
+        <small>10 months ago</small>
+      </div>
+      <p class="mb-1">Personal mouth interest prove learn think positive name.</p>
+
+      <div class="float-end">
+        <a class="btn btn-light btn-sm" href="/reply/comment/440">Reply</a>
+        <a class="btn btn-light btn-sm" href="#">Email</a>
+        <form class="inline" method="post" action="#">
+          <input type="hidden" name="csrf_token" value="xxx">
+          <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?');">Delete
+          </button>
+        </form>
+      </div>
+    </li>
+  </ul>
+
+</div>
+
+<!-- 评论区分页器 -->
+<nav aria-label="Page navigation">
+  <ul class="pagination ">
+    <li class="page-item disabled">
+      <a class="page-link" href="##comments">«</a>
+    </li>
+
+    <li class="page-item active">
+      <a class="page-link" href="#">1 <span class="visually-hidden">(current)</span></a>
+    </li>
+
+    <li class="page-item disabled">
+      <a class="page-link" href="##comments">»</a>
+    </li>
+  </ul>
+</nav>
+
+<!-- 评论回复提示框 -->
+<div class="alert alert-dark">
+  Reply to <strong>Charles Norton</strong>:
+  <a class="float-end" href="/post/34">Cancel</a>
+</div>
+
+  <!-- 评论回复表单 -->
+  <!-- <div id="comment-form">
+          <form action="#" method="post" class="form" role="form">
+            <input id="author" name="author" type="hidden" value="Mima Kirigoe">
+            <input id="email" name="email" type="hidden" value="">
+            <input id="site" name="site" type="hidden" value="/">
+            <input id="csrf_token" name="csrf_token" type="hidden" value="xxx">
+            <div class="mb-3 required"><label class="form-control-label" for="body">Comment</label>
+              <textarea class="form-control" id="body" name="body" required=""></textarea>
+            </div>
+            <input class="btn btn-secondary" id="submit" name="submit" type="submit" value="Submit">
+          </form>
+        </div> -->
+
+  <!-- 游客评论回复表单 -->
+  <!-- <div id="comment-form">
+          <form action="#" method="post" class="form" role="form">
+            <input id="csrf_token" name="csrf_token" type="hidden" value="xxx">
+            <div class="mb-3 required"><label class="form-control-label" for="author">Name</label>
+              <input class="form-control" id="author" name="author" required="" type="text" value="">
+            </div>
+            <div class="mb-3 required"><label class="form-control-label" for="email">Email</label>
+              <input class="form-control" id="email" name="email" required="" type="text" value="">
+            </div>
+            <div class="mb-3"><label class="form-control-label" for="site">Site</label>
+              <input class="form-control" id="site" name="site" type="text" value="">
+            </div>
+            <div class="mb-3 required"><label class="form-control-label" for="body">Comment</label>
+              <textarea class="form-control" id="body" name="body" required=""></textarea>
+            </div>
+            <input class="btn btn-secondary" id="submit" name="submit" type="submit" value="Submit">
+          </form>
+        </div> -->
+
+  <!-- 若禁用评论，则显示下面的代码 -->
+  <div class="tip">
+    <h5>Comment disabled.</h5>
+  </div>
+</div>
+
+<!-- 侧边栏 -->
+<div class="col-sm-4 sidebar">
+  {% include 'blog/_sidebar.html' %}
+</div>
+{% endblock content %}

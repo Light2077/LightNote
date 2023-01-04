@@ -1,21 +1,13 @@
-.page-header {
-    padding-top: 20px;
-    padding-bottom: 20px;
-}
-
-a {
-    color: #2780E3;
-    text-decoration: none;
-    /* 不显示链接的下划线 */
-    background-color: transparent;
-}
-
-
 footer {
     margin-top: 30px;
     padding: 10px 0 40px;
     color: #999;
     border-top: 1px solid #e5e5e5;
+}
+
+.page-header {
+    padding-top: 20px;
+    padding-bottom: 20px;
 }
 
 .page-footer {
@@ -28,10 +20,6 @@ footer {
 
 .comments {
     margin: 20px 0;
-}
-
-nav {
-    margin-bottom: 20px;
 }
 
 .tip {
