@@ -409,7 +409,7 @@ base模板主要框架如下：
   {% block head %}
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>index</title>
+  <title>{% block title %}{% endblock %}</title>
   <!-- bootstrap -->
   <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/5.1.1/css/bootstrap.min.css">
   <link rel="stylesheet" href="static/style.css">
@@ -1012,6 +1012,13 @@ def index():
 
 这里用的是虚拟数据，后面在写后端的时候会修改这部分的代码。
 
+注意修改`static/style.css`，取消链接的下划线
+
+```css
+```
+
+
+
 ### 分页器`_pagination.html`
 
 ```html
@@ -1141,8 +1148,8 @@ category.html与index.html类似，差别在于标题和文章数量
 在`blueprints/blog.py`内，添加：
 
 ```python
-@blog_bp.route('/category')
-def show_category():
+@blog_bp.route('/category/<int:category_id>')
+def show_category(category_id):
     return render_template("blog/category.html")
 ```
 
@@ -1538,6 +1545,19 @@ nav {
 }
 ```
 
+#### 添加视图函数
+
+在`blueprints/blog.html`内
+
+```python
+
+@blog_bp.route('/post/<int:post_id>', methods=['GET', 'POST'])
+def show_post(post_id):
+    return render_template('blog/post.html')
+```
+
+
+
 ## 小结
 
 这里仅构建了blog视图的相关前端代码，而且这里只是用来展示，还不能展示数据库的内容。
@@ -1653,23 +1673,7 @@ views.py db.name: banana
 
 可以看到，我们调用的是views里面的函数，但是是在`__init__.py`里修改db对象的名字，views里面的db也跟着一起发生改变了。
 
-## bluelog数据库设计
 
-首先思考一下数据库包含哪些表：
-
-- 用户表Admin：因为是私人博客，所以只有管理员表
-- 文章类别表Category：通过文章类别可以一次性索引该类别下的多篇文章。
-- 文章表Post：存储文章标题正文等信息
-- 评论表Comment：文章评论表。
-- 扩展链接表Link：右侧导航栏上半部分的链接信息。
-
-然后思考每个表的字段有哪些。
-
-> 首先，每个表都应该有`id`这个主键。
->
-> 然后个人认为两个通用的字段是“**创建时间**”和“**更新时间**”，不过这个项目只有文章表和评论表有**创建时间**字段。
-
-![](images/bluelog_database.png)
 
 ## flask_sqlalchemy的使用
 
@@ -1706,15 +1710,15 @@ class Category(db.Model):
 
 `_id`定义在**一**的那边。
 
-`db.relationship`定义在**多**的那边
+`db.relationship`定义在**两边**
 
 这样，就可以通过`Post.category`找到文章对应的类别，也可以通过`Category.posts`找到这个类别下的所有文章。
 
-写法是成对的
+relationship的写法是成对的，back_populates表示怎么反过来找到。比如：
 
 ```python
-category = db.relationship('Category', back_populates='posts')
-posts = db.relationship('Post', back_populates='category')
+c = Category()
+c.posts  # 就能找到属于该类别的所有文章
 ```
 
 ### 自己一对自己多
@@ -1733,7 +1737,7 @@ class Comment(db.Model):
 
 replied_id就表示这条评论回复的评论的id
 
-repiled表这条评论回复的评论
+repiled表示这条评论回复的评论
 
 replies表示所有回复这条评论的评论
 
@@ -1786,6 +1790,9 @@ Post.query.get_or_404(post_id)
 
 # 获取并排序
 Category.query.order_by(Category.name).all()
+
+# 获取限定数量的文章
+Post.query.limit(10).all()
 ```
 
 ### 分页器
@@ -1831,13 +1838,264 @@ pagination.next()  # 下一页的分页对象
 pagination.iter_pages(left_edge=2, left_current=2, right_current=5, right_edge=2)
 ```
 
+## bluelog数据库设计
 
+首先思考一下数据库包含哪些表：
+
+- 用户表Admin：因为是私人博客，所以只有管理员表
+- 文章类别表Category：通过文章类别可以一次性索引该类别下的多篇文章。
+- 文章表Post：存储文章标题正文等信息
+- 评论表Comment：文章评论表。
+- 扩展链接表Link：右侧导航栏上半部分的链接信息。
+
+然后思考每个表的字段有哪些。
+
+> 首先，每个表都应该有`id`这个主键。
+>
+> 然后个人认为两个通用的字段是“**创建时间**”和“**更新时间**”，不过这个项目只有文章表和评论表有**创建时间**字段。
+
+![](images/bluelog_database.png)
+
+## models.py
+
+有了以上铺垫，下面开始创建数据库，首先在`bluelog/bluelog`目录下创建`extensions.py`和`models.py`
+
+```
+|-bluelog
+  |-bluelog
+    |-extensions.py  # 统一管理插件
+    |-models.py  # 数据库定义
+```
+
+安装flask_sqlalchemy插件
+
+```
+poetry add flask_sqlalchemy
+```
+
+
+
+在`extensions.py`内
+
+```python
+from flask_sqlalchemy import SQLAlchemy
+db = SQLAlchemy()
+```
+
+在`models.py`内，按照上面定义数据库模型
+
+```python
+from datetime import datetime
+
+from werkzeug.security import generate_password_hash, check_password_hash
+from bluelog.extensions import db
+
+
+class Admin(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(20))
+    password_hash = db.Column(db.String(128))
+    blog_title = db.Column(db.String(60))
+    blog_sub_title = db.Column(db.String(100))
+    name = db.Column(db.String(30))
+    about = db.Column(db.Text)
+
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def validate_password(self, password):
+        return check_password_hash(self.password_hash, password)
+
+
+class Category(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(30), unique=True)
+
+    posts = db.relationship('Post', back_populates='category')
+
+    def delete(self):
+        default_category = Category.query.get(1)
+        posts = self.posts[:]
+        for post in posts:
+            post.category = default_category
+        db.session.delete(self)
+        db.session.commit()
+
+
+class Post(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(60))
+    body = db.Column(db.Text)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow, index=True)
+    can_comment = db.Column(db.Boolean, default=True)
+
+    category_id = db.Column(db.Integer, db.ForeignKey('category.id'))
+
+    category = db.relationship('Category', back_populates='posts')
+    comments = db.relationship(
+        'Comment', back_populates='post', cascade='all, delete-orphan')
+
+
+class Comment(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    author = db.Column(db.String(30))
+    email = db.Column(db.String(254))
+    site = db.Column(db.String(255))
+    body = db.Column(db.Text)
+    from_admin = db.Column(db.Boolean, default=False)
+    reviewed = db.Column(db.Boolean, default=False)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow, index=True)
+
+    replied_id = db.Column(db.Integer, db.ForeignKey('comment.id'))
+    post_id = db.Column(db.Integer, db.ForeignKey('post.id'))
+
+    post = db.relationship('Post', back_populates='comments')
+    replies = db.relationship(
+        'Comment', back_populates='replied', cascade='all, delete-orphan')
+    replied = db.relationship(
+        'Comment', back_populates='replies', remote_side=[id])
+    # Same with:
+    # replies = db.relationship('Comment', backref=db.backref('replied', remote_side=[id]),
+    # cascade='all,delete-orphan')
+
+
+class Link(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(30))
+    url = db.Column(db.String(255))
+```
+
+在`bluelog/__init__.py`内初始化
+
+```python
+...
+from bluelog.extensions import db
+
+def create_app(config_name=None):
+    ...
+    register_extensions(app)  # 注册插件
+    return app
+
+def register_extensions(app):
+    db.init_app(app)
+```
+
+在`bluelog/settings.py`内配置数据库的路径参数
+
+```python
+# SQLite URI compatible
+WIN = sys.platform.startswith('win')
+if WIN:
+    prefix = 'sqlite:///'
+else:
+    prefix = 'sqlite:////'
+
+...
+
+class DevelopmentConfig(BaseConfig):
+    SQLALCHEMY_DATABASE_URI = prefix + os.path.join(basedir, 'data-dev.db')
+
+
+class TestingConfig(BaseConfig):
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'  # in-memory database
+
+
+class ProductionConfig(BaseConfig):
+    SQLALCHEMY_DATABASE_URI = os.getenv(
+        'DATABASE_URL', prefix + os.path.join(basedir, 'data.db'))
+```
+
+## 使用命令初始化数据库
+
+bluelog项目通过click库定义命令来实现数据库的初始化。
+
+### 初始化空数据库
+
+在`bluelog/__init__.py`中
+
+```python
+def create_app(config_name=None):
+    ...
+    register_commands(app)  # 注册命令
+    return app
+
+def register_commands(app):
+    @app.cli.command()
+    @click.option('--drop', is_flag=True, help='Create after drop.')
+    def initdb(drop):
+        """Initialize the database."""
+        if drop:
+            click.confirm('This operation will delete the database, do you want to continue?', abort=True)
+            db.drop_all()
+            click.echo('Drop tables.')
+        db.create_all()
+        click.echo('Initialized database.')
+```
+
+此时在主目录下运行
+
+```
+flask init
+```
+
+就会发现多了一个文件：`bluelog/data-dev.db`
+
+上面这个命令创建了一个空的数据库。
+
+### 创建管理员和默认分类
+
+在这个初始化命令中，确保生成管理员账户、文章的默认分类。
+
+在`bluelog/__init__.py`中，加入
+
+```python
+...
+from bluelog.models import Admin, Post, Category, Comment, Link
+
+def register_commands(app):
+    ...
+    @app.cli.command()
+    @click.option('--username', prompt=True, help='The username used to login.')
+    @click.option('--password', prompt=True, hide_input=True,
+                  confirmation_prompt=True, help='The password used to login.')
+    def init(username, password):
+        """Building Bluelog, just for you."""
+
+        click.echo('Initializing the database...')
+        db.create_all()
+
+        admin = Admin.query.first()
+        if admin is not None:
+            click.echo('The administrator already exists, updating...')
+            admin.username = username
+            admin.set_password(password)
+        else:
+            click.echo('Creating the temporary administrator account...')
+            admin = Admin(
+                username=username,
+                blog_title='Bluelog',
+                blog_sub_title="No, I'm the real thing.",
+                name='Admin',
+                about='Anything about you.'
+            )
+            admin.set_password(password)
+            db.session.add(admin)
+
+        category = Category.query.first()
+        if category is None:
+            click.echo('Creating the default category...')
+            category = Category(name='Default')
+            db.session.add(category)
+
+        db.session.commit()
+        click.echo('Done.')
+```
 
 
 
 ## faker库
 
-由于创建好的数据库是空的，为了能看到网页的效果，可以使用faker库生成一些假数据
+由于创建好的数据库是空的，为了能看到网页的效果，需要生成一些假数据来填充页面
 
 在bluelog项目中，使用了Faker库来生成假数据，这里总结了项目中Faker库的使用场景
 
@@ -1891,17 +2149,532 @@ Evening who tend Mrs stage. Car reveal program as maintain.
 fake = Faker('zh-cn')
 ```
 
+### 创建虚拟数据
+
+创建`bluelog/fakes.py`
+
+```python
+import random
+
+from faker import Faker
+from sqlalchemy.exc import IntegrityError
+
+from bluelog.extensions import db
+from bluelog.models import Admin, Category, Post, Comment, Link
+
+fake = Faker()
+
+
+def fake_admin():
+    admin = Admin(
+        username='admin',
+        blog_title='Bluelog',
+        blog_sub_title="No, I'm the real thing.",
+        name='Mima Kirigoe',
+        about='Um, l, Mima Kirigoe, had a fun time as a member of CHAM...'
+    )
+    admin.set_password('helloflask')
+    db.session.add(admin)
+    db.session.commit()
+
+
+def fake_categories(count=10):
+    category = Category(name='Default')
+    db.session.add(category)
+
+    for i in range(count):
+        category = Category(name=fake.word())
+        db.session.add(category)
+        try:
+            db.session.commit()
+        except IntegrityError:
+            db.session.rollback()
+
+
+def fake_posts(count=50):
+    for i in range(count):
+        post = Post(
+            title=fake.sentence(),
+            body=fake.text(2000),
+            category=Category.query.get(random.randint(1, Category.query.count())),
+            timestamp=fake.date_time_this_year()
+        )
+
+        db.session.add(post)
+    db.session.commit()
+
+
+def fake_comments(count=500):
+    for i in range(count):
+        comment = Comment(
+            author=fake.name(),
+            email=fake.email(),
+            site=fake.url(),
+            body=fake.sentence(),
+            timestamp=fake.date_time_this_year(),
+            reviewed=True,
+            post=Post.query.get(random.randint(1, Post.query.count()))
+        )
+        db.session.add(comment)
+
+    salt = int(count * 0.1)
+    for i in range(salt):
+        # unreviewed comments
+        comment = Comment(
+            author=fake.name(),
+            email=fake.email(),
+            site=fake.url(),
+            body=fake.sentence(),
+            timestamp=fake.date_time_this_year(),
+            reviewed=False,
+            post=Post.query.get(random.randint(1, Post.query.count()))
+        )
+        db.session.add(comment)
+
+        # from admin
+        comment = Comment(
+            author='Mima Kirigoe',
+            email='mima@example.com',
+            site='example.com',
+            body=fake.sentence(),
+            timestamp=fake.date_time_this_year(),
+            from_admin=True,
+            reviewed=True,
+            post=Post.query.get(random.randint(1, Post.query.count()))
+        )
+        db.session.add(comment)
+    db.session.commit()
+
+    # replies
+    for i in range(salt):
+        comment = Comment(
+            author=fake.name(),
+            email=fake.email(),
+            site=fake.url(),
+            body=fake.sentence(),
+            timestamp=fake.date_time_this_year(),
+            reviewed=True,
+            replied=Comment.query.get(random.randint(1, Comment.query.count())),
+            post=Post.query.get(random.randint(1, Post.query.count()))
+        )
+        db.session.add(comment)
+    db.session.commit()
+
+
+def fake_links():
+    twitter = Link(name='Twitter', url='#')
+    facebook = Link(name='Facebook', url='#')
+    linkedin = Link(name='LinkedIn', url='#')
+    google = Link(name='Google+', url='#')
+    db.session.add_all([twitter, facebook, linkedin, google])
+    db.session.commit()
+
+```
+
+发现一个问题，在`fake_comments()`中，在生成评论的评论时，文章id和评论id都是随机的
+
+```python
+comment = Comment(
+    author=fake.name(),
+    email=fake.email(),
+    site=fake.url(),
+    body=fake.sentence(),
+    timestamp=fake.date_time_this_year(),
+    reviewed=True,
+    replied=Comment.query.get(random.randint(1, Comment.query.count())),
+    post=Post.query.get(random.randint(1, Post.query.count()))
+)
+```
+
+这就可能会导致在A文章回复了B文章的评论，出现回复和文章不匹配的问题。
 
 
 
+```python
+IntegrityError
+```
 
-# 后端构建
+数据库设置了唯一约束，但是提交的是重复数据，就会出现此错误。
 
-个人认为，前后端当然最好还是分离搭建，虽然可能在flask这种框架中，分离可能会显得有些麻烦。
+### 添加虚拟数据初始化命令
+
+在`bluelog/__init__.py`中的`register_commands`函数，加入
+
+```python
+def register_commands(app):
+    ...
+    
+    @app.cli.command()
+    @click.option('--category', default=10, help='Quantity of categories, default is 10.')
+    @click.option('--post', default=50, help='Quantity of posts, default is 50.')
+    @click.option('--comment', default=500, help='Quantity of comments, default is 500.')
+    def forge(category, post, comment):
+        """Generate fake data."""
+        from bluelog.fakes import fake_admin, fake_categories, fake_posts, fake_comments, fake_links
+
+        db.drop_all()
+        db.create_all()
+
+        click.echo('Generating the administrator...')
+        fake_admin()
+
+        click.echo('Generating %d categories...' % category)
+        fake_categories(category)
+
+        click.echo('Generating %d posts...' % post)
+        fake_posts(post)
+
+        click.echo('Generating %d comments...' % comment)
+        fake_comments(comment)
+
+        click.echo('Generating links...')
+        fake_links()
+
+        click.echo('Done.')
+
+```
+
+在命令行输入
+
+```
+flask forge
+```
+
+就会生成虚拟数据
+
+# 用户认证
+
+## 初始化插件
+
+http://flask-login.readthedocs.io/#how-it-works
+
+影响用户在登录和未登录状态下看到的页面的差异。
+
+使用`flask_login`来进行用户认证功能，首先安装该插件
+
+```
+poetry add flask_login
+```
+
+在`extensions.py`脚本内
+
+```python
+...
+from flask_login import LoginManager
+
+...
+login_manager = LoginManager()
+```
+
+在`bluelog/__init__.py`内
+
+```python
+...
+from bluelog.extensions import db, login_manager
+
+...
+def register_extensions(app):
+    db.init_app(app)
+    login_manager.init_app(app)
+```
 
 
 
-在后端构建的部分，尽量就不要放前端的代码了，同时在构建前端的时候，也尽量不要放后端的代码。
+Flask-Login 要求表示用户的类必须实现下表所示的这几个属性和方法，以使用来判断用户的认证状态。
+
+| 属性/方法          | 说明                                                     |
+| ------------------ | -------------------------------------------------------- |
+| `is_authenticated` | 如果用户已经通过认证，返回True ， 否则返回False          |
+| `is_active`        | 如果允许用户登录， 返回True ，否则返回False              |
+| `is_anonymous`     | 如果当前用户未登录（匿名用户），返回True ，否则返回False |
+| `get_id()`         | 以Unicode 形式返回用户的唯一标识符                       |
+
+修改`models.py`
+
+```python
+from flask_login import UserMixin
+...
+class Admin(db.Model, UserMixin):
+    ...
+```
+
+这样Admin类就默认实现了上述的属性和方法
+
+## current_user对象
+
+current_user是一个和current_app 类似的代理对象（ Proxy ），表示当前用户。调用时会返回与当前用户对
+应的用户模型类对象。
+
+在`blueprints/blog.py`文件中，编写如下测试代码
+
+```python
+@blog_bp.route('/test')
+def test_current_user():
+    from flask_login import current_user
+    print(type(current_user), current_user)
+    print("is_authenticated", current_user.is_authenticated)
+    print("is_active", current_user.is_active)
+    print("is_anonymous", current_user.is_anonymous)
+    print("get_id()", current_user.get_id())
+    return "test"
+```
+
+访问：http://127.0.0.1:5000/test
+
+会出现报错信息
+
+```
+Exception: Missing user_loader or request_loader. Refer to http://flask-login.readthedocs.io/#how-it-works for more info.
+```
+
+因为需要实现一个`load_user()`函数
+
+在`extensions.py`脚本内
+
+```python
+@login_manager.user_loader
+def load_user(user_id):
+    from bluelog.models import Admin
+    user = Admin.query.get(int(user_id))
+    return user
+```
+
+再次访问：http://127.0.0.1:5000/test，查看控制台输出
+
+```
+<class 'werkzeug.local.LocalProxy'> <flask_login.mixins.AnonymousUserMixin object at 0x00000196BD81A220>
+is_authenticated False
+is_active False
+is_anonymous True
+get_id() None
+```
+
+此时由于是未登录状态，因此`get_id()`返回的是`None`
+
+## 用户登录
+
+在`blueprints/auth.py`内
+
+```python
+from flask_login import login_user, logout_user, login_required, current_user
+@auth_bp.route('/login', methods=['GET', 'POST'])
+def login():
+    if current_user.is_authenticated:
+        return "已登录！"
+    admin = Admin.query.first()
+    login_user(admin, remember=True)
+    return "登录成功"
+```
+
+修改`settings.py`，加入`SECRET_KEY`否则无法登录
+
+```python
+class BaseConfig(object):
+    ...
+    SECRET_KEY = os.getenv('SECRET_KEY', 'dev key')
+```
+
+访问http://127.0.0.1:5000/auth/login，会显示登录成功
+
+此时再访问：http://127.0.0.1:5000/test，查看控制台输出
+
+```
+<class 'werkzeug.local.LocalProxy'> <Admin 1>
+is_authenticated True
+is_active True
+is_anonymous False
+get_id() 1
+```
+
+此时
+
+```python
+current_user == Admin.query.get(1)
+```
+
+## 用户注销
+
+```python
+@auth_bp.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return "注销成功"
+```
+
+`@login_required`就表示必须登录才能访问这个页面，如果是未登录状态访问：http://127.0.0.1:5000/auth/logout
+
+会显示：Unauthorized
+
+在`extensions.py`中加入
+
+```python
+...
+
+login_manager.login_view = 'auth.login'
+# login_manager.login_message = 'Your custom message'
+login_manager.login_message_category = 'warning'
+```
+
+此时在未登录状态访问：http://127.0.0.1:5000/auth/logout
+
+会自动跳转到登录页面。
+
+# 后端构建与模板调整
+
+现在有了数据库数据了，就可以开始写视图函数了。
+
+由于之前的前端模板是直接使用的写好的页面，这时候也要替换成数据库的数据。
+
+## 模板上下文
+
+配置通用的模板上下文，这样就不必在每个视图都要传一遍了。
+
+在`bluelog/__init__.py`内修改并添加：
+
+```python
+def create_app(config_name=None):
+    ...
+    register_template_context(app)  # 注册模板上下文
+    return app
+
+def register_template_context(app):
+    @app.context_processor
+    def make_template_context():
+        admin = Admin.query.first()
+        categories = Category.query.order_by(Category.name).all()
+        links = Link.query.order_by(Link.name).all()
+        # if current_user.is_authenticated:
+        #     unread_comments = Comment.query.filter_by(reviewed=False).count()
+        # else:
+        #     unread_comments = None
+        return dict(
+            admin=admin, categories=categories,
+            links=links)
+```
+
+> 注意到中间有注释，current_user需要用到flask_login插件，将在后面引入这个插件后再回来修改这部分的代码。
+
+## 前端模板修改
+
+### 修改`index.html`
+
+将标题和副标题替换为数据库中admin的相关信息
+
+```html
+{% extends 'base.html' %}
+{% block title %}Home{% endblock %}
+{% block content %}
+
+<!-- header -->
+<div class="page-header">
+  <h1 class="display-3">{{ admin.blog_title|default('Blog Title') }}</h1>
+  <h4 class="text-muted">&nbsp;{{ admin.blog_sub_title|default('Blog Subtitle') }}</h4>
+</div>
+
+<!-- 下面的不变 -->
+...
+{% endblock %}
+```
+
+### 修改`_post.html`
+
+#### 初步修改`_post.html`
+
+```html
+{% for post in posts %}
+<article>
+  <h4 class="text-primary"><a href="#">{{ post.title }}</a></h4>
+  <p>
+    {{ post.body|truncate }}
+    <small><a href="#">Read More</a></small>
+  </p>
+  <small>
+    Comments: <a href="#">{{ post.comments|length }}</a>&nbsp;&nbsp;
+    Category: <a href="#">{{ post.category.name }}</a>
+    <span class="float-end">{{ post.timestamp }}</span>
+  </small>
+  <!-- 只要不是最后一盘文章，都在文章底部放个hr水平分隔线 -->
+  {% if not loop.last %}
+  <hr>
+  {% endif %}
+</article>
+{% endfor %}
+```
+
+#### 修改视图函数
+
+修改`blueprints/blog.py`
+
+```python
+@blog_bp.route('/')
+def index():
+    posts = Post.query.limit(10).all()
+    return render_template("blog/index.html", posts=posts)
+```
+
+这里先暂时直接放10篇文章，为了看看效果。
+
+这时候查看：http://127.0.0.1:5000/
+
+![image-20230105160226582](images/逐步实现bluelog_修改_post.html后.png)
+
+#### 完善`_post.html`的跳转链接
+
+目前每个文章的各个跳转链接还是点不了，跳转链接及其链接样例如下：
+
+- 文章标题：http://127.0.0.1:5000/post/34
+- Read More：http://127.0.0.1:5000/post/34
+- 评论数量（跳转到评论区）：http://127.0.0.1:5000/post/34#comments
+- 文章类别链接：http://127.0.0.1:5000/category/1
+
+只展示这几个跳转链接在模板中的写法，在对应位置修改即可。
+
+```jinja2
+<a href="{{ url_for('.show_post', post_id=post.id) }}">
+<a href="{{ url_for('.show_post', post_id=post.id) }}#comments">
+<a href="{{ url_for('.show_category', category_id=post.category.id) }}">
+```
+
+
+
+#### 学到的新知识点
+
+获取限定数量的文章
+
+```python
+Post.query.limit(10).all()
+```
+
+
+
+获取文章评论的数量
+
+```jinja2
+{{ post.comments|length }}
+```
+
+
+
+判断是否是最后一盘文章
+
+```jinja2
+<!-- 只要不是最后一盘文章，都在文章底部放个hr水平分隔线 -->
+{% for post in posts %}
+  ...
+  {% if not loop.last %}
+    <hr>
+  {% endif %}
+{% endfor %}
+```
+
+
+
+url构建
+
+```jinja2
+{{ url_for('.show_post', post_id=post.id) }}
+```
 
 
 
@@ -1911,16 +2684,7 @@ fake = Faker('zh-cn')
 
 配置日志模块
 
-#### `register_extensions()`
 
-为各个插件统一初始化
-
-```python
-def register_extensions(app):
-    bootstrap.init_app(app)
-    db.init_app(app)
-    ...
-```
 
 #### `register_blueprints()`
 
