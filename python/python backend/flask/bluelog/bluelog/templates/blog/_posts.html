@@ -1,36 +1,18 @@
-<!-- 第1篇文章 -->
+{% for post in posts %}
 <article>
-  <h4 class="text-primary"><a href="#">Join body understand firm now visit cultural health.</a></h4>
+  <h4 class="text-primary"><a href="{{ url_for('.show_post', post_id=post.id) }}">{{ post.title }}</a></h4>
   <p>
-    Grow read speak find son heavy. Reality win possible statement similar.
-    Whatever skin high feeling job. Clear these like oil give. Three enough
-    personal. Important crime study same. Wrong increase discussion move
-    administration hope doctor
-    <small><a href="#">Read More</a></small>
+    {{ post.body|truncate }}
+    <small><a href="{{ url_for('.show_post', post_id=post.id) }}">Read More</a></small>
   </p>
   <small>
-    Comments: <a href="#">11</a>&nbsp;&nbsp;
-    Category: <a href="#">apple</a>
-    <span class="float-end">November 2, 2022</span>
+    Comments: <a href="{{ url_for('.show_post', post_id=post.id) }}#comments">{{ post.comments|length }}</a>&nbsp;&nbsp;
+    Category: <a href="{{ url_for('.show_category', category_id=post.category.id) }}">{{ post.category.name }}</a>
+    <span class="float-end">{{ post.timestamp }}</span>
   </small>
   <!-- 只要不是最后一盘文章，都在文章底部放个hr水平分隔线 -->
+  {% if not loop.last %}
   <hr>
+  {% endif %}
 </article>
-
-<!-- 第2篇文章 -->
-<article>
-  <h4 class="text-primary"><a href="#">Series age maintain talk thank weight home only.</a></h4>
-  <p>
-    Turn can night well cost. Of book job mother lawyer skin. Manage it major.
-    Light dinner lawyer peace throw although. Current positive sea ground radio
-    show ahead answer. Probably first your everyone. Magazine just movie inside.
-    Ground protect state...
-    <small><a href="#">Read More</a></small>
-  </p>
-  <small>
-    Comments: <a href="#">5</a>&nbsp;&nbsp;
-    Category: <a href="#">banana</a>
-    <span class="float-end">November 2, 2022</span>
-  </small>
-  <!-- 第二篇文章的结尾就不用放hr了 -->
-</article>
+{% endfor %}
