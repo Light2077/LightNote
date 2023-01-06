@@ -107,9 +107,9 @@ def fake_comments(count=500):
 
 
 def fake_links():
-    twitter = Link(name='Twitter', url='#')
-    facebook = Link(name='Facebook', url='#')
-    linkedin = Link(name='LinkedIn', url='#')
-    google = Link(name='Google+', url='#')
-    db.session.add_all([twitter, facebook, linkedin, google])
+    qq = Link(name='QQ', url='https://www.qq.com/')
+    weibo = Link(name='Weibo', url='https://weibo.com/')
+    github = Link(name='GitHub', url='https://www.github.com/')
+    baidu = Link(name='Baidu', url='https://www.baidu.com')
+    db.session.add_all([qq, weibo, github, baidu])
     db.session.commit()

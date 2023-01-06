@@ -1,5 +1,7 @@
 # bluelog
 
+网站主题切换：https://bootswatch.com
+
 ## 项目准备
 
 在书中，作者是一次性给出了完整的代码。省略了不少内容，因此我想从头开始编写代码实现整个流程。
@@ -1556,6 +1558,50 @@ def show_post(post_id):
     return render_template('blog/post.html')
 ```
 
+## login.html
+
+创建`templates/auth/login.html`
+
+```html
+{% extends 'base.html' %}
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<h1 class="text-center">Log in</h1>
+
+<!-- 放表单的div，用于通过修改class设置表单的样式 -->
+<div class="row h-100 page-header justify-content-center align-items-center">
+  <!-- 表单 -->
+  <form action="" method="post" class="form col-lg-3 col-md-6" role="form">
+    <input id="csrf_token" name="csrf_token" type="hidden" value="xx">
+
+    <!-- username -->
+    <div class="required">
+      <label class="form-label" for="username">Username</label>
+      <input class="form-control" id="username" name="username" required="" type="text" value="">
+    </div>
+
+    <!-- Password -->
+    <div class="required">
+      <label class="form-label" for="password">Password</label>
+      <input class="form-control" id="password" name="password" required="" type="password" value="">
+    </div>
+
+    <!-- Remember me -->
+    <div class="form-check">
+      <label class="form-check-label">
+        <input class="form-check-input" id="remember" name="remember" type="checkbox" value="y">
+        Remember me
+      </label>
+    </div>
+
+    <!-- 提交按钮 -->
+    <input class="btn btn-primary" id="submit" name="submit" type="submit" value="Log in">
+  </form>
+</div>
+{% endblock %}
+```
+
 
 
 ## 小结
@@ -2374,7 +2420,7 @@ from bluelog.extensions import db, login_manager
 
 ...
 def register_extensions(app):
-    db.init_app(app)
+    ...
     login_manager.init_app(app)
 ```
 
@@ -2451,7 +2497,9 @@ get_id() None
 
 此时由于是未登录状态，因此`get_id()`返回的是`None`
 
-## 用户登录
+## 简单案例
+
+### 用户登录
 
 在`blueprints/auth.py`内
 
@@ -2492,7 +2540,7 @@ get_id() 1
 current_user == Admin.query.get(1)
 ```
 
-## 用户注销
+### 用户注销
 
 ```python
 @auth_bp.route('/logout')
@@ -2519,6 +2567,59 @@ login_manager.login_message_category = 'warning'
 此时在未登录状态访问：http://127.0.0.1:5000/auth/logout
 
 会自动跳转到登录页面。
+
+## 完善登录注销
+
+### 登录模板
+
+创建`templates\auth.html`
+
+```html
+{% extends 'base.html' %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+    <div class="container h-100">
+        <div class="row h-100 page-header justify-content-center align-items-center">
+            <h1>Log in</h1>
+        </div>
+        <div class="row h-100 justify-content-center align-items-center">
+            {{ render_form(form, extra_classes='col-6') }}
+        </div>
+    </div>
+{% endblock %}
+
+{% block footer %}{% endblock %}
+```
+
+
+
+
+
+## 显示未读评论
+
+修改`bluelog/__init__.py`
+
+将未读评论也传到模板上下文内，为了让管理员审核评论后再决定是否展示该评论。
+
+```python
+def register_template_context(app):
+    @app.context_processor
+    def make_template_context():
+        admin = Admin.query.first()
+        categories = Category.query.order_by(Category.name).all()
+        links = Link.query.order_by(Link.name).all()
+        if current_user.is_authenticated:
+            unread_comments = Comment.query.filter_by(reviewed=False).count()
+        else:
+            unread_comments = None
+        return dict(
+            admin=admin, categories=categories,
+            links=links, unread_comments=unread_comments)
+```
+
+
 
 # 后端构建与模板调整
 
@@ -2555,7 +2656,61 @@ def register_template_context(app):
 
 > 注意到中间有注释，current_user需要用到flask_login插件，将在后面引入这个插件后再回来修改这部分的代码。
 
+## 表单
+
+
+
 ## 前端模板修改
+
+### 修改`base.html`
+
+完善基模板的以下几个部分：
+
+- 之前空出来的链接
+- 用户登录、未登录的显示差异
+
+导航栏内
+
+```jinja2
+{% block nav %}
+<div class="container">
+  <a class="navbar-brand" href="{{ url_for('.index') }}">Blog</a>
+  <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#collapsibleNavbar">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="collapsibleNavbar">
+    <!-- 【导航栏左侧】Bluelog / Home / About -->
+    <ul class="navbar-nav">
+      <li class="nav-item">
+        <a class="nav-link {% if request.endpoint == 'blog.index'}active{% endif %}" href="{{ url_for('.index') }}">Home</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link {% if request.endpoint == 'blog.about'}active{% endif %}" href="{{ url_for('.about') }}">About</a>
+      </li>
+    </ul>
+
+    <!-- 【导航栏右侧】New▽ / Manage▽ / Settings -->
+    <ul></ul>
+  </div>
+</div>
+{% endblock nav %}
+```
+
+footer内
+
+```jinja2
+<small>
+  {% if current_user.is_authenticated %}
+  <!-- 如果未登录，隐藏下面这行 -->
+  <a href="{{ url_for('auth.logout', next=request.full_path) }}">Logout</a>
+  {% else %}
+  <!-- 如果已登录，隐藏下面这行 -->
+  <a href="{{ url_for('auth.login', next=request.full_path) }}">Login</a>
+  {% endif %}
+</small>
+```
+
+
 
 ### 修改`index.html`
 
@@ -2581,12 +2736,14 @@ def register_template_context(app):
 
 #### 初步修改`_post.html`
 
+将文章的内容替换为数据库中的内容
+
 ```html
 {% for post in posts %}
 <article>
   <h4 class="text-primary"><a href="#">{{ post.title }}</a></h4>
   <p>
-    {{ post.body|truncate }}
+    {{ post.body|striptags|truncate }}
     <small><a href="#">Read More</a></small>
   </p>
   <small>
@@ -2640,6 +2797,14 @@ def index():
 
 #### 学到的新知识点
 
+jinja2的过滤器
+
+`striptags`：清除字符串内的html标签
+
+`truncate`：截断字符串，默认255个字符，多余的会显示为“省略号”
+
+
+
 获取限定数量的文章
 
 ```python
@@ -2676,7 +2841,412 @@ url构建
 {{ url_for('.show_post', post_id=post.id) }}
 ```
 
+### 修改`_sidebar.html`
 
+在`bluelog/__init__.py`已经传入了links和categories。
+
+```html
+<!-- Link栏 -->
+<div class="card mb-3">
+  <div class="card-header">Links</div>
+  <ul class="list-group list-group-flush">
+    {% for link in links %}
+    <li class="list-group-item list-group-item-action">
+      <a href="{{ link.url }}" target="_blank">{{ link.name }}</a>
+    </li>
+    {% endfor %}
+  </ul>
+</div>
+
+<!-- Categories栏 -->
+<div class="card mb-3">
+  <div class="card-header">Categories</div>
+  <ul class="list-group list-group-flush">
+    {% for category in categories %}
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+      <a href="{{ url_for('.show_category', category_id=category.id) }}">{{ category.name }}</a>
+      <!-- 显示这个分类下有多少篇文章 -->
+      <span class="badge rounded-pill bg-primary">{{ category.posts|length }}</span>
+    </li>
+    {% endfor %}
+  </ul>
+</div>
+<!-- 主题切换下拉菜单 -->
+<div class="dropdown">
+  <button type="button" class="btn btn-light dropdown-toggle" data-bs-toggle="dropdown">
+    Change Theme
+  </button>
+  <div class="dropdown-menu">
+    <a class="dropdown-item" href="#">Blue</a>
+    <a class="dropdown-item" href="#">Black</a>
+  </div>
+</div>
+```
+
+> 主题切换菜单及其功能之后再实现。
+
+### 修改`_pagination.html`
+
+分页器的渲染在要稍微复杂一些，首先要从python的角度了解分页器对象。
+
+1、确定当前页面：页码是通过页面的参数来确定的，比如：http://127.0.0.1:5000/?page=2，在flask中可以通过`request.args.get('page', 1, type=int)`获取页码。
+
+2、需要确定每页有多少篇文章，可以通过配置参数来确定，修改`bluelog/settings.py`
+
+```python
+class BaseConfig(object):
+    ...
+    BLUELOG_POST_PER_PAGE = 10  # 每页多少篇文章
+```
+
+然后使用`current_app.config['BLUELOG_POST_PER_PAGE']`获取每页的文章数量
+
+3、获取分页器对象：`<query>.paginate(page, per_page=per_page)`
+
+#### 修改视图函数
+
+修改`blueprints/blog.py`
+
+```python
+from flask import Blueprint, render_template, request, current_app
+
+@blog_bp.route('/')
+def index():
+    page = request.args.get('page', 1, type=int)
+    per_page = current_app.config['BLUELOG_POST_PER_PAGE']
+    pagination = Post.query.order_by(Post.timestamp.desc()).paginate(page=page, per_page=per_page)
+    posts = pagination.items
+    return render_template('blog/index.html', pagination=pagination, posts=posts)
+```
+
+获取分页器对象并传入模板
+
+#### 了解pagination对象
+
+为了了解pagination对象，可以进入flask shell内进行测试。
+
+```
+flask shell
+```
+
+```python
+from bluelog.models import Post
+page = 8
+per_page = 2
+pagination = Post.query.order_by(Post.timestamp.desc()).paginate(page=page, per_page=per_page)
+pagination.items
+```
+
+```
+[<Post 50>, <Post 37>, <Post 13>, <Post 48>, <Post 30>, <Post 11>, <Post 28>, <Post 35>, <Post 47>, <Post 39>]
+```
+
+其他功能可自行测试
+
+```python
+pagination.items  # 当前页面的记录
+pagination.page  # 当前页数
+pagination.per_page  # 每页的记录数
+pagination.pages  # 总页数
+pagination.total  # 记录总数
+pagination.next_num  # 下一页的页数
+pagination.prev_num  # 上一页的页数
+pagination.has_next  # 如果存在下一页，返回True
+pagination.has_prev  # 如果存在上一页，返回True
+pagination.query  # 分页的源查询
+pagination.prev()  # 上一页的分页对象
+pagination.next()  # 下一页的分页对象
+
+# 迭代一个页数列表。
+# left_edge 表示最左边的页数
+# left_current 表示当前页数左边的页数
+# right_edge 表示最右边的页数
+# right_current 表示当前页数左边的页数
+# 假设总共25页，当前页是8
+
+pagination.iter_pages(left_edge=2, left_current=2, right_current=5, right_edge=2)
+# [1, 2, None, 6, 7, 8, 9, 10, 11, 12, 13, None, 24, 25]
+
+pagination.iter_pages(left_edge=2, left_current=1, right_current=1, right_edge=2)
+# [1, 2, None, 7, 8, 9, None, 24, 25]
+
+pagination.iter_pages(left_edge=0, left_current=1, right_current=1, right_edge=0)
+# 
+```
+
+#### 修改模板
+
+写法1，核心思路，通过拼接构建
+
+```jinja2
+{{ request.path }}?page={{ pagination.prev_num}}
+```
+
+
+
+```jinja2
+<!-- 文章分页器 -->
+<div class="page-footer">
+  <ul class="pagination">
+    <li class="page-item {% if not pagination.has_prev %}disabled{% endif %}">
+      <a class="page-link" href="{{ request.path }}?page=1">首页</a>
+    </li>
+    <li class="page-item {% if not pagination.has_prev %}disabled{% endif %}">
+      <a class="page-link" href="{{ request.path }}?page={{ pagination.prev_num}}">← Previous
+      </a>
+    </li>
+    <li class="page-item {% if not pagination.has_next %}disabled{% endif %}">
+      <a class="page-link" href="{{ request.path }}?page={{ pagination.next_num}}">Next →</a>
+    </li>
+    <li class="page-item {% if not pagination.has_next %}disabled{% endif %}">
+      <a class="page-link" href="{{ request.path }}?page={{ pagination.pages }}">尾页</a>
+    </li>
+  </ul>
+</div>
+```
+
+写法2：使用`url_for()`
+
+```jinja2
+{{ url_for(request.endpoint, page=pagination.prev_num, **request.view_args) }}
+```
+
+`request.view_args`
+
+```
+{'category_id': 1}
+```
+
+写法
+
+```jinja2
+<div class="page-footer">
+  <ul class="pagination">
+    <li class="page-item {% if not pagination.has_prev %}disabled{% endif %}">
+      <a class="page-link" href="{{ url_for(request.endpoint, page=1, **request.view_args) }}">首页</a>
+    </li>
+    <li class="page-item {% if not pagination.has_prev %}disabled{% endif %}">
+      <a class="page-link" href="{{ url_for(request.endpoint, page=pagination.prev_num, **request.view_args) }}">←
+        Previous
+      </a>
+    </li>
+    <li class="page-item {% if not pagination.has_next %}disabled{% endif %}">
+      <a class="page-link" href="{{ url_for(request.endpoint, page=pagination.next_num, **request.view_args) }}">Next
+        →</a>
+    </li>
+    <li class="page-item {% if not pagination.has_next %}disabled{% endif %}">
+      <a class="page-link" href="{{ url_for(request.endpoint, page=pagination.pages, **request.view_args) }}">尾页</a>
+    </li>
+  </ul>
+</div>
+```
+
+
+
+
+
+![image-20230106104458752](images/逐步实现bluelog_分页器.png)
+
+### 修改`about.html`
+
+```html
+{% extends 'base.html' %}
+{% block title %}About{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>About</h1>
+</div>
+
+<div class="col-sm-8">
+  {{ admin.about|safe }}
+</div>
+
+<div class="col-sm-4 sidebar">
+  {% include "blog/_sidebar.html" %}
+</div>
+{% endblock %}
+```
+
+
+
+`safe`表示把所有变量中的内容都自动转义，信任并全部显示。也就是说如果有html标签，也会显示。
+
+### 修改`category.html`
+
+修改一下header部分即可
+
+```jinja2
+<!-- header -->
+<div class="page-header">
+  <h1>Category: {{ category.name }}</h1>
+  <h4 class="text-muted">{{ category.posts|length }} posts</h4>
+</div>
+```
+
+修改视图函数，在`blueprints/blog.py`内
+
+```python
+from bluelog.models import Post, Category
+
+@blog_bp.route('/category/<int:category_id>')
+def show_category(category_id):
+    category = Category.query.get_or_404(category_id)
+    page = request.args.get('page', 1, type=int)
+    per_page = current_app.config['BLUELOG_POST_PER_PAGE']
+    pagination = Post.query.with_parent(category).order_by(
+        Post.timestamp.desc()).paginate(page=page, per_page=per_page)
+    posts = pagination.items
+
+    return render_template("blog/category.html", category=category, pagination=pagination, posts=posts)
+```
+
+### 修改`post.html`
+
+
+
+#### 修改`settings.py`
+
+添加每页显示多少评论数量的配置
+
+```python
+class BaseConfig(object):
+    ...
+    BLUELOG_COMMENT_PER_PAGE = 5  # 每页显示多少评论
+```
+
+#### 文章的类别和日期部分
+
+```jinja2
+<!-- 文章类别和日期 -->
+<small>
+  Category: <a href="{{ url_for('blog.show_category', category_id=post.category.id) }}">{{ post.category.name
+    }}</a><br>
+  Date: {{ post.timestamp }}
+</small>
+```
+
+#### 模态框的内容
+
+```jinja2
+<!-- 模态框内容 -->
+<div class="modal-body">
+  <div class="form-group">
+    <input type="text" class="form-control"
+      value="{{ url_for('blog.show_post', post_id=post.id, _external=True) }}" readonly="">
+  </div>
+</div>
+```
+
+`_external=True`表示生成完整的外部链接。
+
+#### 评论数量
+
+```jinja2
+<small>
+  <a href="{{ url_for('blog.show_post', post_id=post.id) }}#comments">
+    latest</a>
+</small>
+```
+
+#### 显示所有评论
+
+```jinja2
+<!-- 评论 -->
+{% for comment in comments %}
+<li class="list-group-item list-group-item-action flex-column">
+  <!-- 评论人 评论时间 -->
+  <div class="d-flex w-100 justify-content-between">
+    <h5 class="mb-1"><a href="{{ comment.site }}" target="_blank">{{ comment.author }}</a></h5>
+    <small>{{ comment.timestamp }}</small>
+  </div>
+  <!-- 评论内容 -->
+  <p class="mb-1">{{ comment.body }}</p>
+  <!-- 通用的代码 按钮 Reply / Email / Delete -->
+  <div class="float-end">
+    <a class="btn btn-light btn-sm" href="/reply/comment/366">Reply</a>
+    <a class="btn btn-light btn-sm" href="#">Email</a>
+
+    <!-- 删除评论 -->
+    <form class="inline" method="post" action="#">
+      <input type="hidden" name="csrf_token" value="xxx">
+      <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?');">Delete
+      </button>
+    </form>
+  </div>
+</li>
+{% endfor %}
+```
+
+#### 评论分页器
+
+```jinja2
+<!-- 评论区分页器 -->
+<nav aria-label="Page navigation">
+  <ul class="pagination ">
+    <!-- 上一页 -->
+    <li class="page-item {% if not pagination.has_prev %}disabled{% endif %}">
+      <a class="page-link"
+        href="{{ url_for(request.endpoint, page=pagination.prev_num, **request.view_args) }}#comments">«</a>
+    </li>
+    {% for page in pagination.iter_pages() %}
+    {% if page %}
+    <li class="page-item {% if page==pagination.page %}active{% endif %}">
+      <a class="page-link" href="{{ url_for(request.endpoint, page=page, **request.view_args) }}#comments">{{
+        page }}</a>
+    </li>
+    {% else %}
+    <li class="page-item disabled">
+      <a class="page-link" href="#">...</a>
+    </li>
+    {% endif %}
+    {% endfor %}
+
+    <!-- 下一页 -->
+    <li class="page-item {% if not pagination.has_next %}disabled{% endif %}">
+      <a class="page-link"
+        href="{{ url_for(request.endpoint, page=pagination.next_num, **request.view_args) }}#comments">»</a>
+    </li>
+  </ul>
+</nav>
+```
+
+核心部分就是
+
+```jinja2
+{% for page in pagination.iter_pages() %}
+{% endfor %}
+```
+
+
+
+
+
+至此，文章页面上该显示的内容都能够展示了，但是现在的文章页面上，评论、删除评论、禁用评论等功能还没有实现。
+
+#### 修改视图函数
+
+在`blueprints/blog.py`内：
+
+```python
+from bluelog.models import Post, Category, Comment
+...
+@blog_bp.route('/post/<int:post_id>', methods=['GET', 'POST'])
+def show_post(post_id):
+    post = Post.query.get_or_404(post_id)
+    page = request.args.get('page', 1, type=int)
+    per_page = current_app.config['BLUELOG_COMMENT_PER_PAGE']
+    pagination = comment.query.with_parent(post).filter_by(reviewed=True).order_by(Comment.timestamp.asc()).paginate(page=page, per_page=per_page)
+    comments = pagination.items
+
+    return render_template('blog/post.html', post=post, pagination=pagination, comments=comments)
+```
+
+此时可以访问文章页面，查看各项内容。
+
+同时，这个视图函数还兼具了文章发布功能（POST）只是目前还没有实现而已
+
+通过GET请求就是查看文章内容。
 
 # 其他
 

@@ -15,6 +15,9 @@ class BaseConfig(object):
     TEST_CONFIG = 'test config'  # 用于测试
     SECRET_KEY = os.getenv('SECRET_KEY', 'dev key')
 
+    BLUELOG_POST_PER_PAGE = 10  # 每页多少篇文章
+    BLUELOG_COMMENT_PER_PAGE = 5  # 每页显示多少评论
+
 
 class DevelopmentConfig(BaseConfig):
     SQLALCHEMY_DATABASE_URI = prefix + os.path.join(basedir, 'data-dev.db')
