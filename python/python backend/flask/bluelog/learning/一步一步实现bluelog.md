@@ -2,6 +2,14 @@
 
 网站主题切换：https://bootswatch.com
 
+原项目下载
+
+```
+git clone git@github.com:greyli/bluelog.git
+```
+
+
+
 ## 项目准备
 
 在书中，作者是一次性给出了完整的代码。省略了不少内容，因此我想从头开始编写代码实现整个流程。
@@ -1602,7 +1610,37 @@ def show_post(post_id):
 {% endblock %}
 ```
 
+## flash弹窗
 
+在`templates/base.html`中，加入：
+
+```html
+<main class="container">
+  <!-- flash弹窗 -->
+  {% for message in get_flashed_messages(with_categories=True) %}
+  <div class="alert alert-{{ message[0] }} alert-dismissible">
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    {{ message[1] }}
+  </div>
+  {% endfor %}
+  ...
+</main>
+```
+
+修改
+
+```python
+# 测试用代码
+from flask import render_template, flash
+@blog_bp.route('/')
+def index():
+    flash("hello", category="success")
+    return render_template("blog/index.html")
+```
+
+通过category修改消息类型。
+
+![image-20230108201518628](images/image-20230108201518628.png)
 
 ## 小结
 
@@ -2390,13 +2428,11 @@ flask forge
 
 # 用户认证
 
-## 初始化插件
+## flask_login
 
-http://flask-login.readthedocs.io/#how-it-works
+bluelog使用[flask_login](http://flask-login.readthedocs.io/#how-it-works)插件来控制用户认证，用户认证影响用户在登录和未登录状态下看到的页面的差异。
 
-影响用户在登录和未登录状态下看到的页面的差异。
-
-使用`flask_login`来进行用户认证功能，首先安装该插件
+插件安装
 
 ```
 poetry add flask_login
@@ -2424,8 +2460,6 @@ def register_extensions(app):
     login_manager.init_app(app)
 ```
 
-
-
 Flask-Login 要求表示用户的类必须实现下表所示的这几个属性和方法，以使用来判断用户的认证状态。
 
 | 属性/方法          | 说明                                                     |
@@ -2448,13 +2482,12 @@ class Admin(db.Model, UserMixin):
 
 ## current_user对象
 
-current_user是一个和current_app 类似的代理对象（ Proxy ），表示当前用户。调用时会返回与当前用户对
-应的用户模型类对象。
+current_user是一个和current_app 类似的代理对象（ Proxy ），表示当前用户。调用时会返回与当前用户对应的用户模型类对象。
 
 在`blueprints/blog.py`文件中，编写如下测试代码
 
 ```python
-@blog_bp.route('/test')
+@blog_bp.route('/test_current_user')
 def test_current_user():
     from flask_login import current_user
     print(type(current_user), current_user)
@@ -2465,7 +2498,7 @@ def test_current_user():
     return "test"
 ```
 
-访问：http://127.0.0.1:5000/test
+访问：http://127.0.0.1:5000/test_current_user
 
 会出现报错信息
 
@@ -2485,7 +2518,7 @@ def load_user(user_id):
     return user
 ```
 
-再次访问：http://127.0.0.1:5000/test，查看控制台输出
+再次访问：http://127.0.0.1:5000/test_current_user，查看控制台输出
 
 ```
 <class 'werkzeug.local.LocalProxy'> <flask_login.mixins.AnonymousUserMixin object at 0x00000196BD81A220>
@@ -2497,24 +2530,77 @@ get_id() None
 
 此时由于是未登录状态，因此`get_id()`返回的是`None`
 
-## 简单案例
+## 不同请求的处理
 
-### 用户登录
+在`blueprints/auth.py`内编写测试用视图函数
 
-在`blueprints/auth.py`内
+```python
+@auth_bp.route('/test_request_method', methods=['GET', 'POST'])
+def test_request_method():
+    if request.method == "GET":
+        print("GET request")
+        return "GET return data"
+    
+    if request.method == "POST":
+        print("POST request")
+        return "POST return data"
+```
+
+访问：http://127.0.0.1:5000/auth/test_request_method
+
+会看到`GET request`。
+
+在flask shell中进行POST请求的测试。
+
+```
+flask shell
+```
+
+```python
+from flask import url_for
+request_context = app.test_request_context()
+request_context.push()
+client = app.test_client()
+resp_post = client.post(url_for('auth.test_request_method'))
+# POST request
+print(resp_post.get_data())
+# b'POST return data'
+resp_get = client.get(url_for('auth.test_request_method'))
+# GET request
+print(resp_get.get_data())
+# b'GET return data'
+request_context.pop()
+```
+
+根据请求的不同会返回值也会有所区别。
+
+## 用户登录
+
+在`blueprints/auth.py`内，也分别判断get请求和post请求，首先编写一个初级的视图函数用于测试。
+
+如果是GET请求，则返回登录页面，如果是POST请求，则返回一段字符串。
 
 ```python
 from flask_login import login_user, logout_user, login_required, current_user
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
-    if current_user.is_authenticated:
-        return "已登录！"
-    admin = Admin.query.first()
-    login_user(admin, remember=True)
-    return "登录成功"
+    if request.method == "POST":
+        print('request.form', request.form)
+        print('username', request.form['username'])
+        print('password', request.form['password'])
+        print("POST request")
+        return "POST return data"
+    
+    return render_template("auth/login.html")
+    # if current_user.is_authenticated:
+    #    return "已登录！"
+    
+    # admin = Admin.query.first()
+    # login_user(admin, remember=True)
+    # return "登录成功"
 ```
 
-修改`settings.py`，加入`SECRET_KEY`否则无法登录
+修改`settings.py`，加入`SECRET_KEY`，否则无法登录
 
 ```python
 class BaseConfig(object):
@@ -2522,9 +2608,132 @@ class BaseConfig(object):
     SECRET_KEY = os.getenv('SECRET_KEY', 'dev key')
 ```
 
-访问http://127.0.0.1:5000/auth/login，会显示登录成功
+访问http://127.0.0.1:5000/auth/login，会显示登录页面
 
-此时再访问：http://127.0.0.1:5000/test，查看控制台输出
+![image-20230108192709714](images/image-20230108192709714.png)
+
+用户名和密码随意输入，勾选**Remember me**，点击“Log in”按钮。
+
+![image-20230108192857249](images/image-20230108192857249.png)
+
+这是因为点击Log in按钮后，对这个页面发送了一条POST请求。
+
+查看后端控制台输出：
+
+```
+request.form ImmutableMultiDict([('csrf_token', 'xx'), ('username', 'abc'), ('password', '123'), ('remember', 'y'), ('submit', 'Log in')])
+username abc
+password 123
+POST request
+```
+
+
+
+## 使用flask-wtf简化表单编写
+
+bluelog项目使用flask-wtf来简化表单的编写
+
+```
+poetry add flask-wtf
+```
+
+创建`bluelog/bluelog/forms.py`
+
+```python
+from flask_wtf import FlaskForm
+from wtforms import StringField, SubmitField, BooleanField, PasswordField
+from wtforms.validators import DataRequired, Length
+
+class LoginForm(FlaskForm):
+    username = StringField('Username', validators=[DataRequired(), Length(1, 20)])
+    password = PasswordField('Password', validators=[DataRequired(), Length(1, 128)])
+    remember = BooleanField('Remember me')
+    submit = SubmitField('Log in')
+```
+
+在视图函数中，可以获取这个表单对象，然后传入jinja模板内
+
+在`blueprints/auth.py`内创建一个测试函数
+
+```python
+from bluelog.forms import LoginForm
+@auth_bp.route('/test_login', methods=['GET', 'POST'])
+def test_login():
+    form = LoginForm()
+    if request.method == "POST":
+        print(form.username.data)
+        print(form.password.data)
+        print(form.remember.data)
+        return "POST request"
+    return render_template('auth/test_login.html', form=form)
+```
+
+创建`templates/auth/test_login.html`
+
+```html
+<form method="post">
+    {{ form.csrf_token }} <!-- 渲染CSRF令牌隐藏字段 -->
+    {{ form.username.label }} {{ form.username }} <br>
+    {{ form.password.label }} {{ form.password }} <br>
+    {{ form.remember }} {{ form.remember.label }} <br>
+    {{ form.submit }}<br>
+</form>
+```
+
+访问：http://127.0.0.1:5000/auth/test_login
+
+![image-20230108200306196](images/image-20230108200306196.png)
+
+渲染后的HTML代码为
+
+```html
+<form method="post">
+    <input id="csrf_token" name="csrf_token" type="hidden" value="IjU0MDdmMzI4ZWI3NzcwNDA2YmUwZDcxZWQwNmU0NmU5NGJkOWVkNTQi.Y7qw6Q.dggusaCwwlz7QP375FXMr6CMOK4"> <!-- 渲染CSRF令牌隐藏字段 -->
+    <label for="username">Username</label> <input id="username" maxlength="20" minlength="1" name="username" required="" type="text" value=""> <br>
+    <label for="password">Password</label> <input id="password" maxlength="128" minlength="1" name="password" required="" type="password" value=""> <br>
+    <input id="remember" name="remember" type="checkbox" value="y"> <label for="remember">Remember me</label> <br>
+    <input id="submit" name="submit" type="submit" value="Log in"><br>
+</form>
+```
+
+随便输入用户名密码后查看控制台输出
+
+```
+abc
+123
+True
+```
+
+
+
+## 完善用户登录
+
+下面开始完善登录功能，修改`blueprints/auth.py`
+
+```python
+@auth_bp.route('/login', methods=['GET', 'POST'])
+def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('blog.index'))
+
+    if request.method == "POST":
+        username = request.form.get('username')
+        password = request.form.get('password')
+        remember = request.form.get('remember')
+        admin = Admin.query.first()
+        if admin:
+            if username == admin.username and admin.validate_password(password):
+                login_user(admin, remember)
+                return redirect(url_for('blog.index'))
+        else:
+            return "No account."
+```
+
+访问：
+
+输入用户名admin，密码helloflask。
+
+此时再访问：http://127.0.0.1:5000/test_current_user，查看控制台输出
 
 ```
 <class 'werkzeug.local.LocalProxy'> <Admin 1>
@@ -2540,7 +2749,11 @@ get_id() 1
 current_user == Admin.query.get(1)
 ```
 
-### 用户注销
+
+
+## 用户注销
+
+编写用户注销视图函数
 
 ```python
 @auth_bp.route('/logout')
@@ -2568,42 +2781,26 @@ login_manager.login_message_category = 'warning'
 
 会自动跳转到登录页面。
 
-## 完善登录注销
+# 后端构建与模板调整
 
-### 登录模板
+现在有了数据库数据了，就可以开始写视图函数了。
 
-创建`templates\auth.html`
+由于之前的前端模板是直接使用的写好的页面，这时候也要替换成数据库的数据。
 
-```html
-{% extends 'base.html' %}
+## 模板上下文
 
-{% block title %}Login{% endblock %}
+模板上下文：传入jinja2模板中的变量。
 
-{% block content %}
-    <div class="container h-100">
-        <div class="row h-100 page-header justify-content-center align-items-center">
-            <h1>Log in</h1>
-        </div>
-        <div class="row h-100 justify-content-center align-items-center">
-            {{ render_form(form, extra_classes='col-6') }}
-        </div>
-    </div>
-{% endblock %}
-
-{% block footer %}{% endblock %}
-```
-
-
-
-
-
-## 显示未读评论
-
-修改`bluelog/__init__.py`
-
-将未读评论也传到模板上下文内，为了让管理员审核评论后再决定是否展示该评论。
+在`bluelog/__init__.py`内配置通用的模板上下文，这样就不必在每个视图都要传一遍了。
 
 ```python
+# bluelog/__init__.py
+
+def create_app(config_name=None):
+    ...
+    register_template_context(app)  # 注册模板上下文
+    return app
+
 def register_template_context(app):
     @app.context_processor
     def make_template_context():
@@ -2619,44 +2816,16 @@ def register_template_context(app):
             links=links, unread_comments=unread_comments)
 ```
 
-
-
-# 后端构建与模板调整
-
-现在有了数据库数据了，就可以开始写视图函数了。
-
-由于之前的前端模板是直接使用的写好的页面，这时候也要替换成数据库的数据。
-
-## 模板上下文
-
-配置通用的模板上下文，这样就不必在每个视图都要传一遍了。
-
-在`bluelog/__init__.py`内修改并添加：
+未读评论`unread_comments`
 
 ```python
-def create_app(config_name=None):
-    ...
-    register_template_context(app)  # 注册模板上下文
-    return app
-
-def register_template_context(app):
-    @app.context_processor
-    def make_template_context():
-        admin = Admin.query.first()
-        categories = Category.query.order_by(Category.name).all()
-        links = Link.query.order_by(Link.name).all()
-        # if current_user.is_authenticated:
-        #     unread_comments = Comment.query.filter_by(reviewed=False).count()
-        # else:
-        #     unread_comments = None
-        return dict(
-            admin=admin, categories=categories,
-            links=links)
+if current_user.is_authenticated:
+    unread_comments = Comment.query.filter_by(reviewed=False).count()
+else:
+    unread_comments = None
 ```
 
-> 注意到中间有注释，current_user需要用到flask_login插件，将在后面引入这个插件后再回来修改这部分的代码。
-
-## 表单
+登录后，如果有未读评论，会在导航栏右侧看到未读评论的数量。
 
 
 

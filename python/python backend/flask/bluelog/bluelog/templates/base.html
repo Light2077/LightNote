@@ -41,6 +41,13 @@
   </nav>
   <!-- 核心内容 -->
   <main class="container">
+    <!-- flash弹窗 -->
+    {% for message in get_flashed_messages(with_categories=True) %}
+    <div class="alert alert-{{ message[0] }} alert-dismissible">
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      {{ message[1] }}
+    </div>
+    {% endfor %}
     <div class="row">
       {% block content %}
       {% endblock content %}

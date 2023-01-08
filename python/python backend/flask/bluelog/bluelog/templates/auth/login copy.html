@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<h1 class="text-center">Log in</h1>
+
+<!-- 放表单的div，用于通过修改class设置表单的样式 -->
+<div class="row h-100 page-header justify-content-center align-items-center">
+  <!-- 表单 -->
+  <form action="" method="post" class="form col-lg-3 col-md-6" role="form">
+    {{ form.csrf_token }}
+    <!-- username -->
+    <div class="required">
+      {{ form.username.label(class="form-label") }}
+      {{ form.username(class='form-control') }}
+    </div>
+
+    <!-- Password -->
+    <div class="required">
+      {{ form.password.label(class="form-label") }}
+      {{ form.password(class='form-control') }}
+    </div>
+
+    <!-- Remember me -->
+    <div class="form-check">
+      {{ form.remember(class='form-check-input') }}
+      {{ form.remember.label }}
+      <!-- <label class="form-check-label">
+        <input class="form-check-input" id="remember" name="remember" type="checkbox" value="y">
+        Remember me
+      </label> -->
+    </div>
+
+    <!-- 提交按钮 -->
+    {{ form.submit(class='btn btn-primary') }}
+  </form>
+</div>
+{% endblock %}

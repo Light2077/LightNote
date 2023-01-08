@@ -213,3 +213,11 @@ https://iconstore.co/?s=minister
 地图生成 https://watabou.github.io/
 
 像素风PS：Aseprite（软件）
+
+
+2.音轨分离：www.lalal.ai
+3.全历史：https://www.allhistory.com/
+4.动漫查找：https://trace.moe/
+5.Metademolab：https://sketch.metademolab.com
+6.极简简历：https://www.polebrief.com/
+7.HiPPTer：https://www.hippter.com/index.html
