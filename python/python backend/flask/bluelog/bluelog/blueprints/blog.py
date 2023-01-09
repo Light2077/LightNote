@@ -1,11 +1,11 @@
-from flask import Blueprint, render_template, request, current_app
+from flask import Blueprint, render_template, request, current_app, flash
 from bluelog.models import Post, Category, Comment
 blog_bp = Blueprint('blog', __name__)
 
 
 # 测试用代码
-@blog_bp.route('/test')
-def test():
+@blog_bp.route('/test_current_user')
+def test_current_user():
     from flask_login import current_user
     print(type(current_user), current_user)
     print("is_authenticated", current_user.is_authenticated)
@@ -17,6 +17,7 @@ def test():
 
 @blog_bp.route('/')
 def index():
+    flash("hello", category="success")
     page = request.args.get('page', 1, type=int)
     per_page = current_app.config['BLUELOG_POST_PER_PAGE']
     pagination = Post.query.order_by(

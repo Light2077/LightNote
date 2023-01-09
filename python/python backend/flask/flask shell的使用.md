@@ -36,6 +36,8 @@ app_context.pop()  # 退出上下文
 
 创建请求上下文
 
+具体参数查看：https://flask.palletsprojects.com/en/2.2.x/api/#flask.Flask.test_request_context
+
 ```python
 with app.test_request_context('/hello'):
     print(request.method)

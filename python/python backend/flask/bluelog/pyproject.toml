@@ -11,6 +11,7 @@ flask = "^2.2.2"
 python-dotenv = "^0.21.0"
 flask-sqlalchemy = "^3.0.2"
 flask-login = "^0.6.2"
+flask-wtf = "^1.0.1"
 
 
 [tool.poetry.group.dev.dependencies]
