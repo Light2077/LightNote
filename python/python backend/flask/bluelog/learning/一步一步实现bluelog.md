@@ -2049,6 +2049,42 @@ class Link(db.Model):
     url = db.Column(db.String(255))
 ```
 
+密码安全
+
+使用werkzeug.security 提供的`generate_password_hash`	方法来包含用户密码
+
+```python
+from werkzeug.security import generate_password_hash, check_password_hash
+password_hash = generate_password_hash('apple')
+password_hash
+```
+
+```
+'pbkdf2:sha256:260000$c0PopQWtfTBIqjpm$a8f08621805a27ac10f06a9a40ef7a22a26765cee85937ee848fcf2e5bc97643'
+```
+
+该函数参数为
+
+```python
+generate_password_hash(
+    password, 
+    method='pbkdf2:sha256',
+    salt_length=16
+)
+```
+
+生成的password_hash结构为
+
+```
+f"{actual_method}${salt}${h}"
+```
+
+加的盐（salt）已经包含在`password_hash`内了。
+
+
+
+
+
 在`bluelog/__init__.py`内初始化
 
 ```python
@@ -2704,30 +2740,174 @@ abc
 True
 ```
 
+## 重定向辅助函数
+
+创建`bluelog/utils.py`
+
+```python
+from urllib.parse import urlparse, urljoin
+from flask import request, redirect, url_for, current_app
 
 
-## 完善用户登录
+def is_safe_url(target):
+    ref_url = urlparse(request.host_url)
+    test_url = urlparse(urljoin(request.host_url, target))
+    return test_url.scheme in ('http', 'https') and ref_url.netloc == test_url.netloc
+
+
+def redirect_back(default='blog.index', **kwargs):
+    for target in request.args.get('next'), request.referrer:
+        if not target:
+            continue
+        if is_safe_url(target):
+            return redirect(target)
+    return redirect(url_for(default, **kwargs))
+```
+
+使用方法：在视图函数中赋予`next`参数，比如
+
+```python
+@app.route('/foo')
+def foo():
+    return url_for('do_something', next=request.full_path)
+```
+
+然后在`do_something`视图内
+
+```python
+@app.route('/do_something')
+def do_something():
+    return redirect_back()
+```
+
+
+
+## 完善用户登录视图函数
 
 下面开始完善登录功能，修改`blueprints/auth.py`
 
 ```python
+from flask import render_template, flash, redirect, url_for, Blueprint
+from flask_login import login_user, logout_user, login_required, current_user
+
+from bluelog.forms import LoginForm
+from bluelog.models import Admin
+from bluelog.utils import redirect_back
+
+auth_bp = Blueprint('auth', __name__)
+
+
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
         return redirect(url_for('blog.index'))
 
-    if request.method == "POST":
-        username = request.form.get('username')
-        password = request.form.get('password')
-        remember = request.form.get('remember')
+    form = LoginForm()
+    if form.validate_on_submit():
+        username = form.username.data
+        password = form.password.data
+        remember = form.remember.data
         admin = Admin.query.first()
         if admin:
             if username == admin.username and admin.validate_password(password):
                 login_user(admin, remember)
-                return redirect(url_for('blog.index'))
+                flash('Welcome back.', 'info')
+                return redirect_back()
+            flash('Invalid username or password.', 'warning')
         else:
-            return "No account."
+            flash('No account.', 'warning')
+    return render_template('auth/login.html', form=form)
 ```
+
+代码说明
+
+```python
+if form.validate_on_submit()
+```
+
+就相当于
+
+```python
+if request.method == 'POST' and form.validate():
+```
+
+若`form.validate_on_submit()`返回False，WTForms会把错误消息添加到表单类的errors属性中。
+
+可以用这个属性来返回错误信息
+
+```jinja2
+...
+{% for msg in form.username.errors %}
+    <small class="text-danger">{{ message }}</small><br>
+{% endfor %}
+...
+{% for msg in form.password.errors %}
+    <small class="text-danger">{{ message }}</small><br>
+{% endfor %}
+```
+
+## 完善用户登录模板
+
+修改`templates/auth/login.html`
+
+```jinja2
+{% extends 'base.html' %}
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<h1 class="text-center">Log in</h1>
+
+<!-- 放表单的div，用于通过修改class设置表单的样式 -->
+<div class="row h-100 page-header justify-content-center align-items-center">
+  <!-- 表单 -->
+  <form action="" method="post" class="form col-lg-3 col-md-6" role="form">
+    {{ form.csrf_token }}
+    <!-- username -->
+    <div class="required">
+      {{ form.username.label(class="form-label") }}
+      {{ form.username(class='form-control') }}
+      <!-- {% for msg in form.username.errors %}
+      <small class="text-danger">{{ message }}</small><br>
+      {% endfor %} -->
+    </div>
+
+    <!-- Password -->
+    <div class="required">
+      {{ form.password.label(class="form-label") }}
+      {{ form.password(class='form-control') }}
+      <!-- <small class="text-danger">密码长度至少为6位！</small><br>
+      <small class="text-danger">密码不能为空！</small><br> -->
+    </div>
+
+    <!-- Remember me -->
+    <div class="form-check">
+      {{ form.remember(class='form-check-input') }}
+      {{ form.remember.label }}
+    </div>
+
+    <!-- 提交按钮 -->
+    {{ form.submit(class='btn btn-primary') }}
+  </form>
+</div>
+{% endblock %}
+```
+
+> 使用bootstrap5时，这里的错误信息不会显示，因为代码中定义的验证为 长度验证和数据不能为空，如果不满足这两个条件，点击Log in是没有效果的。
+>
+> 如果想查看errors的示例效果，可以取消模板代码中的注释
+
+```html
+<div class="required">
+  {{ form.password.label(class="form-label") }}
+  {{ form.password(class='form-control') }}
+  <!-- <small class="text-danger">密码长度至少为6位！</small><br>
+  <small class="text-danger">密码不能为空！</small><br> -->
+</div>
+```
+
+
+
+
 
 访问：
 
@@ -2760,7 +2940,8 @@ current_user == Admin.query.get(1)
 @login_required
 def logout():
     logout_user()
-    return "注销成功"
+    flash('Logout success.', 'info')
+    return redirect_back()
 ```
 
 `@login_required`就表示必须登录才能访问这个页面，如果是未登录状态访问：http://127.0.0.1:5000/auth/logout
@@ -2783,7 +2964,7 @@ login_manager.login_message_category = 'warning'
 
 # 后端构建与模板调整
 
-现在有了数据库数据了，就可以开始写视图函数了。
+现在开始完善blog相关的视图函数。
 
 由于之前的前端模板是直接使用的写好的页面，这时候也要替换成数据库的数据。
 
@@ -3284,6 +3465,23 @@ class BaseConfig(object):
     BLUELOG_COMMENT_PER_PAGE = 5  # 每页显示多少评论
 ```
 
+#### 文章编辑和删除按钮
+
+```jinja2
+{% if current_user.is_authenticated %}
+<span class="float-end">
+  <!-- 文章编辑按钮 -->
+  <a class="btn btn-primary btn-sm" href="#">Edit</a>
+  <!-- 文章删除按钮(表单) -->
+  <form class="inline" method="post" action="#">
+    <input type="hidden" name="csrf_token" value="x">
+    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?');">Delete
+    </button>
+  </form>
+</span>
+{% endif %}
+```
+
 #### 文章的类别和日期部分
 
 ```jinja2
@@ -3308,6 +3506,22 @@ class BaseConfig(object):
 ```
 
 `_external=True`表示生成完整的外部链接。
+
+#### 启用/禁用评论按钮
+
+```jinja2
+<!-- 禁用/启用 评论按钮 -->
+{% if current_user.is_authenticated %}
+<form class="float-end" method="post" action="#">
+  <input type="hidden" name="csrf_token" value="xxx">
+  <button type="submit" class="btn btn-warning btn-sm">
+    {% if post.can_comment %}Disable{% else %}Enable{% endif %} Comment
+  </button>
+</form>
+{% endif %}
+```
+
+
 
 #### 评论数量
 

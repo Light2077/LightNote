@@ -8,30 +8,29 @@
 <div class="row h-100 page-header justify-content-center align-items-center">
   <!-- 表单 -->
   <form action="" method="post" class="form col-lg-3 col-md-6" role="form">
-    <input id="csrf_token" name="csrf_token" type="hidden" value="xx">
-
+    {{ form.csrf_token }}
     <!-- username -->
     <div class="required">
-      <label class="form-label" for="username">Username</label>
-      <input class="form-control" id="username" name="username" required="" type="text" value="">
+      {{ form.username.label(class="form-label") }}
+      {{ form.username(class='form-control') }}
     </div>
 
     <!-- Password -->
     <div class="required">
-      <label class="form-label" for="password">Password</label>
-      <input class="form-control" id="password" name="password" required="" type="password" value="">
+      {{ form.password.label(class="form-label") }}
+      {{ form.password(class='form-control') }}
+      <!-- <small class="text-danger">密码长度至少为6位！</small><br>
+      <small class="text-danger">密码不能为空！</small><br> -->
     </div>
 
     <!-- Remember me -->
     <div class="form-check">
-      <label class="form-check-label">
-        <input class="form-check-input" id="remember" name="remember" type="checkbox" value="y">
-        Remember me
-      </label>
+      {{ form.remember(class='form-check-input') }}
+      {{ form.remember.label }}
     </div>
 
     <!-- 提交按钮 -->
-    <input class="btn btn-primary" id="submit" name="submit" type="submit" value="Log in">
+    {{ form.submit(class='btn btn-primary') }}
   </form>
 </div>
 {% endblock %}

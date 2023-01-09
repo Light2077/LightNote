@@ -6,16 +6,18 @@
 <div class="page-header">
   <!-- 文章标题 -->
   <h1>{{ post.title }}
+    {% if current_user.is_authenticated %}
     <span class="float-end">
       <!-- 文章编辑按钮 -->
       <a class="btn btn-primary btn-sm" href="#">Edit</a>
-      <!-- 文章删除按钮 -->
+      <!-- 文章删除按钮(表单) -->
       <form class="inline" method="post" action="#">
         <input type="hidden" name="csrf_token" value="x">
         <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?');">Delete
         </button>
       </form>
     </span>
+    {% endif %}
   </h1>
 
   <!-- 文章类别和日期 -->
@@ -66,13 +68,15 @@
         <a href="{{ url_for('blog.show_post', post_id=post.id) }}#comments">
           latest</a>
       </small>
-      <!-- 禁用评论按钮 -->
+      <!-- 禁用/启用 评论按钮 -->
+      {% if current_user.is_authenticated %}
       <form class="float-end" method="post" action="#">
         <input type="hidden" name="csrf_token" value="xxx">
         <button type="submit" class="btn btn-warning btn-sm">
-          Disable Comment
+          {% if post.can_comment %}Disable{% else %}Enable{% endif %} Comment
         </button>
       </form>
+      {% endif %}
     </h3>
     <ul class="list-group">
       <!-- 评论 -->
@@ -135,47 +139,51 @@
   <!-- 评论回复提示框 -->
   <div class="alert alert-dark">
     Reply to <strong>Charles Norton</strong>:
-    <a class="float-end" href="/post/34">Cancel</a>
+    <a class="float-end" href="#">Cancel</a>
   </div>
-
-  <!-- 评论回复表单 -->
-  <!-- <div id="comment-form">
-          <form action="#" method="post" class="form" role="form">
-            <input id="author" name="author" type="hidden" value="Mima Kirigoe">
-            <input id="email" name="email" type="hidden" value="">
-            <input id="site" name="site" type="hidden" value="/">
-            <input id="csrf_token" name="csrf_token" type="hidden" value="xxx">
-            <div class="mb-3 required"><label class="form-control-label" for="body">Comment</label>
-              <textarea class="form-control" id="body" name="body" required=""></textarea>
-            </div>
-            <input class="btn btn-secondary" id="submit" name="submit" type="submit" value="Submit">
-          </form>
-        </div> -->
-
+  {% if post.can_comment %}
+  {% if current_user.is_authenticated %}
+  <!-- 管理员评论回复表单 -->
+  <div id="comment-form">
+    <form action="#" method="post" class="form" role="form">
+      <input id="author" name="author" type="hidden" value="Mima Kirigoe">
+      <input id="email" name="email" type="hidden" value="">
+      <input id="site" name="site" type="hidden" value="/">
+      <input id="csrf_token" name="csrf_token" type="hidden" value="xxx">
+      <div class="mb-3 required"><label class="form-control-label" for="body">Comment</label>
+        <textarea class="form-control" id="body" name="body" required=""></textarea>
+      </div>
+      <input class="btn btn-secondary" id="submit" name="submit" type="submit" value="Submit">
+    </form>
+  </div>
+  {% else %}
   <!-- 游客评论回复表单 -->
-  <!-- <div id="comment-form">
-          <form action="#" method="post" class="form" role="form">
-            <input id="csrf_token" name="csrf_token" type="hidden" value="xxx">
-            <div class="mb-3 required"><label class="form-control-label" for="author">Name</label>
-              <input class="form-control" id="author" name="author" required="" type="text" value="">
-            </div>
-            <div class="mb-3 required"><label class="form-control-label" for="email">Email</label>
-              <input class="form-control" id="email" name="email" required="" type="text" value="">
-            </div>
-            <div class="mb-3"><label class="form-control-label" for="site">Site</label>
-              <input class="form-control" id="site" name="site" type="text" value="">
-            </div>
-            <div class="mb-3 required"><label class="form-control-label" for="body">Comment</label>
-              <textarea class="form-control" id="body" name="body" required=""></textarea>
-            </div>
-            <input class="btn btn-secondary" id="submit" name="submit" type="submit" value="Submit">
-          </form>
-        </div> -->
-
+  <div id="comment-form">
+    <form action="#" method="post" class="form" role="form">
+      <input id="csrf_token" name="csrf_token" type="hidden" value="xxx">
+      <div class="mb-3 required"><label class="form-control-label" for="author">Name</label>
+        <input class="form-control" id="author" name="author" required="" type="text" value="">
+      </div>
+      <div class="mb-3 required"><label class="form-control-label" for="email">Email</label>
+        <input class="form-control" id="email" name="email" required="" type="text" value="">
+      </div>
+      <div class="mb-3"><label class="form-control-label" for="site">Site</label>
+        <input class="form-control" id="site" name="site" type="text" value="">
+      </div>
+      <div class="mb-3 required"><label class="form-control-label" for="body">Comment</label>
+        <textarea class="form-control" id="body" name="body" required=""></textarea>
+      </div>
+      <input class="btn btn-secondary" id="submit" name="submit" type="submit" value="Submit">
+    </form>
+  </div>
+  {% endif %}
+  {% else %}
   <!-- 若禁用评论，则显示下面的代码 -->
   <div class="tip">
     <h5>Comment disabled.</h5>
   </div>
+  {% endif %}
+
 </div>
 
 <!-- 侧边栏 -->
