@@ -3774,7 +3774,7 @@ poetry add email_validator
 {% if current_user.is_authenticated %}
 <!-- 管理员评论回复表单 -->
 <div id="comment-form">
-  <form action="#" method="post" class="form" role="form">
+  <form action="{{ request.full_path }}" method="post" class="form" role="form">
     {{ form.author }}
     {{ form.email }}
     {{ form.site }}
@@ -3790,7 +3790,7 @@ poetry add email_validator
 {% else %}
 <!-- 游客评论回复表单 -->
 <div id="comment-form">
-  <form action="#" method="post" class="form" role="form">
+  <form action="{{ request.full_path }}" method="post" class="form" role="form">
     {{ form.csrf_token }}
     <div class="mb-3 required">
       {{ form.author.label(class="form-label") }}
@@ -3821,11 +3821,52 @@ poetry add email_validator
 {% endif %}
 ```
 
-
-
-
-
 ### 电子邮件支持
+
+当文章有新评论后，需要发送邮箱通知管理员。当读者的评论被回复时，也要发送邮件通知读者。
+
+创建`bluelog/emails.py`
+
+```python
+from threading import Thread
+
+from flask import url_for, current_app
+from flask_mail import Message
+
+from bluelog.extensions import mail
+
+
+def _send_async_mail(app, message):
+    with app.app_context():
+        mail.send(message)
+
+
+def send_mail(subject, to, html):
+    app = current_app._get_current_object()
+    message = Message(subject, recipients=[to], html=html)
+    thr = Thread(target=_send_async_mail, args=[app, message])
+    thr.start()
+    return thr
+
+
+def send_new_comment_email(post):
+    post_url = url_for('blog.show_post', post_id=post.id, _external=True) + '#comments'
+    send_mail(subject='New comment', to=current_app.config['BLUELOG_EMAIL'],
+              html='<p>New comment in post <i>%s</i>, click the link below to check:</p>'
+                   '<p><a href="%s">%s</a></P>'
+                   '<p><small style="color: #868e96">Do not reply this email.</small></p>'
+                   % (post.title, post_url, post_url))
+
+
+def send_new_reply_email(comment):
+    post_url = url_for('blog.show_post', post_id=comment.post_id, _external=True) + '#comments'
+    send_mail(subject='New reply', to=comment.email,
+              html='<p>New reply for the comment you left in post <i>%s</i>, click the link below to check: </p>'
+                   '<p><a href="%s">%s</a></p>'
+                   '<p><small style="color: #868e96">Do not reply this email.</small></p>'
+                   % (comment.post.title, post_url, post_url))
+
+```
 
 
 

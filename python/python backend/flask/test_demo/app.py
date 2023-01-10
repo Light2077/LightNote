@@ -35,6 +35,3 @@ def test_referrer():
 def index():
     url = url_for('test_referrer')
     return f"<a href='{url}'>test referrer</a>"
-
-if __name__ == '__main__':
-   app.run(port=5002)
