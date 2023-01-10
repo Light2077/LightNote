@@ -2846,7 +2846,7 @@ if request.method == 'POST' and form.validate():
 {% endfor %}
 ```
 
-## 完善用户登录模板
+## 完善`login.html`
 
 修改`templates/auth/login.html`
 
@@ -2962,7 +2962,7 @@ login_manager.login_message_category = 'warning'
 
 会自动跳转到登录页面。
 
-# 后端构建与模板调整
+# 博客内容展示
 
 现在开始完善blog相关的视图函数。
 
@@ -3451,7 +3451,7 @@ def show_category(category_id):
     return render_template("blog/category.html", category=category, pagination=pagination, posts=posts)
 ```
 
-### 修改`post.html`
+### 修改`post.html`:star:
 
 
 
@@ -3466,6 +3466,8 @@ class BaseConfig(object):
 ```
 
 #### 文章编辑和删除按钮
+
+相关的视图函数还没有实现，先写好模板
 
 ```jinja2
 {% if current_user.is_authenticated %}
@@ -3508,6 +3510,8 @@ class BaseConfig(object):
 `_external=True`表示生成完整的外部链接。
 
 #### 启用/禁用评论按钮
+
+相关的视图函数还没有实现
 
 ```jinja2
 <!-- 禁用/启用 评论按钮 -->
@@ -3601,6 +3605,71 @@ class BaseConfig(object):
 {% endfor %}
 ```
 
+#### 评论表单
+
+逻辑框架
+
+![](images/文章评论表单模板逻辑框架.svg)
+
+```jinja2
+{% if post.can_comment %}
+  {% if current_user.is_authenticated %}
+    <!-- 渲染管理员评论回复表单 -->
+  {% else %}
+    <!-- 渲染游客评论回复表单 -->
+  {% endif %}
+{% else %}
+  <!-- 渲染评论区禁用样式 -->
+{% endif %}
+```
+
+
+
+```jinja2
+{% if post.can_comment %}
+{% if current_user.is_authenticated %}
+<!-- 管理员评论回复表单 -->
+<div id="comment-form">
+  <form action="#" method="post" class="form" role="form">
+    <input id="author" name="author" type="hidden" value="Mima Kirigoe">
+    <input id="email" name="email" type="hidden" value="">
+    <input id="site" name="site" type="hidden" value="/">
+    <input id="csrf_token" name="csrf_token" type="hidden" value="xxx">
+    <div class="mb-3 required"><label class="form-control-label" for="body">Comment</label>
+      <textarea class="form-control" id="body" name="body" required=""></textarea>
+    </div>
+    <input class="btn btn-secondary" id="submit" name="submit" type="submit" value="Submit">
+  </form>
+</div>
+{% else %}
+<!-- 游客评论回复表单 -->
+<div id="comment-form">
+  <form action="#" method="post" class="form" role="form">
+    <input id="csrf_token" name="csrf_token" type="hidden" value="xxx">
+    <div class="mb-3 required"><label class="form-control-label" for="author">Name</label>
+      <input class="form-control" id="author" name="author" required="" type="text" value="">
+    </div>
+    <div class="mb-3 required"><label class="form-control-label" for="email">Email</label>
+      <input class="form-control" id="email" name="email" required="" type="text" value="">
+    </div>
+    <div class="mb-3"><label class="form-control-label" for="site">Site</label>
+      <input class="form-control" id="site" name="site" type="text" value="">
+    </div>
+    <div class="mb-3 required"><label class="form-control-label" for="body">Comment</label>
+      <textarea class="form-control" id="body" name="body" required=""></textarea>
+    </div>
+    <input class="btn btn-secondary" id="submit" name="submit" type="submit" value="Submit">
+  </form>
+</div>
+{% endif %}
+{% else %}
+<!-- 若禁用评论，则显示下面的代码 -->
+<div class="tip">
+  <h5>Comment disabled.</h5>
+</div>
+{% endif %}
+```
+
 
 
 
@@ -3627,9 +3696,193 @@ def show_post(post_id):
 
 此时可以访问文章页面，查看各项内容。
 
-同时，这个视图函数还兼具了文章发布功能（POST）只是目前还没有实现而已
+同时，这个视图函数还兼具了评论发布功能（POST）会在下方实现
 
 通过GET请求就是查看文章内容。
+
+## 实现评论功能
+
+因为评论表单要显示在文章页面的评论列表下方，所以评论数据的验证和保存在`show_post`视图中处理
+
+### 增加管理员/用户评论表单
+
+修改`bluelog/forms`
+
+```python
+from wtforms import (StringField, SubmitField, BooleanField,
+                     PasswordField, TextAreaField, HiddenField)
+from wtforms.validators import DataRequired, Length, Email, Optional, URL
+
+...
+# 游客评论表单
+class CommentForm(FlaskForm):
+    author = StringField('Name', validators=[DataRequired(), Length(1, 30)])
+    email = StringField('Email', validators=[
+                        DataRequired(), Email(), Length(1, 254)])
+    site = StringField('Site', validators=[Optional(), URL(), Length(0, 255)])
+    body = TextAreaField('Comment', validators=[DataRequired()])
+    submit = SubmitField()
+
+
+# 管理员评论表单
+class AdminCommentForm(CommentForm):
+    author = HiddenField()
+    email = HiddenField()
+    site = HiddenField()
+```
+
+
+
+### 修改post.html
+
+简单修改`show_post`视图函数中加入`form`作为模板上下文变量，用于测试。
+
+```python
+@blog_bp.route('/post/<int:post_id>', methods=['GET', 'POST'])
+def show_post(post_id):
+    post = Post.query.get_or_404(post_id)
+    page = request.args.get('page', 1, type=int)
+    per_page = current_app.config['BLUELOG_COMMENT_PER_PAGE']
+    pagination = Comment.query.with_parent(post).filter_by(reviewed=True).order_by(Comment.timestamp.asc()).paginate(page=page, per_page=per_page)
+    comments = pagination.items
+    
+    # 测试用
+    from bluelog.forms import CommentForm, AdminCommentForm
+    if current_user.is_authenticated:
+        form = AdminCommentForm()
+        form.author.data = current_user.name
+        form.email.data = current_app.config['BLUELOG_EMAIL']
+        form.site.data = url_for('.index')
+    else:
+        form = CommentForm()
+    return render_template('blog/post.html', post=post, pagination=pagination, comments=comments, form=form)
+```
+
+注意，需要安装`email-validator`，因为2.3.0以后的WTForms已经不支持email验证器了
+
+```
+poetry add email_validator
+```
+
+
+
+修改`post.html`的评论表单部分
+
+```jinja2
+{# 该文章是否可以进行评论 #}
+{% if post.can_comment %}
+{% if current_user.is_authenticated %}
+<!-- 管理员评论回复表单 -->
+<div id="comment-form">
+  <form action="#" method="post" class="form" role="form">
+    {{ form.author }}
+    {{ form.email }}
+    {{ form.site }}
+    {{ form.csrf_token }}
+    <div class="mb-3 required">
+      {{ form.body.label(class="form-label") }}
+      {{ form.body(class="form-control") }}
+    </div>
+    <!-- 提交按钮 -->
+    {{ form.submit(class='btn btn-secondary') }}
+  </form>
+</div>
+{% else %}
+<!-- 游客评论回复表单 -->
+<div id="comment-form">
+  <form action="#" method="post" class="form" role="form">
+    {{ form.csrf_token }}
+    <div class="mb-3 required">
+      {{ form.author.label(class="form-label") }}
+      {{ form.author(class="form-control") }}
+    </div>
+    <div class="mb-3 required">
+      {{ form.email.label(class="form-label") }}
+      {{ form.email(class="form-control") }}
+    </div>
+    <div class="mb-3">
+      {{ form.site.label(class="form-label") }}
+      {{ form.site(class="form-control") }}
+    </div>
+    <div class="mb-3 required">
+      {{ form.body.label(class="form-label") }}
+      {{ form.body(class="form-control") }}
+    </div>
+    <!-- 提交按钮 -->
+    {{ form.submit(class='btn btn-secondary') }}
+  </form>
+</div>
+{% endif %}
+{% else %}
+<!-- 若禁用评论，则显示下面的代码 -->
+<div class="tip">
+  <h5>Comment disabled.</h5>
+</div>
+{% endif %}
+```
+
+
+
+
+
+### 电子邮件支持
+
+
+
+### 修改show_post
+
+修改`blueprints/blog.py`
+
+```python
+from flask import current_user
+
+
+@blog_bp.route('/post/<int:post_id>', methods=['GET', 'POST'])
+def show_post(post_id):
+    post = Post.query.get_or_404(post_id)
+    page = request.args.get('page', 1, type=int)
+    per_page = current_app.config['BLUELOG_COMMENT_PER_PAGE']
+    pagination = Comment.query.with_parent(post).filter_by(reviewed=True).order_by(Comment.timestamp.asc()).paginate(
+        page, per_page)
+    comments = pagination.items
+
+    if current_user.is_authenticated:
+        form = AdminCommentForm()
+        form.author.data = current_user.name
+        form.email.data = current_app.config['BLUELOG_EMAIL']
+        form.site.data = url_for('.index')
+        from_admin = True
+        reviewed = True
+    else:
+        form = CommentForm()
+        from_admin = False
+        reviewed = False
+
+    if form.validate_on_submit():
+        author = form.author.data
+        email = form.email.data
+        site = form.site.data
+        body = form.body.data
+        comment = Comment(
+            author=author, email=email, site=site, body=body,
+            from_admin=from_admin, post=post, reviewed=reviewed)
+        replied_id = request.args.get('reply')
+        if replied_id:
+            replied_comment = Comment.query.get_or_404(replied_id)
+            comment.replied = replied_comment
+            send_new_reply_email(replied_comment)
+        db.session.add(comment)
+        db.session.commit()
+        if current_user.is_authenticated:  # send message based on authentication status
+            flash('Comment published.', 'success')
+        else:
+            flash('Thanks, your comment will be published after reviewed.', 'info')
+            send_new_comment_email(post)  # send notification email to admin
+        return redirect(url_for('.show_post', post_id=post_id))
+    return render_template('blog/post.html', post=post, pagination=pagination, form=form, comments=comments)
+```
+
+
 
 # 其他
 

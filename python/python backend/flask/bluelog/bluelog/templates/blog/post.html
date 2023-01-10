@@ -141,39 +141,48 @@
     Reply to <strong>Charles Norton</strong>:
     <a class="float-end" href="#">Cancel</a>
   </div>
+
+  {# 该文章是否可以进行评论 #}
   {% if post.can_comment %}
   {% if current_user.is_authenticated %}
   <!-- 管理员评论回复表单 -->
   <div id="comment-form">
-    <form action="#" method="post" class="form" role="form">
-      <input id="author" name="author" type="hidden" value="Mima Kirigoe">
-      <input id="email" name="email" type="hidden" value="">
-      <input id="site" name="site" type="hidden" value="/">
-      <input id="csrf_token" name="csrf_token" type="hidden" value="xxx">
-      <div class="mb-3 required"><label class="form-control-label" for="body">Comment</label>
-        <textarea class="form-control" id="body" name="body" required=""></textarea>
+    <form action="{{ request.full_path }}" method="post" class="form" role="form">
+      {{ form.author }}
+      {{ form.email }}
+      {{ form.site }}
+      {{ form.csrf_token }}
+      <div class="mb-3 required">
+        {{ form.body.label(class="form-label") }}
+        {{ form.body(class="form-control") }}
       </div>
-      <input class="btn btn-secondary" id="submit" name="submit" type="submit" value="Submit">
+      <!-- 提交按钮 -->
+      {{ form.submit(class='btn btn-secondary') }}
     </form>
   </div>
   {% else %}
   <!-- 游客评论回复表单 -->
   <div id="comment-form">
-    <form action="#" method="post" class="form" role="form">
-      <input id="csrf_token" name="csrf_token" type="hidden" value="xxx">
-      <div class="mb-3 required"><label class="form-control-label" for="author">Name</label>
-        <input class="form-control" id="author" name="author" required="" type="text" value="">
+    <form action="{{ request.full_path }}" method="post" class="form" role="form">
+      {{ form.csrf_token }}
+      <div class="mb-3 required">
+        {{ form.author.label(class="form-label") }}
+        {{ form.author(class="form-control") }}
       </div>
-      <div class="mb-3 required"><label class="form-control-label" for="email">Email</label>
-        <input class="form-control" id="email" name="email" required="" type="text" value="">
+      <div class="mb-3 required">
+        {{ form.email.label(class="form-label") }}
+        {{ form.email(class="form-control") }}
       </div>
-      <div class="mb-3"><label class="form-control-label" for="site">Site</label>
-        <input class="form-control" id="site" name="site" type="text" value="">
+      <div class="mb-3">
+        {{ form.site.label(class="form-label") }}
+        {{ form.site(class="form-control") }}
       </div>
-      <div class="mb-3 required"><label class="form-control-label" for="body">Comment</label>
-        <textarea class="form-control" id="body" name="body" required=""></textarea>
+      <div class="mb-3 required">
+        {{ form.body.label(class="form-label") }}
+        {{ form.body(class="form-control") }}
       </div>
-      <input class="btn btn-secondary" id="submit" name="submit" type="submit" value="Submit">
+      <!-- 提交按钮 -->
+      {{ form.submit(class='btn btn-secondary') }}
     </form>
   </div>
   {% endif %}
