@@ -12,7 +12,7 @@ git clone git@github.com:greyli/bluelog.git
 
 ## 项目准备
 
-在书中，作者是一次性给出了完整的代码。省略了不少内容，因此我想从头开始编写代码实现整个流程。
+在书中，作者是一次性给出了完整的代码。省略项目创建到一步一步添加代码的过程，因此我想从头开始编写代码实现整个流程。
 
 由于我选择使用`poetry`管理依赖包，因此我在依赖包管理方面会和原项目有所区别。
 
@@ -3824,6 +3824,41 @@ poetry add email_validator
 ### 电子邮件支持
 
 当文章有新评论后，需要发送邮箱通知管理员。当读者的评论被回复时，也要发送邮件通知读者。
+
+#### 邮件参数配置
+
+修改`bluelog/bluelog/settings.py`
+
+```python
+class BaseConfig(object):
+    TEST_CONFIG = 'test config'  # 用于测试
+    SECRET_KEY = os.getenv('SECRET_KEY', 'dev key')
+
+    MAIL_SERVER = os.getenv('MAIL_SERVER')
+    MAIL_PORT = 465  # 25
+    MAIL_USE_SSL = True
+    MAIL_USERNAME = os.getenv('MAIL_USERNAME')
+    MAIL_PASSWORD = os.getenv('MAIL_PASSWORD')
+    MAIL_DEFAULT_SENDER = ('Bluelog Admin', MAIL_USERNAME)
+
+    BLUELOG_EMAIL = os.getenv('BLUELOG_EMAIL')
+
+    BLUELOG_EMAIL = "YourEmail@email.com"
+    BLUELOG_POST_PER_PAGE = 10  # 每页多少篇文章
+    BLUELOG_COMMENT_PER_PAGE = 5  # 每页显示多少评论
+```
+
+创建`bluelog/.env`，将敏感的环境变量配置数据存储在`.env`内
+
+```
+SECRET_KEY = 123
+MAIL_SERVER = smtp.qq.com
+MAIL_USERNAME = xxxx@qq.com
+MAIL_PASSWORD = asdfasdfasdfasdf
+BLUELOG_EMAIL = xxxx@qq.com
+```
+
+
 
 创建`bluelog/emails.py`
 
