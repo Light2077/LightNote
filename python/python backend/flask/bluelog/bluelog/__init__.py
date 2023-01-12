@@ -6,7 +6,7 @@ import click
 from bluelog.blueprints.admin import admin_bp
 from bluelog.blueprints.auth import auth_bp
 from bluelog.blueprints.blog import blog_bp
-from bluelog.extensions import db, login_manager
+from bluelog.extensions import db, login_manager, mail
 from bluelog.models import Admin, Post, Category, Comment, Link
 from flask_login import current_user
 from bluelog.settings import config
@@ -35,6 +35,7 @@ def register_blueprints(app):
 def register_extensions(app):
     db.init_app(app)
     login_manager.init_app(app)
+    mail.init_app(app)
 
 
 def register_commands(app):

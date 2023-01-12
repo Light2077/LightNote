@@ -65,3 +65,12 @@ def show_post(post_id):
     else:
         form = CommentForm()
     return render_template('blog/post.html', post=post, pagination=pagination, comments=comments, form=form)
+
+
+@blog_bp.route('/test_email')
+def test_email():
+    from bluelog.emails import send_mail
+    send_mail(
+        subject='test email', to="569853885@qq.com", html="hello"
+    )
+    return "test send email"

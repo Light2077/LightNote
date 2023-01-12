@@ -3833,17 +3833,16 @@ poetry add email_validator
 class BaseConfig(object):
     TEST_CONFIG = 'test config'  # 用于测试
     SECRET_KEY = os.getenv('SECRET_KEY', 'dev key')
-
+	
+    # 邮箱相关参数
     MAIL_SERVER = os.getenv('MAIL_SERVER')
     MAIL_PORT = 465  # 25
     MAIL_USE_SSL = True
     MAIL_USERNAME = os.getenv('MAIL_USERNAME')
     MAIL_PASSWORD = os.getenv('MAIL_PASSWORD')
     MAIL_DEFAULT_SENDER = ('Bluelog Admin', MAIL_USERNAME)
-
     BLUELOG_EMAIL = os.getenv('BLUELOG_EMAIL')
 
-    BLUELOG_EMAIL = "YourEmail@email.com"
     BLUELOG_POST_PER_PAGE = 10  # 每页多少篇文章
     BLUELOG_COMMENT_PER_PAGE = 5  # 每页显示多少评论
 ```
@@ -3858,7 +3857,7 @@ MAIL_PASSWORD = asdfasdfasdfasdf
 BLUELOG_EMAIL = xxxx@qq.com
 ```
 
-
+#### 邮件发送相关脚本
 
 创建`bluelog/emails.py`
 
@@ -3885,27 +3884,95 @@ def send_mail(subject, to, html):
 
 
 def send_new_comment_email(post):
-    post_url = url_for('blog.show_post', post_id=post.id, _external=True) + '#comments'
-    send_mail(subject='New comment', to=current_app.config['BLUELOG_EMAIL'],
-              html='<p>New comment in post <i>%s</i>, click the link below to check:</p>'
-                   '<p><a href="%s">%s</a></P>'
-                   '<p><small style="color: #868e96">Do not reply this email.</small></p>'
-                   % (post.title, post_url, post_url))
+    """ 当有新的读者评论时，发送邮件给管理员 """
+    post_url = url_for('blog.show_post', post_id=post.id,
+                       _external=True) + '#comments'
+    send_mail(
+        subject='New comment', to=current_app.config['BLUELOG_EMAIL'],
+        html=f'<p>New comment in post <i>{post.title}</i>, click the link below to check:</p>'
+        f'<p><a href="{post_url}">{post_url}</a></P>'
+        f'<p><small style="color: #868e96">Do not reply this email.</small></p>'
+    )
 
 
 def send_new_reply_email(comment):
-    post_url = url_for('blog.show_post', post_id=comment.post_id, _external=True) + '#comments'
-    send_mail(subject='New reply', to=comment.email,
-              html='<p>New reply for the comment you left in post <i>%s</i>, click the link below to check: </p>'
-                   '<p><a href="%s">%s</a></p>'
-                   '<p><small style="color: #868e96">Do not reply this email.</small></p>'
-                   % (comment.post.title, post_url, post_url))
+    """ 当评论被他人回复时，发邮件给被评论人 """
+    post_url = url_for('blog.show_post', post_id=comment.post_id,
+                       _external=True) + '#comments'
+    send_mail(
+        subject='New reply', to=comment.email,
+        html=f'<p>New reply for the comment you left in post <i>{comment.post.title}</i>'
+        f', click the link below to check: </p><p><a href="{post_url}">{post_url}</a></p>'
+        '<p><small style="color: #868e96">Do not reply this email.</small></p>'
+    )
 
+```
+
+为什么不能直接传`current_app`而是要通过`current_app._get_current_object()`获得app？
+
+参考：https://blog.csdn.net/xili2532/article/details/122085462
+
+因为current_app是一个与处理客户端请求的线程绑定的上下文感知变量。在另一个线程中，current_app没有赋值。直接将current_app作为参数传递给线程对象也不会有效，因为current_app实际上是一个代理对象，它被动态地映射到应用实例。因此，传递代理对象与直接在线程中使用current_app相同。我需要做的是访问存储在代理对象中的实际应用程序实例，并将其作为app参数传递。 current_app._get_current_object()表达式从代理对象中提取实际的应用实例，所以它就是我作为参数传递给线程的。
+
+`current_app._get_current_object()`的作用是 **获取本线程的应用实例以作为参数传递给其他线程使用**，应用实例就是`_find_app中返回的top.app`。
+
+
+
+为什么要使用`with app.app_context()`？
+
+因为Flask-Mail 的send() 方法内部的调用逻辑中使用了current_app 变量，而这个变量只在激活的程序上下文中才存在，这里在后台线程调用发信函数，但是后台线程并没有程序上下文存在。所以要调用`app.app_context()`手动激活程序上下文。
+
+> 在生产环境下， 我们应该使用异步任务队列处理工具来处理这类任务，比如Celery（ http://www.celeryproject.com ） 
+
+#### 加载插件
+
+修改`bluelog/extensions.py`
+
+```python
+...
+from flask_mail import Mail
+
+...
+mail = Mail()
+```
+
+修改`bluelog/__init__.py`
+
+```python
+...
+from bluelog.extensions import db, login_manager, mail
+...
+
+def register_extensions(app):
+    db.init_app(app)
+    login_manager.init_app(app)
+    mail.init_app(app)
 ```
 
 
 
-### 修改show_post
+#### 测试邮件发送功能
+
+在`blueprints/blog.py`内编写
+
+```python
+@blog_bp.route('/test_email')
+def test_email():
+    from bluelog.emails import send_mail
+    to = "xxx@qq.com" # 用于接收测试邮件的邮箱账号
+    send_mail(
+        subject='test email', to=to, html="hello"
+    )
+    return "test send email"
+```
+
+然后访问：http://127.0.0.1:5000/test_email
+
+如果你的测试邮箱能收到消息，说明之前的代码都ok了。
+
+
+
+### 完善show_post
 
 修改`blueprints/blog.py`
 
