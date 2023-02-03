@@ -61,6 +61,12 @@ MAIL_DEFAULT_SENDER = None
 
 常用电邮服务提供商的SMTP配置
 
+- `smtp.gmail.com`
+- `smtp.qq.com`
+- `smtp.sina.com`
+- `smtp.163.com`
+- `smtp.office365.com`
+
 ```python
 # Gmail
 MAIL_SERVER = 'smtp.gmail.com'

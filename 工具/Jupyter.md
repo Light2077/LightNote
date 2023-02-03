@@ -290,3 +290,6 @@ Settings > Advanced Settings Editor
 pip install jupyterlab_execute_time
 ```
 
+## 复制Jupyter Lab里的图片
+
+https://stackoverflow.com/questions/52062493/copy-matlibplot-plot-image-from-jupyter-lab

@@ -1,4 +1,11 @@
-## 字体设置
+## 中文字体设置
+
+开始前的中文字体设置
+
+```python
+```
+
+
 
 具体属性参考 [matplotlib.text.Text](https://matplotlib.org/api/text_api.html#matplotlib.text.Text)
 
@@ -342,7 +349,7 @@ plt.show()
 
 ![](images/公式字体.png)
 
-## 正态分布曲线
+## 区域颜色
 
 ```python
 import matplotlib.pyplot as plt
@@ -454,6 +461,8 @@ plt.show()
 ![Named linestyles, Parametrized linestyles](images/sphx_glr_linestyles_001.png)
 
 ## marker
+
+### 控制marker的间距
 
 matplotlib 绘制曲线时如果数据点较多， 添加 marker 后会出现 marker 重叠或太密集的现象， 可以用 `markevery` 来控制 marker 的间距。
 

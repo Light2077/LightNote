@@ -91,7 +91,7 @@
         <p class="mb-1">{{ comment.body }}</p>
         <!-- 通用的代码 按钮 Reply / Email / Delete -->
         <div class="float-end">
-          <a class="btn btn-light btn-sm" href="/reply/comment/366">Reply</a>
+          <a class="btn btn-light btn-sm" href="{{ url_for('blog.reply_comment', comment_id=comment.id) }}">Reply</a>
           <a class="btn btn-light btn-sm" href="#">Email</a>
 
           <!-- 删除评论 -->
@@ -137,10 +137,14 @@
   </nav>
 
   <!-- 评论回复提示框 -->
+  {% if request.args.get('reply') %}
   <div class="alert alert-dark">
-    Reply to <strong>Charles Norton</strong>:
-    <a class="float-end" href="#">Cancel</a>
+    Reply to <strong>{{ request.args.get('author') }}</strong>:
+    <a class="float-end" href="{{ url_for('blog.show_post', post_id=post.id) }}">Cancel</a>
   </div>
+  {% endif %}
+
+
 
   {# 该文章是否可以进行评论 #}
   {% if post.can_comment %}
@@ -168,18 +172,30 @@
       <div class="mb-3 required">
         {{ form.author.label(class="form-label") }}
         {{ form.author(class="form-control") }}
+        {% for msg in form.author.errors %}
+        <small class="text-danger">{{ msg }}</small><br>
+        {% endfor %}
       </div>
       <div class="mb-3 required">
         {{ form.email.label(class="form-label") }}
         {{ form.email(class="form-control") }}
+        {% for msg in form.email.errors %}
+        <small class="text-danger">{{ msg }}</small><br>
+        {% endfor %}
       </div>
       <div class="mb-3">
         {{ form.site.label(class="form-label") }}
         {{ form.site(class="form-control") }}
+        {% for msg in form.site.errors %}
+        <small class="text-danger">{{ msg }}</small><br>
+        {% endfor %}
       </div>
       <div class="mb-3 required">
         {{ form.body.label(class="form-label") }}
         {{ form.body(class="form-control") }}
+        {% for msg in form.body.errors %}
+        <small class="text-danger">{{ msg }}</small><br>
+        {% endfor %}
       </div>
       <!-- 提交按钮 -->
       {{ form.submit(class='btn btn-secondary') }}

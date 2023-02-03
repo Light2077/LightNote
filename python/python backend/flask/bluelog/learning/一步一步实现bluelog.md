@@ -2892,6 +2892,8 @@ if request.method == 'POST' and form.validate():
 {% endblock %}
 ```
 
+### error效果
+
 > 使用bootstrap5时，这里的错误信息不会显示，因为代码中定义的验证为 长度验证和数据不能为空，如果不满足这两个条件，点击Log in是没有效果的。
 >
 > 如果想查看errors的示例效果，可以取消模板代码中的注释
@@ -2903,6 +2905,14 @@ if request.method == 'POST' and form.validate():
   <!-- <small class="text-danger">密码长度至少为6位！</small><br>
   <small class="text-danger">密码不能为空！</small><br> -->
 </div>
+```
+
+使用flask-wtf时，如果发生错误，会自动给模板传入errors变量，可以用如下方式展示
+
+```jinja2
+{% for msg in form.username.errors %}
+<small class="text-danger">{{ message }}</small><br>
+{% endfor %}
 ```
 
 
@@ -3789,29 +3799,36 @@ poetry add email_validator
 </div>
 {% else %}
 <!-- 游客评论回复表单 -->
-<div id="comment-form">
-  <form action="{{ request.full_path }}" method="post" class="form" role="form">
-    {{ form.csrf_token }}
-    <div class="mb-3 required">
-      {{ form.author.label(class="form-label") }}
-      {{ form.author(class="form-control") }}
-    </div>
-    <div class="mb-3 required">
-      {{ form.email.label(class="form-label") }}
-      {{ form.email(class="form-control") }}
-    </div>
-    <div class="mb-3">
-      {{ form.site.label(class="form-label") }}
-      {{ form.site(class="form-control") }}
-    </div>
-    <div class="mb-3 required">
-      {{ form.body.label(class="form-label") }}
-      {{ form.body(class="form-control") }}
-    </div>
-    <!-- 提交按钮 -->
-    {{ form.submit(class='btn btn-secondary') }}
-  </form>
-</div>
+  <!-- 游客评论回复表单 -->
+  <div id="comment-form">
+    <form action="{{ request.full_path }}" method="post" class="form" role="form">
+      {{ form.csrf_token }}
+      <div class="mb-3 required">
+        {{ form.author.label(class="form-label") }}
+        {{ form.author(class="form-control") }}
+      </div>
+      <div class="mb-3 required">
+        {{ form.email.label(class="form-label") }}
+        {{ form.email(class="form-control") }}
+        {% for msg in form.email.errors %}
+        <small class="text-danger">{{ msg }}</small><br>
+        {% endfor %}
+      </div>
+      <div class="mb-3">
+        {{ form.site.label(class="form-label") }}
+        {{ form.site(class="form-control") }}
+        {% for msg in form.site.errors %}
+        <small class="text-danger">{{ msg }}</small><br>
+        {% endfor %}
+      </div>
+      <div class="mb-3 required">
+        {{ form.body.label(class="form-label") }}
+        {{ form.body(class="form-control") }}
+      </div>
+      <!-- 提交按钮 -->
+      {{ form.submit(class='btn btn-secondary') }}
+    </form>
+  </div>
 {% endif %}
 {% else %}
 <!-- 若禁用评论，则显示下面的代码 -->
@@ -3820,6 +3837,16 @@ poetry add email_validator
 </div>
 {% endif %}
 ```
+
+注意到电子邮件和site行，使用了
+
+```jinja2
+{% for msg in form.site.errors %}
+<small class="text-danger">{{ msg }}</small><br>
+{% endfor %}
+```
+
+当表单填入错误的值时，`form.validate_on_submit()`会验证失败，就会重新返回当前页面，同时会在页面上显示响应的错误。
 
 ### 电子邮件支持
 
@@ -3970,6 +3997,68 @@ def test_email():
 
 如果你的测试邮箱能收到消息，说明之前的代码都ok了。
 
+### 支持回复评论
+
+#### 修改`blog.py`
+
+如何实现回复功能？当用户点击某条评论下的回复按钮时，==需要获取该评论的id==。
+
+实现方案：
+
+- 方案1：创建一个新的视图，视图包含评论id，重定向回文章页面，并传入这个评论的id。
+- 方案2：渲染一个隐藏的表单来存储评论的id，在用户提交表单时再查找它。
+
+> b站的评论回复不需要刷新页面，这里的实现方式要刷新一下页面（发生了重定向）。所以我个人感觉方案2更好。
+>
+> 但是需要会写javascript
+
+修改`blueprints/blog.py`
+
+```python
+
+@blog_bp.route('/reply/comment/<int:comment_id>')
+def reply_comment(comment_id):
+    comment = Comment.query.get_or_404(comment_id)
+    if not comment.post.can_comment:
+        flash('Comment is disabled.', 'warning')
+        return redirect(url_for('.show_post', post_id=comment.post.id))
+    return redirect(
+        url_for('.show_post', post_id=comment.post_id, reply=comment_id, author=comment.author) + '#comment-form')
+```
+
+#### 修改`post.html`
+
+在点击回复按钮Reply时，页面需要显示被回复的评论的作者姓名
+
+点击取消按钮Cancel后，就不显示回复信息。
+
+![image-20230117095322217](images/评论被回复页面.png)
+
+评论回复按钮
+
+```jinja2
+<!-- 评论内容 -->
+<p class="mb-1">{{ comment.body }}</p>
+<!-- 通用的代码 按钮 Reply / Email / Delete -->
+<div class="float-end">
+  <a class="btn btn-light btn-sm" href="{{ url_for('blog.reply_comment', comment_id=comment.id) }}">Reply</a>
+  
+  ...
+</div>
+```
+
+评论回复提示框
+
+```jinja2
+<!-- 评论回复提示框 -->
+{% if request.args.get('reply') %}
+<div class="alert alert-dark">
+  Reply to <strong>{{ request.args.get('author') }}</strong>:
+  <a class="float-end" href="{{ url_for('blog.show_post', post_id=post.id) }}">Cancel</a>
+</div>
+{% endif %}
+```
+
 
 
 ### 完善show_post
@@ -3986,7 +4075,7 @@ def show_post(post_id):
     page = request.args.get('page', 1, type=int)
     per_page = current_app.config['BLUELOG_COMMENT_PER_PAGE']
     pagination = Comment.query.with_parent(post).filter_by(reviewed=True).order_by(Comment.timestamp.asc()).paginate(
-        page, per_page)
+        page=page, per_page=per_page)
     comments = pagination.items
 
     if current_user.is_authenticated:
