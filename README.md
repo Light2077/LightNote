@@ -1,42 +1,8 @@
 # LightNote
 
-Lightnote 是一本笔记，记录在学习过程中遇到的问题和解决方案。
+有志之人立志长，无志之人常立志
 
-## 文档编写准则
-
-一个markdown有且只有一个一级标题（适配vuepress）
-
-尽量多拆分markdown，讲解的细一点。
-
-
-
-**图片相关**
-
-(1) 不要用网络链接的图片
-
-(2) 每级目录下有一个images文件夹，所有markdown中使用的图片统一存放在images文件夹内。
-
-(3) markdown图片编写格式
-
-图片的markdown编写格式是`![]()`。尽量在中括号内标明图片名称，这样后期可以使用代码自动重命名
-
-如`记录.md`文件里用了一张图片
-
-```
-![背景图片1](./images/20211213023214.png)
-```
-
-经过自动格式化以后
-
-```
-![背景图片1](./images/记录_背景图片1.png)
-```
-
-> 若一张图片被多个文件引用怎么办？
->
-> 多复制一份，然后重命名
-
-
+搏二兔而不得一兔
 
 优秀网址记录
 
@@ -160,6 +126,8 @@ https://www.zhihu.com/question/24711491/answer/2726596500
 
 ## 实用网页
 
+:video_game: AI生成游戏素材资源 https://www.scenario.gg/
+
 信用信息公示系统www.gsxt.gov.cn/index.html
 
 合同示范文本库https://cont.12315.cn
@@ -221,3 +189,36 @@ https://iconstore.co/?s=minister
 5.Metademolab：https://sketch.metademolab.com
 6.极简简历：https://www.polebrief.com/
 7.HiPPTer：https://www.hippter.com/index.html
+
+## qita
+
+
+
+
+
+**图片相关**
+
+(1) 不要用网络链接的图片
+
+(2) 每级目录下有一个images文件夹，所有markdown中使用的图片统一存放在images文件夹内。
+
+(3) markdown图片编写格式
+
+图片的markdown编写格式是`![]()`。尽量在中括号内标明图片名称，这样后期可以使用代码自动重命名
+
+如`记录.md`文件里用了一张图片
+
+```
+![背景图片1](./images/20211213023214.png)
+```
+
+经过自动格式化以后
+
+```
+![背景图片1](./images/记录_背景图片1.png)
+```
+
+> 若一张图片被多个文件引用怎么办？
+>
+> 多复制一份，然后重命名
+
