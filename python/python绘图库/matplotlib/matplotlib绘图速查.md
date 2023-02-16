@@ -1,13 +1,22 @@
-## 中文字体设置
+## 字体
 
-开始前的中文字体设置
+[matplotlib.axes.Axes.text](https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.text.html#matplotlib-axes-axes-text)
+
+[matplotlib.text.Text](https://matplotlib.org/stable/api/text_api.html#matplotlib.text.Text)
+
+### 开始前的中文字体设置
 
 ```python
+import matplotlib.pyplot as plt
+
+plt.rcParams["font.family"] = "SimHei"  # 字体
+plt.rcParams["axes.unicode_minus"] = False  # 负号
+plt.rcParams["mathtext.fontset"] = "stix"  # 数学公式
 ```
 
-
-
 具体属性参考 [matplotlib.text.Text](https://matplotlib.org/api/text_api.html#matplotlib.text.Text)
+
+### 标签和刻度的字体
 
 常用：
 
@@ -33,17 +42,27 @@ ax.set_xticklabels(ticks, fontfamily='simsong')
 ax.legend(prop={'family': 'SimHei'})
 ```
 
+## 坐标轴
 
+刻度线的各种设置
 
-## 小技巧速查
+https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.tick_params.html?highlight=matplotlib%20axes%20axes%20tick_params#matplotlib.axes.Axes.tick_params
 
-### xy轴的刻度间隔相同
+### xy轴坐标比例
+
+https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_aspect.html#matplotlib.axes.Axes.set_aspect
 
 - 此时 `ax.set_ylim()`或`plt.ylim()`无效。对x轴也无效。
 - 只有通过更改`figsize`来改变y轴的范围，比如：
   - `plt.figure(figsize=(3, 4))`
   - `plt.figure(figsize=(3, 8))`
   - 后者的y轴范围更广
+
+`scaled`：x轴刻度和y轴刻度比例相同，但是范围根据实际数据确定
+
+`equal`：x轴刻度和y轴刻度比例相同，范围也相同
+
+`tight`：x轴和y轴比例不同，范围根据实际数据确定
 
 ```python
 import matplotlib.pyplot as plt
@@ -72,11 +91,7 @@ plt.show()
 
 ![](images/设置刻度间隔相同.png)
 
-### 双y轴
 
-```python
-ax2 = ax.twinx()
-```
 
 ### x轴标签倾斜
 
@@ -85,29 +100,73 @@ labels = ax.get_xticklabels()
 plt.setp(labels, rotation=45, horizontalalignment='center')
 ```
 
-### 使图片显示完整
-
-```python
-plt.tight_layout()
-```
-
-### 保存图片时显示不完整
-
-```
-plt.savefig(..., bbox_inches="tight")
-```
-
-
-
 ### 共享y轴
 
 ```python
 plt.subplots(..., sharey=True)
 ```
 
+### 双y轴
+
+matplotlib中，可以绘制多个y轴
+
+两个y轴的情况
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+
+x = np.linspace(0, 10)
+y1 = np.sin(x) * 10
+y2 = np.exp(x)
+
+fig, ax = plt.subplots()
+ax2 = ax.twinx()
+
+ax.plot(y1, c='r')
+ax2.plot(y2, c='g')
+plt.show()
+
+```
+
+![index](images/index-16372158224411.png)
+
+三个y轴的情况
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+
+x = np.linspace(0, 10)
+y1 = np.sin(x) * 10
+y2 = np.exp(x)
+y3 = x * 15
+
+fig, ax = plt.subplots()
+ax2 = ax.twinx()
+ax3 = ax.twinx()
+
+ax.plot(y1, c='r')
+ax2.plot(y2, c='g')
+ax3.plot(y3)
+
+# 需要调整y轴位置，否则会重叠
+ax3.spines['right'].set_position(('axes', 1.15))
+ax3.yaxis.set_ticks_position('right')
+plt.show()
+```
+
+![index](images/index-16372158403952.png)
+
+### 绑定刻度线与坐标轴
+
+```python
+ax.yaxis.set_ticks_position('right')
+```
 
 
-## 主副刻度值的设置
+
+### 主副刻度值的设置
 
 [`ax.tick_params()`](https://matplotlib.org/api/_as_gen/matplotlib.axes.Axes.tick_params.html?highlight=ax%20tick_params#matplotlib.axes.Axes.tick_params)
 
@@ -130,7 +189,7 @@ plt.subplots(..., sharey=True)
 - **width**
 
   Tick width in points.
-  
+
 - **pad**
 
   刻度与标签之间的距离
@@ -169,36 +228,24 @@ plt.show()
 ### 隐藏刻度线
 
 ```python
-import matplotlib.pyplot as plt
-import numpy as np
-fig, ax = plt.subplots()
-
-x = np.linspace(-10, 10, 100)
-y = np.sin(x)
-
 ax.plot(x, y)
-
 ax.tick_params(bottom=False, left=False)
-
-plt.show()
 ```
 
 ### 隐藏标签
 
 ```python
-import matplotlib.pyplot as plt
-import numpy as np
-fig, ax = plt.subplots()
-
-x = np.linspace(-10, 10, 100)
-y = np.sin(x)
-
 ax.plot(x, y)
 ax.tick_params(labelbottom=False, labelleft=False)
-plt.show()
 ```
 
-## 坐标轴的设置
+### 设置刻度标签到坐标轴的距离
+
+```python
+ax.yaxis.set_tick_params(pad=10)
+```
+
+
 
 ### 设置坐标轴不可见
 
@@ -219,6 +266,7 @@ plt.axis("off")
 ```python
 ax.spines["left"].set_position(("data", 0))
 ax.spines["bottom"].set_position(("data", 0))
+ax.spines['right'].set_position(('axes', 1.15))
 ```
 
 ### 设置带箭头的坐标轴
@@ -253,27 +301,58 @@ plt.show()
 
 ![](images/带箭头的坐标轴.png)
 
-绘制tanh函数
+## 图片保存
+
+### 使图片显示完整
 
 ```python
-# Some sample data.
-x = np.linspace(-5, 5, 100)
-y = np.tanh(x)
-ax.set_xticks([-5,-4, -3, -2, -1, 1, 2, 3, 4, 5])
-ax.set_yticks([-1, 1])
-ax.plot(x, y)
+plt.tight_layout()
 ```
 
-### xy坐标轴刻度等比例
+### 保存图片时显示不完整
 
-https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_aspect.html#matplotlib.axes.Axes.set_aspect
+```
+plt.savefig(..., bbox_inches="tight")
+```
+
+### 图片保存时带边框
 
 ```python
+import matplotlib.pyplot as plt
 
-ax.set_aspect('equal')
+# 绘制图像
+fig, ax = plt.subplots(figsize=(3, 2), layout='tight')
+ax.plot([1, 2, 3], [4, 5, 6])
+# 获取图像的背景对象
+background = fig.patch
+# 设置边框线颜色为蓝色
+background.set_edgecolor("blue")
+# 设置边框线宽度为2
+background.set_linewidth(2)
+# 显示图像
+plt.savefig("图片边框.png")
+plt.show()
+
 ```
 
+![图片边框](images/图片边框.png)
 
+### bbox_inches的作用
+
+在 matplotlib 中，`bbox_inches` 是一个可选参数，用于指定要保存图像时剪裁图像周围空白区域的大小。
+
+当你使用 `savefig` 函数保存图像时，如果图像周围存在空白区域，这些空白区域将被保存到输出的图像文件中。这通常不是我们想要的，因为它会浪费存储空间并使图像难以处理。为了避免这种情况，可以使用 `bbox_inches` 参数指定要剪裁的区域。
+
+`bbox_inches` 参数接受一个字符串或者一个 `Bbox` 对象。常用的字符串选项包括：
+
+- 'tight': 剪裁空白区域，使图像紧贴着图形边界
+- 'standard': 与 'tight' 类似，但留有一些空白区域，以保留所有轴标签
+- 'inches': 剪裁指定大小的区域。可以将参数设置为一个四元组，指定要剪裁的区域的左、下、右、上边界的英寸数。
+
+例如，以下代码将创建一个简单的散点图，并使用 `bbox_inches='tight'` 参数剪裁图像周围的空白区域：
+
+```python
+```
 
 
 
@@ -349,7 +428,7 @@ plt.show()
 
 ![](images/公式字体.png)
 
-## 区域颜色
+## fill_between
 
 ```python
 import matplotlib.pyplot as plt

@@ -1,3 +1,88 @@
+### Bbox的作用
+
+https://matplotlib.org/stable/api/transforms_api.html#matplotlib.transforms.Bbox
+
+`matplotlib.transforms.Bbox`是Matplotlib中的一个类，它表示图形对象的边界框。它是一个四元组，用于表示左下角和右上角的坐标，并用于在图形的空间内定位和对齐元素。
+
+主要作用：
+
+- 计算图形的空间大小和位置
+- 计算图形的交集、并集、包含等关系
+- 在图形空间中的定位和对齐
+
+使用方法：
+
+首先，需要实例化一个`Bbox`对象：
+
+```python
+from matplotlib.transforms import Bbox
+
+bbox = Bbox([[xmin, ymin], [xmax, ymax]])
+
+```
+
+其中`xmin`、`ymin`、`xmax`、`ymax`分别表示左下角和右上角的坐标。
+
+然后，可以使用以下方法来操作`Bbox`对象：
+
+- `translate`：移动边界框
+- `scale`：缩放边界框
+- `union`：计算两个边界框的并集
+- `intersection`：计算两个边界框的交集
+- `contains`：判断一个边界框是否完全包含另一个边界框
+
+另外，还可以使用`Bbox`对象来定位和对齐图形：
+
+```python
+from matplotlib.patches import Rectangle
+import matplotlib.pyplot as plt
+
+fig, ax = plt.subplots()
+x, y = 1, 1
+width, height = 5, 5
+rect = Rectangle((x, y), width, height, transform=ax.transData, color='r', alpha=.3)
+ax.add_patch(rect)
+ax.set_ylim(0, 10)
+ax.set_xlim(0, 10)
+```
+
+![index](images/index-1676008317378-1.png)
+
+```python
+from matplotlib.patches import Rectangle
+import matplotlib.pyplot as plt
+
+fig, ax = plt.subplots()
+x, y = 0.1, 0.1
+width, height = 0.5, 0.5
+rect = Rectangle((x, y), width, height, transform=ax.transAxes, color='r', alpha=.3)
+ax.add_patch(rect)
+ax.set_ylim(0, 10)
+ax.set_xlim(0, 10)
+```
+
+![index](images/index-1676008331132-3.png)
+
+```python
+import matplotlib.pyplot as plt
+import matplotlib.transforms as transforms
+
+fig, ax = plt.subplots()
+
+bbox = transforms.Bbox([[0.25, 0.25], [0.75, 0.75]])
+
+ax.annotate("Text", xy=(0.5, 0.5), xycoords='data', 
+            bbox=bbox, textcoords='data')
+
+plt.show()
+```
+
+
+
+### transform
+
+
+
 transform的作用就是把数据点映射到像素点上。
 
 ```python
