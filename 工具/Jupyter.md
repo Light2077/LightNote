@@ -1,3 +1,17 @@
+## 修改默认启动浏览器
+
+命令行输入`jupyter notebook --generate-config`
+
+找到`c.NotebookApp.browser = 'chrome'` 	
+
+```python
+import webbrowser
+webbrowser.register('chrome', None, webbrowser.GenericBrowser(u'C:\\Users\\用户名\\AppData\\Local\\Google\\Chrome\\Application\\chrome.exe'))
+c.NotebookApp.browser = 'chrome'
+```
+
+
+
 ## 修改默认启动路径
 
 windows环境下修改jupyter notebook默认启动路径
