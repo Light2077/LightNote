@@ -222,3 +222,8 @@ https://iconstore.co/?s=minister
 >
 > 多复制一份，然后重命名
 
+看markdown笔记的软件
+
+yank note
+
+typora
