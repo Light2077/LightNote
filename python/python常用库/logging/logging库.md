@@ -25,6 +25,44 @@ ERROR:root:this is a error log.
 CRITICAL:root:this is a critical log.
 ```
 
+## logger
+
+基础的使用方式跟logging一样，但我发现setLevel居然没用
+
+```python
+import logging
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+
+logger.debug("this is a debug log.")
+logger.info("this is a info log.")
+logger.warning("this is a warning log.")
+logger.error("this is a error log.")
+logger.critical("this is a critical log.")
+```
+
+还是只显示warning以上的信息
+
+```
+WARNING:root:this is a warning log.
+ERROR:root:this is a error log.
+CRITICAL:root:this is a critical log.
+```
+
+要使用这种方式
+
+```python
+import logging
+
+logging.basicConfig(level=logging.DEBUG, format='%(message)s')
+
+logging.debug('This is a debug message.')
+
+```
+
+这样做的缺点是会输出很多不想看到的DEBUG日志
+
 ## 日志的等级
 
 是以数字来指定的，可以print下面的代码查看不同等级对应的数字。
