@@ -210,6 +210,8 @@ ruler_designer_3294265672={
 
 ```
 
+### 好听的名字
+
 莉娜
 
 艾莲娜
@@ -218,8 +220,16 @@ ruler_designer_3294265672={
 
 奥莉维亚
 
-Eva伊娃 意思是生命，寓意聪明活泼 精力充沛
-Ava艾娃 意思是生命，水，小鸟
+莉莉丝
+
+德洛丽丝
+
+艾莉娅
+
+莱安娜
+
+伊娃 Eva意思是生命，寓意聪明活泼 精力充沛
+艾娃 Ava意思是生命，水，小鸟
 Ulani乌兰妮  代表一辈子希望你幸福快乐
 Katerina卡特琳娜 代表纯洁的 圣洁美丽的
 Xana夏纳 是西语神话里的山泉仙女，在英语中用x开头的名字很稀有
@@ -232,7 +242,7 @@ Azalea艾泽莉亚 代表杜鹃花 寓意有创意，漂亮，果断
 Eliza伊丽莎 代表上帝的誓言
 Daviana 黛薇亚纳 代表被爱的 寓意愿你被世界温柔以待
 Natalie娜塔莉 拉丁语表示圣诞节 寓意心细与善于分析经济头脑出色
-Hailey海莉 它的意思是甘草田里的居住者 寓意成熟甜美
+海莉 Hailey它的意思是甘草田里的居住者 寓意成熟甜美
 
 兰斯洛特
 
@@ -242,4 +252,9 @@ Hailey海莉 它的意思是甘草田里的居住者 寓意成熟甜美
 
 
 
-effect create_artifact_reichskrone_effect = { OWNER = this } Reichskrone 帝国冠冕
+ 帝国冠冕
+
+```
+effect create_artifact_reichskrone_effect = { OWNER = this } Reichskrone
+```
+
