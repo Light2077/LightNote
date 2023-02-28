@@ -227,6 +227,101 @@ if __name__ == "__main__":
 
 ### 如何隐藏坐标轴
 
+### 如何使坐标轴的XY轴比例一样
+
+```python
+# 绘制数据
+plot.plot(x, y, pen='r')
+
+# 锁定x轴和y轴的比例
+plot.setAspectLocked(True)
+```
+
+### 如何修改曲线
+
+```python
+curve = p.plot(pen='y')
+curve.setData(data)
+curve.setData(x, y)
+```
+
+### 如何设置双y轴
+
+### 如何设置图例
+
+### 可移动直线InfiniteLine
+
+[InfiniteLine](https://pyqtgraph.readthedocs.io/en/latest/api_reference/graphicsItems/infiniteline.html)
+
+```python
+vline = pg.InfiniteLine(
+    movable=True,
+    angle=90,
+    label="x={value:0.2f}",
+    hoverPen=(0, 200, 0),
+    labelOpts={
+        "position": 0.1,
+        "color": (200, 200, 100),
+        "fill": (200, 200, 200, 50),
+        "movable": True,
+    },
+)
+
+# 改变
+vline.setPos(10)
+
+# 设置范围
+
+```
+
+
+
+### 如何绘制线性区域
+
+:book:[LinearRegionItem](https://pyqtgraph.readthedocs.io/en/latest/api_reference/graphicsItems/linearregionitem.html)
+
+```python
+region = pg.LinearRegionItem()
+p.addItem(region, ignoreBounds=True)
+
+# 更改
+region.setRegion((xmin, xmax))
+```
+
+### 如何添加会变的文本
+
+[LabelItem](https://pyqtgraph.readthedocs.io/en/latest/api_reference/graphicsItems/labelitem.html)
+
+```python
+label = pg.LabelItem()
+
+label.setText("<span style='font-size: 12pt'>x=%0.1f,   <span style='color: red'>y1=%0.1f</span>,   <span style='color: green'>y2=%0.1f</span>" % (mousePoint.x(), data1[index], data2[index]))
+```
+
+css格式
+
+```python
+"<p style='color: green; font-size: 12pt'>Hello</p>"
+```
+
+### 如何设置图像的全局格式
+
+[Global Configuration Options](https://pyqtgraph.readthedocs.io/en/latest/api_reference/config_options.html)
+
+```python
+# 设置抗锯齿，使得曲线更平滑
+pg.setConfigOptions(antialias=True)
+pg.setConfigOption('font', '微软雅黑')
+```
+
+### 如何固定坐标轴的范围
+
+在 Pyqtgraph 中，可以使用 `setAutoVisible()` 方法来锁定坐标轴的范围，在更新数据时，坐标轴范围不会自动调整。
+
+```python
+plot.setAutoVisible(x=False, y=False)
+```
+
 
 
 # 案例
@@ -253,9 +348,9 @@ if __name__ == "__main__":
 
 ## 鼠标移动时显示数值
 
+案例解读
+
 [LinearRegionItem](https://pyqtgraph.readthedocs.io/en/latest/api_reference/graphicsItems/linearregionitem.html)
-
-
 
 ```python
 """
@@ -411,5 +506,312 @@ vb 是 Pyqtgraph 中的一个 ViewBox 实例，可以通过添加子项来将图
 
 ```python
 vb = p1.vb
+```
+
+### mouseMoved事件
+
+窗口的左上角是(0, 0)
+
+```python
+def mouseMoved(evt):
+    pos = evt[0]
+    print(pos)
+```
+
+```
+PyQt5.QtCore.QPointF(630.0, 73.0)
+```
+
+pos是一个PyQt5的QPointF对象
+
+### 判断某个框是否包含点
+
+```python
+if p1.sceneBoundingRect().contains(pos):
+    pass
+```
+
+### 将像素位置转换为图像坐标位置
+
+```python
+mousePoint = vb.mapSceneToView(pos)
+```
+
+### SignalProxy
+
+```python
+proxy = pg.SignalProxy(p1.scene().sigMouseMoved, rateLimit=60, slot=mouseMoved)
+```
+
+`rateLimit=60`表示每秒钟最多调用回调函数60次。
+
+```python
+p1.scene().sigMouseMoved
+```
+
+获取曲线p1所在场景的鼠标移动事件`sigMouseMoved`。
+
+```python
+slot=mouseMoved
+```
+
+当检测到p1所在场景鼠标移动时，调用我们定义的`mouseMoved`方法。
+
+
+
+Pyqtgraph中的SignalProxy在数据发生变化时捕捉并对其进行处理。它能够监测任何已连接的信号，并在信号被触发时调用一个回调函数。SignalProxy被设计用于在实时数据流中获取数据、对数据进行处理、更新显示等。例如，当从网络流式传输数据时，SignalProxy可以用于捕捉数据的变化，并在数据发生变化时更新图表、图像等。
+
+`p1.scene()`
+
+在PyQtGraph中，一个PlotWidget（或其他绘图部件）包含了一个或多个子场景（scene），每个子场景都可以包含一个或多个绘图项（item）。在这种层次结构中，每个子场景都是一个 QGraphicsScene 对象。
+
+在上面的例子中，我们使用了p1.scene()方法来获取曲线所在的场景。具体来说，p1是一个GraphicsObject对象，代表了绘图中的曲线。在这个例子中，曲线被添加到PlotWidget中，因此它所在的场景实际上是 PlotWidget 的默认场景。因此，p1.scene()返回的是PlotWidget的默认场景对象，即 QGraphicsScene 对象。
+
+我们使用 SignalProxy 对象连接曲线的数据变化信号 sigDataChanged 和回调函数 updateData。为了监听此信号，我们需要获取到曲线所在的场景对象。因此，我们使用 curve.scene() 来获取曲线所在的场景对象，并将其作为 SignalProxy 对象的参数之一。这样，SignalProxy 对象就可以监听到曲线的数据变化信号，并在信号被触发时调用回调函数 updateData。
+
+sigMouseMoved是什么意思？
+
+`sigMouseMoved` 是一个 PyQtGraph 内置的信号(signal)，它在鼠标移动时被发出。当鼠标在 Pyqtgraph 的图形区域内移动时，该信号会被触发，并携带有关鼠标位置的信息。
+
+## 可以拖动的垂直线
+
+案例解读
+
+InfiniteLine
+
+```python
+"""
+This example demonstrates some of the plotting items available in pyqtgraph.
+"""
+
+import numpy as np
+
+import pyqtgraph as pg
+from pyqtgraph.Qt import QtCore
+
+app = pg.mkQApp("InfiniteLine Example")
+win = pg.GraphicsLayoutWidget(show=True, title="Plotting items examples")
+win.resize(1000, 600)
+
+# Enable antialiasing for prettier plots
+pg.setConfigOptions(antialias=True)
+
+# Create a plot with some random data
+p1 = win.addPlot(
+    title="Plot Items example", y=np.random.normal(size=100, scale=10), pen=0.5
+)
+p1.setYRange(-40, 40)
+
+# Add three infinite lines with labels
+inf1 = pg.InfiniteLine(
+    movable=True,
+    angle=90,
+    label="x={value:0.2f}",
+    labelOpts={
+        "position": 0.1,
+        "color": (200, 200, 100),
+        "fill": (200, 200, 200, 50),
+        "movable": True,
+    },
+)
+inf2 = pg.InfiniteLine(
+    movable=True,
+    angle=0,
+    pen=(0, 0, 200),
+    bounds=[-20, 20],
+    hoverPen=(0, 200, 0),
+    label="y={value:0.2f}mm",
+    labelOpts={"color": (200, 0, 0), "movable": True, "fill": (0, 0, 200, 100)},
+)
+inf3 = pg.InfiniteLine(
+    movable=True,
+    angle=45,
+    pen="g",
+    label="diagonal",
+    labelOpts={"rotateAxis": [1, 0], "fill": (0, 200, 0, 100), "movable": True},
+)
+inf1.setPos([2, 2])
+p1.addItem(inf1)
+p1.addItem(inf2)
+p1.addItem(inf3)
+
+targetItem1 = pg.TargetItem()
+
+targetItem2 = pg.TargetItem(
+    pos=(30, 5),
+    size=20,
+    symbol="star",
+    pen="#F4511E",
+    label="vert={1:0.2f}",
+    labelOpts={"offset": QtCore.QPoint(15, 15)},
+)
+targetItem2.label().setAngle(45)
+
+targetItem3 = pg.TargetItem(
+    pos=(10, 10),
+    size=10,
+    symbol="x",
+    pen="#00ACC1",
+)
+targetItem3.setLabel(
+    "Third Label",
+    {
+        "anchor": QtCore.QPointF(0.5, 0.5),
+        "offset": QtCore.QPointF(30, 0),
+        "color": "#558B2F",
+        "rotateAxis": (0, 1),
+    },
+)
+
+
+def callableFunction(x, y):
+    return f"Square Values: ({x**2:.4f}, {y**2:.4f})"
+
+
+targetItem4 = pg.TargetItem(pos=(10, -10), label=callableFunction)
+
+p1.addItem(targetItem1)
+p1.addItem(targetItem2)
+p1.addItem(targetItem3)
+p1.addItem(targetItem4)
+
+# Add a linear region with a label
+lr = pg.LinearRegionItem(values=[70, 80])
+p1.addItem(lr)
+label = pg.InfLineLabel(
+    lr.lines[1], "region 1", position=0.95, rotateAxis=(1, 0), anchor=(1, 1)
+)
+
+if __name__ == "__main__":
+    pg.exec()
+
+```
+
+### InfiniteLine
+
+[InfiniteLine](https://pyqtgraph.readthedocs.io/en/latest/api_reference/graphicsItems/infiniteline.html)
+
+```python
+inf1 = pg.InfiniteLine(
+    movable=True,
+    angle=90,
+    label="x={value:0.2f}",
+    hoverPen=(0, 200, 0),
+    labelOpts={
+        "position": 0.1,
+        "color": (200, 200, 100),
+        "fill": (200, 200, 200, 50),
+        "movable": True,
+    },
+)
+```
+
+### TargetItem
+
+可以拖动的标记
+
+```python
+targetItem2 = pg.TargetItem(
+    pos=(30, 5),
+    size=20,
+    symbol="star",
+    pen="#F4511E",
+    label="vert={1:0.2f}",
+    labelOpts={"offset": QtCore.QPoint(15, 15)},
+)
+targetItem2.label().setAngle(45)
+```
+
+## 三幅图一条可以拖动的线
+
+```python
+import numpy as np
+
+import pyqtgraph as pg
+from pyqtgraph.Qt import QtCore
+
+app = pg.mkQApp("三幅图一条可以拖动的线")
+win = pg.GraphicsLayoutWidget(show=True, title="三幅图一条可以拖动的线")
+win.resize(600, 600)
+
+p1 = win.addPlot(title="图1", row=0, col=0)
+p2 = win.addPlot(title="图2", row=1, col=0)
+p3 = win.addPlot(title="图3", row=2, col=0)
+
+x1 = np.linspace(0, 100, 100)
+x2 = np.linspace(0, 100, 100)
+x3 = np.linspace(0, 100, 100)
+y = np.random.normal(size=100, scale=10)
+p1.plot(x1, y, pen="red")
+p2.plot(x2, y, pen="green")
+p3.plot(x3, y, pen="blue")
+
+
+def get_vline():
+    vline = pg.InfiniteLine(
+        movable=True,
+        angle=90,
+        label="x={value:0.2f}",
+        labelOpts={
+            "position": 0.1,
+            "color": (200, 200, 100),
+            "fill": (200, 200, 200, 50),
+            "movable": True,
+        },
+    )
+    return vline
+
+
+vline1 = get_vline()
+vline2 = get_vline()
+vline3 = get_vline()
+
+vline1.setPos([2, 0])
+vline2.setPos([2, 0])
+vline3.setPos([2, 0])
+
+p1.addItem(vline1)
+p2.addItem(vline2)
+p3.addItem(vline3)
+
+# vline移动时，其他的也跟着动
+def update_lines(evt):
+    xpos = evt.pos().x()
+    if evt is vline1:
+        vline2.setPos(xpos)
+        vline3.setPos(xpos)
+    elif evt is vline2:
+        vline1.setPos(xpos)
+        vline3.setPos(xpos)
+    elif evt is vline3:
+        vline2.setPos(xpos)
+        vline1.setPos(xpos)
+
+
+vline1.sigPositionChanged.connect(update_lines)
+vline2.sigPositionChanged.connect(update_lines)
+vline3.sigPositionChanged.connect(update_lines)
+
+if __name__ == "__main__":
+    pg.exec()
+
+```
+
+### sigPositionChanged事件
+
+```python
+def update_lines(evt):
+    pos = evt.pos()
+    print(pos.x(), pos.y())
+
+vline1.sigPositionChanged.connect(update_lines)
+```
+
+evt是一个GraphicsItem，可以查看https://doc.qt.io/qt-6/qgraphicsobject.html，获取其属性。
+
+最简单的找到其`x`，`y`坐标的方式就是
+
+```python
+evt.pos().x()
 ```
 
