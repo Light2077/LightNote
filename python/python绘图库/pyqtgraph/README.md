@@ -314,12 +314,192 @@ pg.setConfigOptions(antialias=True)
 pg.setConfigOption('font', '微软雅黑')
 ```
 
-### 如何固定坐标轴的范围
+### 如何禁用坐标轴范围自动更新
 
 在 Pyqtgraph 中，可以使用 `setAutoVisible()` 方法来锁定坐标轴的范围，在更新数据时，坐标轴范围不会自动调整。
 
+>  我发现还是会自动调整，得手动用鼠标在图上拖一下，之后改变数据才不会自动调成
+
 ```python
 plot.setAutoVisible(x=False, y=False)
+```
+
+后来发现要这样设置
+
+```python
+plot.getViewBox().setAutoVisible(x=False, y=False)
+```
+
+
+
+### 如何禁用坐标轴鼠标拖动范围
+
+```python
+plot = pg.PlotWidget()
+plot.getViewBox().setMouseEnabled(x=False)
+```
+
+
+
+### 鼠标事件
+
+鼠标点击事件：[pyqtgraph.GraphicsScene.mouseEvents.MouseClickEvent](https://pyqtgraph.readthedocs.io/en/latest/api_reference/graphicsscene/mouseclickevent.html#pyqtgraph.GraphicsScene.mouseEvents.MouseClickEvent)
+
+[pyqtgraph.GraphicsScene](https://pyqtgraph.readthedocs.io/en/latest/api_reference/graphicsscene/graphicsscene.html)
+
+其他常用信号
+
+```python
+sigMouseClicked(event)
+sigMouseMoved(pos)
+sigMouseHover(items)
+```
+
+
+
+
+
+```python
+proxy = pg.SignalProxy(
+    p1.scene().sigMouseClicked, rateLimit=60, slot=mouse_clicked
+)
+
+def mouse_clicked(evt):
+    evt = evt[0]
+    print(evt)
+    if evt.double():
+        print("double click")
+    print("evt.button() = ", evt.button())
+    print("evt.pos() = ", evt.pos())  # plot的坐标
+    print("evt.scenePos() = ", evt.scenePos())  # 窗口的坐标
+    print("evt.screenPos() = ", evt.screenPos())  # 电脑屏幕的坐标
+```
+
+```
+<MouseClickEvent (110,28) button=1>
+evt.button() =  1
+evt.pos() =  Point(110.000000, 28.000000)
+evt.scenePos() =  Point(159.000000, 225.000000)
+evt.screenPos() =  Point(1341.000000, 447.000000)
+```
+
+对于`evt.button()`，左键是1，右键是2，中键是4
+
+### 信号代理SignalProxy
+
+```python
+proxy = pg.SignalProxy(p1.scene().sigMouseMoved, rateLimit=60, slot=mouseMoved)
+```
+
+`rateLimit=60`表示每秒钟最多调用回调函数60次。
+
+```python
+p1.scene().sigMouseMoved
+```
+
+获取曲线p1所在场景的鼠标移动事件`sigMouseMoved`。
+
+```python
+slot=mouseMoved
+```
+
+当检测到p1所在场景鼠标移动时，调用我们定义的`mouseMoved`方法。
+
+
+
+Pyqtgraph中的SignalProxy在数据发生变化时捕捉并对其进行处理。它能够监测任何已连接的信号，并在信号被触发时调用一个回调函数。SignalProxy被设计用于在实时数据流中获取数据、对数据进行处理、更新显示等。例如，当从网络流式传输数据时，SignalProxy可以用于捕捉数据的变化，并在数据发生变化时更新图表、图像等。
+
+`p1.scene()`
+
+在PyQtGraph中，一个PlotWidget（或其他绘图部件）包含了一个或多个子场景（scene），每个子场景都可以包含一个或多个绘图项（item）。在这种层次结构中，每个子场景都是一个 QGraphicsScene 对象。
+
+在上面的例子中，我们使用了p1.scene()方法来获取曲线所在的场景。具体来说，p1是一个GraphicsObject对象，代表了绘图中的曲线。在这个例子中，曲线被添加到PlotWidget中，因此它所在的场景实际上是 PlotWidget 的默认场景。因此，p1.scene()返回的是PlotWidget的默认场景对象，即 QGraphicsScene 对象。
+
+我们使用 SignalProxy 对象连接曲线的数据变化信号 sigDataChanged 和回调函数 updateData。为了监听此信号，我们需要获取到曲线所在的场景对象。因此，我们使用 curve.scene() 来获取曲线所在的场景对象，并将其作为 SignalProxy 对象的参数之一。这样，SignalProxy 对象就可以监听到曲线的数据变化信号，并在信号被触发时调用回调函数 updateData。
+
+sigMouseMoved是什么意思？
+
+`sigMouseMoved` 是一个 PyQtGraph 内置的信号(signal)，它在鼠标移动时被发出。当鼠标在 Pyqtgraph 的图形区域内移动时，该信号会被触发，并携带有关鼠标位置的信息。
+
+### 坐标轴位置移动
+
+https://pyqtgraph.readthedocs.io/en/latest/api_reference/graphicsItems/plotitem.html#pyqtgraph.PlotItem.getAxis
+
+https://pyqtgraph.readthedocs.io/en/latest/api_reference/graphicsItems/axisitem.html
+
+比如变成十字坐标系
+
+```python
+# 创建 AxisItem 对象
+xAxis = pg.AxisItem(orientation='bottom')
+
+# 将 AxisItem 添加到 PlotWidget 中
+pw.setAxisItems({'bottom': xAxis})
+
+# 将 AxisItem 的位置设置为 y=0 的位置
+xAxis.setPos(0)
+```
+
+直接获取坐标轴对象
+
+```python
+import pyqtgraph as pg
+
+# 创建 PlotWidget 对象
+pw = pg.PlotWidget()
+
+# 获取底部轴对象
+xAxis = pw.getAxis('bottom')
+# 获取左侧轴对象
+yAxis = pw.getAxis('left')
+
+```
+
+### showAxes
+
+https://pyqtgraph.readthedocs.io/en/latest/api_reference/graphicsItems/plotitem.html#pyqtgraph.PlotItem.showAxes
+
+第一个参数为True，表示显示所有的坐标轴
+
+```python
+self.p5.showAxes(True, showValues=(True, True, False, False), size=20)
+```
+
+### 设置线条样式mkPen
+
+https://pyqtgraph.readthedocs.io/en/latest/api_reference/functions.html#pyqtgraph.mkPen
+
+pyqtgraph 如何设置绘图曲线的样式为虚线，线条样式有哪些？	
+
+在 PyQtGraph 中，您可以使用 `setPen()` 方法来设置绘图曲线的样式。要将线条样式设置为虚线，可以使用 `Qt.QtCore.Qt.DashLine` 作为 `QPen` 的参数之一。除了虚线，还有许多其他可用的线条样式，如实线、点线、点划线等。以下是一些常用的线条样式：
+
+- Qt.QtCore.Qt.SolidLine：实线
+- Qt.QtCore.Qt.DashLine：虚线
+- Qt.QtCore.Qt.DotLine：点线
+- Qt.QtCore.Qt.DashDotLine：点划线
+- Qt.QtCore.Qt.DashDotDotLine：双点划线
+
+```python
+import pyqtgraph as pg
+from PyQt5 import QtCore, QtGui
+
+app = QtGui.QApplication([])
+win = pg.GraphicsWindow()
+p = win.addPlot()
+pen = pg.mkPen(color='r', width=1, style=QtCore.Qt.DashLine)
+curve = p.plot([1, 2, 3, 4, 5], [1, 2, 3, 2, 1], pen=pen)
+
+```
+
+### 可拖拽的文本
+
+```python
+
+# 创建一个 DraggableTextItem 对象，并将其添加到 PlotItem 中
+text = pg.TextItem("Hello World")
+draggable_text = pg.DraggableTextItem(text)
+draggable_text.setPos(0, 0)  # 设置文本的位置
+plot.addItem(draggable_text)
 ```
 
 
@@ -537,41 +717,7 @@ if p1.sceneBoundingRect().contains(pos):
 mousePoint = vb.mapSceneToView(pos)
 ```
 
-### SignalProxy
 
-```python
-proxy = pg.SignalProxy(p1.scene().sigMouseMoved, rateLimit=60, slot=mouseMoved)
-```
-
-`rateLimit=60`表示每秒钟最多调用回调函数60次。
-
-```python
-p1.scene().sigMouseMoved
-```
-
-获取曲线p1所在场景的鼠标移动事件`sigMouseMoved`。
-
-```python
-slot=mouseMoved
-```
-
-当检测到p1所在场景鼠标移动时，调用我们定义的`mouseMoved`方法。
-
-
-
-Pyqtgraph中的SignalProxy在数据发生变化时捕捉并对其进行处理。它能够监测任何已连接的信号，并在信号被触发时调用一个回调函数。SignalProxy被设计用于在实时数据流中获取数据、对数据进行处理、更新显示等。例如，当从网络流式传输数据时，SignalProxy可以用于捕捉数据的变化，并在数据发生变化时更新图表、图像等。
-
-`p1.scene()`
-
-在PyQtGraph中，一个PlotWidget（或其他绘图部件）包含了一个或多个子场景（scene），每个子场景都可以包含一个或多个绘图项（item）。在这种层次结构中，每个子场景都是一个 QGraphicsScene 对象。
-
-在上面的例子中，我们使用了p1.scene()方法来获取曲线所在的场景。具体来说，p1是一个GraphicsObject对象，代表了绘图中的曲线。在这个例子中，曲线被添加到PlotWidget中，因此它所在的场景实际上是 PlotWidget 的默认场景。因此，p1.scene()返回的是PlotWidget的默认场景对象，即 QGraphicsScene 对象。
-
-我们使用 SignalProxy 对象连接曲线的数据变化信号 sigDataChanged 和回调函数 updateData。为了监听此信号，我们需要获取到曲线所在的场景对象。因此，我们使用 curve.scene() 来获取曲线所在的场景对象，并将其作为 SignalProxy 对象的参数之一。这样，SignalProxy 对象就可以监听到曲线的数据变化信号，并在信号被触发时调用回调函数 updateData。
-
-sigMouseMoved是什么意思？
-
-`sigMouseMoved` 是一个 PyQtGraph 内置的信号(signal)，它在鼠标移动时被发出。当鼠标在 Pyqtgraph 的图形区域内移动时，该信号会被触发，并携带有关鼠标位置的信息。
 
 ## 可以拖动的垂直线
 
