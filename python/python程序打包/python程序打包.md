@@ -1,29 +1,41 @@
 :book:官方文档：https://pyinstaller.readthedocs.io/en/stable/index.html
 
-
-
-
-```powershell
-pyi-makespec -F -w -i favicon.ico main.py
-```
-
 https://blog.csdn.net/tangfreeze/article/details/112240342
 
+## 简明的程序打包方法
+
+1.以单文件形式打包
+
+```shell
+pyinstaller -F -w -i favicon.ico main.py
 ```
+
+- `-F`：表示以单文件形式打包
+- `-w`：运行时不显示终端窗口（对于PyQt5这样的程序比较有用）
+- `-i`：设置程序图标，后接图标文件路径
+
+2.分散文件打包
+
+```shell
+pyinstaller -D -w -i favicon.ico main.py
+```
+
+3.先创建spec文件再打包
+
+
+```shell
 pyi-makespec -D -w -i favicon.ico main.py
 ```
 
-`-D`表示
+会生成一个`main.spec`文件，按需要修改这个文件后运行
 
-执行
-
-```
+```shell
 pyinstaller main.spec
 ```
 
+对于简单的单py文件的程序，直接使用方式1或方式2打包即可，对于包含多个模块、多个资源的更复杂的程序，则需要通过方式3先创建spec文件，然后按照需求定制spec文件，再进行打包。
 
-
-
+下面通过具体案例讲解实现
 
 ## 准备工作
 
@@ -67,7 +79,6 @@ class Example(QWidget):
     def initUI(self):
         # (left, top, width, height)
         self.setGeometry(300, 300, 300, 150)
-        self.setWindowTitle('Icon')
         self.show()
 
 if __name__ == '__main__':
@@ -84,7 +95,7 @@ python main.py
 
 查看上面编写好的GUI界面
 
-![image-20230302170719177](images/image-20230302170719177.png)
+
 
 ## 开始打包第一个程序
 
@@ -193,7 +204,6 @@ class Example(QWidget):
         self.label1.move(50, 50)
         self.label2.move(50, 100)
         self.setGeometry(300, 300, 300, 150)
-        self.setWindowTitle('Icon')
         self.show()
 
 if __name__ == '__main__':
@@ -201,6 +211,22 @@ if __name__ == '__main__':
     ex = Example()
     sys.exit(app.exec_())
 ```
+
+
+
+首先尝试直接打包
+
+```shell
+pyinstaller -D -w main.py
+```
+
+发现也能自动识别要导入的包，直接解决问题了啊。
+
+## 打包带有资源文件的程序
+
+那这个以后再研究吧
+
+## 打包时排除某个包
 
 
 

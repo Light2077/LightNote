@@ -173,4 +173,19 @@ pip-compile --upgrade-package django --upgrade-package requests
 pip-compile --upgrade-package django --upgrade-package requests==2.0.0
 ```
 
+
+
 ### 开发环境与生产环境切换
+
+## 环境变量管理
+
+```
+pip install python-dotenv
+```
+
+环境变量的优先级
+
+```
+手动设置 > .env > .flaskenv
+```
+
