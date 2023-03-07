@@ -6,6 +6,10 @@ QFrame
 
 https://doc.qt.io/qtforpython/PySide6/QtWidgets/QFrame.html
 
+https://blog.csdn.net/Dontla/article/details/105573337
+
+https://blog.csdn.net/weixin_43496130/article/details/104242882
+
 ```python
 import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QLabel, QFrame
@@ -29,7 +33,7 @@ if __name__ == "__main__":
 
 ```
 
-
+![frames](images/frames.png)
 
 
 
