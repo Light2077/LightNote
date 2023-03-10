@@ -94,3 +94,31 @@ https://stackoverflow.com/questions/65734044/kernel-appears-to-have-died-jupyter
 conda install --yes freetype=2.10.4
 ```
 
+## python代码调试
+
+在任意空文件夹下创建`main.py`并传入一下内容
+
+```python
+def foo(a, b):
+    b -= 100
+    c = a + b  # break1 
+    print(c)
+
+
+a = 1
+b = 2
+for i in range(10):
+    a += 1
+    b *= a  # break2
+    foo(a, b)
+```
+
+右键文件夹选择使用vscode打开。
+
+- ==F5== Continue 跳转到下一个断点
+- ==F10== Step Over 单步运行，如果遇到子函数
+  - 子函数内无断点，将子函数当做一行，继续运行
+  - 子函数内有断点，跳转到断点再单步运行。
+- ==F11== Step Into 单步运行，遇到子函数，进入并从子函数第一行开始单步运行
+- ==Shift + F11== Step Out 单步跳出，如果子函数内无断点，跳出子函数，若子函数有断点，执行完断点后再跳出子函数。
+
