@@ -2,6 +2,8 @@
 
 https://blog.csdn.net/tangfreeze/article/details/112240342
 
+参考https://www.cnblogs.com/paisenpython/p/10329882.html
+
 ## 简明的程序打包方法
 
 1.以单文件形式打包

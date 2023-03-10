@@ -1,10 +1,11 @@
 # 日志基础
 
+参考资料：
 
-
-https://docs.python.org/3.9/howto/logging.html#logging-basic-tutorial
-
-https://docs.python.org/zh-cn/3.9/howto/logging.html#logging-advanced-tutorial
+- [logging官方基础教程](https://docs.python.org/3.9/howto/logging.html#logging-basic-tutorial)
+- [logging官方进阶教程](https://docs.python.org/zh-cn/3.9/howto/logging.html#logging-advanced-tutorial)
+- [nb-log: 基于logging的国产的日志管理包](https://nb-log-doc.readthedocs.io/zh_CN/latest/articles/c1.html) 里面文档写的很亲民
+- [如何跟高手一样用python记录日志](https://guicommits.com/how-to-log-in-python-like-a-pro/)：介绍logging的文章
 
 ## 日志的基本使用
 

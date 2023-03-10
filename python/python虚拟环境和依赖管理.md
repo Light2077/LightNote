@@ -26,7 +26,31 @@ windows激活虚拟环境
 deactivate
 ```
 
+
+
+### 环境迁移
+
+最简单的依赖管理方式就是使用python自带的venv。
+
+然后输出requirements文件
+
+```
+pip freeze > requirements.txt
+```
+
+依照requirements安装包
+
+```
+pip install -r requirements.txt 
+```
+
+
+
 ## 依赖管理
+
+
+
+
 
 https://zhuanlan.zhihu.com/p/486778776
 

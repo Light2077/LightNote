@@ -239,7 +239,13 @@ logging.basicConfig(filename='example.log', level=logging.DEBUG, filemode='w')
 
 
 
+## 快速配置日志
 
+创建`log.py`
+
+
+
+在程序的入口处。
 
 
 
