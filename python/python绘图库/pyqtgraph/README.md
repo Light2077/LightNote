@@ -189,7 +189,7 @@ if __name__ == "__main__":
 
 把绘图任务全都放在`MyGraphWidget`类的初始化中了。
 
-### 如何创建多张图
+### 如何多图布局
 
 ```python
 import pyqtgraph as pg
@@ -218,6 +218,19 @@ if __name__ == "__main__":
 ```
 
 ![image-20230227191006437](images/image-20230227191006437.png)
+
+网格布局之，填充空label来更改比例
+
+```python
+layout.addLabel(text="", row=0, col=0)
+layout.addLabel(text="", row=0, col=1)
+layout.addLabel(text="", row=0, col=2)
+layout.addItem(p1, row=1, col=0, colspan=2, rowspan=2)
+layout.addItem(p2, row=2, col=2)
+layout.addItem(p2, row=1, col=2)
+```
+
+
 
 ### `ViewBox`是什么？
 
@@ -269,7 +282,7 @@ vline = pg.InfiniteLine(
 
 # 改变
 vline.setPos(10)
-
+vline.setBounds(0, 10)  # 拖动的范围
 # 设置范围
 
 ```
@@ -370,6 +383,18 @@ p1.setYLink(p2)
 
 
 ### 如何禁用坐标轴范围自动更新
+
+```python
+self.vb.disableAutoRange(axis="y")
+self.vb.disableAutoRange(axis="x")
+self.setYRange(-40, 40)
+```
+
+
+
+
+
+
 
 在 Pyqtgraph 中，可以使用 `setAutoVisible()` 方法来锁定坐标轴的范围，在更新数据时，坐标轴范围不会自动调整。
 
