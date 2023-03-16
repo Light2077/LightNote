@@ -58,6 +58,8 @@ https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_aspect.html#m
   - `plt.figure(figsize=(3, 8))`
   - 后者的y轴范围更广
 
+设置x y轴坐标比例
+
 `scaled`：x轴刻度和y轴刻度比例相同，但是范围根据实际数据确定
 
 `equal`：x轴刻度和y轴刻度比例相同，范围也相同
