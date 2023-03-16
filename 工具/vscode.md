@@ -28,6 +28,10 @@ https://www.zhihu.com/question/322530705/answer/860418884
 
 **代码跳转后回退**：`alt + ←`
 
+## 自定义代码片段
+
+
+
 ## 免密登录
 
 本机为windows，远端为linux。希望vscode每次连接到远端时无需重新输入密码
