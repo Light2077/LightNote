@@ -32,7 +32,7 @@ https://www.code-nav.cn/
 
 https://www.itnanls.cn/ui/login
 
-
+https://cuijiahua.com/ 学习网站
 
 一个很牛的博主，自己录了很多视频课程
 
@@ -227,3 +227,9 @@ https://iconstore.co/?s=minister
 yank note
 
 typora
+
+### spyder相关
+
+webdriver 官方文档：https://www.seleniumhq.org/docs/03_webdriver.jsp
+selenium官网：https://www.seleniumhq.org/
+selenium 国内网站：http://www.selenium.org.cn/
