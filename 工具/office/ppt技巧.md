@@ -22,3 +22,14 @@ pdf处理网站[SmallPDF](https://smallpdf.com/)
 
 
 
+## ppt演示时画笔
+
+
+
+画笔： `Ctrl + P`
+
+荧光笔：`Ctrl + I`
+
+激光笔：`Ctrl + L`。用于突出显示鼠标指针所在的位置
+
+橡皮擦：`Ctrl + E`
