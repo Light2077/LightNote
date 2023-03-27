@@ -1,5 +1,7 @@
 官方文档：https://pyqtgraph.readthedocs.io/en/latest/
 
+# pyqtgraph
+
 查看所有示例
 
 ```python
@@ -648,6 +650,22 @@ text = pg.TextItem("Hello World")
 text.setPos(0, 0)  # 设置文本的位置
 plot.addItem(text)
 ```
+
+### 如何设置标题字体
+
+首先可以通过
+
+```
+plot.setTitle("title")
+```
+
+设置标题的文本格式，直接写html格式
+
+```
+plot.setTitle("<span style='font-size: 18px; font-weight: bold'></span>")
+```
+
+
 
 ### 如何修改图像比例
 
