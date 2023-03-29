@@ -48,7 +48,6 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     # 设置应用图标
     w = FormFormDemo()
-    w.show()
     sys.exit(app.exec_())
 ```
 
