@@ -10,6 +10,8 @@
 
 http://www.yishimei.cn/
 
+好的外国编程学习网站：https://laracasts.com/series/learn-vue-3-step-by-step/episodes/1
+
 📖
 
 表情大全
