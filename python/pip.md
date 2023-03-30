@@ -156,6 +156,14 @@ pip download -d "./pkgs" <some_package>
 pip download -d "./pkgs" --no-deps --platform linux_x86_64 numpy
 ```
 
+如果`--platform`不行
+
+尝试不用这个参数，或者换成
+
+```
+manylinux2014_x86_64
+```
+
 
 
 ### 完整案例
