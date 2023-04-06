@@ -307,3 +307,15 @@ pip install jupyterlab_execute_time
 ## 复制Jupyter Lab里的图片
 
 https://stackoverflow.com/questions/52062493/copy-matlibplot-plot-image-from-jupyter-lab
+
+## 设置打开是jupyterLab
+
+https://blog.csdn.net/eye_s1/article/details/122326686
+
+配置jupyter lab
+
+```
+jupyter lab --generate-config
+```
+
+`jupyter_lab_config.py`
