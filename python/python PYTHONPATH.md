@@ -42,10 +42,13 @@ export PYTHONPATH=/projects/my_project ; python run.py
 
 
 
-一个环境变量设置多个值，linux是 : 隔开，win是 ; 隔开。
+一个环境变量设置多个值，linux是 `:` 隔开，win是` ;` 隔开。
 
 ```
+# Linux
 export PYTHONPATH=/codes/proj1:/codes/proj2
+
+# Windows
 set PYTHONPATH=/codes/proj1;/codes/proj2
 ```
 
@@ -53,7 +56,7 @@ set PYTHONPATH=/codes/proj1;/codes/proj2
 
 vscode 设置 PYTHONPATH
 
-ctrl shift p , 搜索open settings ，找到json文件
+`ctrl + shift + p` , 搜索open settings ，找到json文件，加入或者修改下面这行。
 
 ```json
 "terminal.integrated.env.windows": {"PYTHONPATH":"${workspaceFolder};${env:PYTHONPATH}"}

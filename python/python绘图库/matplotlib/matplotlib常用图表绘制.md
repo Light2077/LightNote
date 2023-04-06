@@ -352,6 +352,74 @@ plt.show()
 
 ![image-20210415105901514](images/image-20210415105901514.png)
 
+matplotlib
+
+水平柱状图
+
+```python
+import matplotlib.pyplot as plt
+import numpy as np
+
+# 准备数据
+y = ['A', 'B', 'C', 'D', 'E']
+x = [10, 24, 36, 42, 55]
+
+# 绘制图形
+fig, ax = plt.subplots()
+rects = ax.barh(y, x)
+
+# 添加标签和标题
+ax.set_xlabel('Value')
+ax.set_ylabel('Category')
+ax.set_title('Horizontal Bar Chart')
+
+# 显示数值标签
+for rect in rects:
+    width = rect.get_width()
+    ax.annotate('{}'.format(width),
+                xy=(width, rect.get_y() + rect.get_height() / 2),
+                xytext=(3, 0),  # 3 points horizontal offset
+                textcoords="offset points",
+                ha='left', va='center')
+
+# 显示图形
+plt.show()
+
+```
+
+垂直柱状图
+
+```python
+import matplotlib.pyplot as plt
+import numpy as np
+
+# 准备数据
+x = ['A', 'B', 'C', 'D', 'E']
+y = [10, 24, 36, 42, 55]
+
+# 绘制图形
+fig, ax = plt.subplots()
+rects = ax.bar(x, y)
+
+# 添加标签和标题
+ax.set_xlabel('Category')
+ax.set_ylabel('Value')
+ax.set_title('Vertical Bar Chart')
+
+# 显示数值标签
+for rect in rects:
+    height = rect.get_height()
+    ax.annotate('{}'.format(height),
+                xy=(rect.get_x() + rect.get_width() / 2, height),
+                xytext=(0, 3),  # 3 points vertical offset
+                textcoords="offset points",
+                ha='center', va='bottom')
+
+# 显示图形
+plt.show()
+
+```
+
 
 
 ### 堆积柱状图
