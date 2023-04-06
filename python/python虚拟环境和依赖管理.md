@@ -26,7 +26,31 @@ windows激活虚拟环境
 deactivate
 ```
 
+
+
+### 环境迁移
+
+最简单的依赖管理方式就是使用python自带的venv。
+
+然后输出requirements文件
+
+```
+pip freeze > requirements.txt
+```
+
+依照requirements安装包
+
+```
+pip install -r requirements.txt 
+```
+
+
+
 ## 依赖管理
+
+
+
+
 
 https://zhuanlan.zhihu.com/p/486778776
 
@@ -173,4 +197,19 @@ pip-compile --upgrade-package django --upgrade-package requests
 pip-compile --upgrade-package django --upgrade-package requests==2.0.0
 ```
 
+
+
 ### 开发环境与生产环境切换
+
+## 环境变量管理
+
+```
+pip install python-dotenv
+```
+
+环境变量的优先级
+
+```
+手动设置 > .env > .flaskenv
+```
+

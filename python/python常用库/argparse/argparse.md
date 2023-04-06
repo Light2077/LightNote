@@ -48,8 +48,8 @@ optional arguments:
   -h, --help  show this help message and exit
 ```
 
-- positional arguments 是必须要输入的参数
-- optional arguments 可以输入也可以不输入
+- positional arguments 位置参数：是必须要输入的参数
+- optional arguments 可选参数：可以输入也可以不输入，在输入时需要指定参数名称，比如`python demo.py -n jack`
 
 ## 例2：add_argument的常用参数
 
@@ -178,5 +178,67 @@ optional arguments:
   -a AGE, --age AGE     enter you age
 ```
 
+## 例4：短选项
 
+```python
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    "-v", "--verbose", 
+    help="increase output verbosity",
+    action="store_true")
+args = parser.parse_args()
+if args.verbose:
+    print("verbosity turned on")
+```
+
+```
+python3 prog.py -v
+```
+
+```
+verbosity turned on
+```
+
+## 例5：矛盾的选项
+
+
+
+```python
+import argparse
+
+parser = argparse.ArgumentParser(description="calculate X to the power of Y")
+group = parser.add_mutually_exclusive_group()
+group.add_argument("-v", "--verbose", action="store_true")
+group.add_argument("-q", "--quiet", action="store_true")
+parser.add_argument("x", type=int, help="the base")
+parser.add_argument("y", type=int, help="the exponent")
+args = parser.parse_args()
+answer = args.x**args.y
+
+if args.quiet:
+    print(answer)
+elif args.verbose:
+    print(f"{args.x} to the power {args.y} equals {answer}")
+else:
+    print(f"{args.x}^{args.y} == {answer}")
+```
+
+```shell
+$ python3 prog.py --help
+usage: prog.py [-h] [-v | -q] x y
+
+calculate X to the power of Y
+
+positional arguments:
+  x              the base
+  y              the exponent
+
+options:
+  -h, --help     show this help message and exit
+  -v, --verbose
+  -q, --quiet
+```
+
+注意 `[-v | -q]`，它的意思是说我们可以使用 `-v` 或 `-q`，但不能同时使用两者
 

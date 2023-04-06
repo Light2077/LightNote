@@ -150,6 +150,22 @@ pip download --only-binary=:all: --platform linux_x86_64 numpy
 pip download -d "./pkgs" <some_package>
 ```
 
+结合
+
+```
+pip download -d "./pkgs" --no-deps --platform linux_x86_64 numpy
+```
+
+如果`--platform`不行
+
+尝试不用这个参数，或者换成
+
+```
+manylinux2014_x86_64
+```
+
+
+
 ### 完整案例
 
 下载linux环境下的`numpy`包到当前目录下的`pkgs`文件内。
@@ -216,4 +232,6 @@ pip install -r requirements.txt
 ```
 
 
+
+## pip查看某个包的依赖包
 

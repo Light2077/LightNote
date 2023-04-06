@@ -10,7 +10,9 @@
 
 http://www.yishimei.cn/
 
+好的外国编程学习网站：https://laracasts.com/series/learn-vue-3-step-by-step/episodes/1
 
+📖
 
 表情大全
 
@@ -32,7 +34,7 @@ https://www.code-nav.cn/
 
 https://www.itnanls.cn/ui/login
 
-
+https://cuijiahua.com/ 学习网站
 
 一个很牛的博主，自己录了很多视频课程
 
@@ -106,7 +108,7 @@ https://visiocafe.com 主流厂商LOGO IT设备图示
 
 [cns学术导航](https://cnspub.com/)
 
-
+代码显示板 https://carbon.now.sh/
 
 pwnable 网络安全刷题？
 
@@ -152,7 +154,7 @@ http://www.ucdrs.superlib.net/
 
 https://www.wenshushu.cn/
 
-代码显示板 https://carbon.now.sh/
+
 
 
 
@@ -194,7 +196,7 @@ https://iconstore.co/?s=minister
 
 
 
-
+[大家的学习笔记记录在哪啊？ - V2EX](https://us.v2ex.com/t/929711#reply175)
 
 **图片相关**
 
@@ -227,3 +229,9 @@ https://iconstore.co/?s=minister
 yank note
 
 typora
+
+### spyder相关
+
+webdriver 官方文档：https://www.seleniumhq.org/docs/03_webdriver.jsp
+selenium官网：https://www.seleniumhq.org/
+selenium 国内网站：http://www.selenium.org.cn/

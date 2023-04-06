@@ -1,5 +1,7 @@
 官方文档：https://pyqtgraph.readthedocs.io/en/latest/
 
+# pyqtgraph
+
 查看所有示例
 
 ```python
@@ -189,7 +191,7 @@ if __name__ == "__main__":
 
 把绘图任务全都放在`MyGraphWidget`类的初始化中了。
 
-### 如何创建多张图
+### 如何多图布局
 
 ```python
 import pyqtgraph as pg
@@ -218,6 +220,19 @@ if __name__ == "__main__":
 ```
 
 ![image-20230227191006437](images/image-20230227191006437.png)
+
+网格布局之，填充空label来更改比例
+
+```python
+layout.addLabel(text="", row=0, col=0)
+layout.addLabel(text="", row=0, col=1)
+layout.addLabel(text="", row=0, col=2)
+layout.addItem(p1, row=1, col=0, colspan=2, rowspan=2)
+layout.addItem(p2, row=2, col=2)
+layout.addItem(p2, row=1, col=2)
+```
+
+
 
 ### `ViewBox`是什么？
 
@@ -269,7 +284,7 @@ vline = pg.InfiniteLine(
 
 # 改变
 vline.setPos(10)
-
+vline.setBounds(0, 10)  # 拖动的范围
 # 设置范围
 
 ```
@@ -314,13 +329,353 @@ pg.setConfigOptions(antialias=True)
 pg.setConfigOption('font', '微软雅黑')
 ```
 
-### 如何固定坐标轴的范围
+### 坐标轴联动
+
+```python
+"""
+This example demonstrates the ability to link the axes of views together
+Views can be linked manually using the context menu, but only if they are given 
+names.
+"""
+
+import numpy as np
+
+import pyqtgraph as pg
+
+app = pg.mkQApp("Linked Views Example")
+#mw = QtWidgets.QMainWindow()
+#mw.resize(800,800)
+
+x = np.linspace(-50, 50, 1000)
+y = np.sin(x) / x
+
+win = pg.GraphicsLayoutWidget(show=True, title="pyqtgraph example: Linked Views")
+win.resize(800,600)
+
+win.addLabel("Linked Views", colspan=2)
+win.nextRow()
+
+p1 = win.addPlot(x=x, y=y, name="Plot1", title="Plot1")
+p2 = win.addPlot(x=x, y=y, name="Plot2", title="Plot2: Y linked with Plot1")
+p2.setLabel('bottom', "Label to test offset")
+p2.setYLink('Plot1')  ## test linking by name
+
+
+## create plots 3 and 4 out of order
+p4 = win.addPlot(x=x, y=y, name="Plot4", title="Plot4: X -> Plot3 (deferred), Y -> Plot1", row=2, col=1)
+p4.setXLink('Plot3')  ## Plot3 has not been created yet, but this should still work anyway.
+p4.setYLink(p1)
+p3 = win.addPlot(x=x, y=y, name="Plot3", title="Plot3: X linked with Plot1", row=2, col=0)
+p3.setXLink(p1)
+p3.setLabel('left', "Label to test offset")
+#QtWidgets.QApplication.processEvents()
+
+if __name__ == '__main__':
+    pg.exec()
+
+```
+
+核心就是
+
+```python
+p1.setXLink(p2)
+p1.setYLink(p2)
+```
+
+
+
+### 如何禁用坐标轴范围自动更新
+
+```python
+self.vb.disableAutoRange(axis="y")
+self.vb.disableAutoRange(axis="x")
+self.setYRange(-40, 40)
+```
+
+
+
+
+
+
 
 在 Pyqtgraph 中，可以使用 `setAutoVisible()` 方法来锁定坐标轴的范围，在更新数据时，坐标轴范围不会自动调整。
+
+>  我发现还是会自动调整，得手动用鼠标在图上拖一下，之后改变数据才不会自动调成
 
 ```python
 plot.setAutoVisible(x=False, y=False)
 ```
+
+后来发现要这样设置
+
+```python
+plot.vb.disableAutoRange(axis="y")
+plot.vb.disableAutoRange(axis="x")
+```
+
+自动更新范围限制
+
+95%以上的数据就不显示了
+
+```python
+p1.enableAutoRange('y', 0.95)
+```
+
+自动缩放时的边距
+
+```python
+p1.setDefaultPadding(padding=0.02)
+```
+
+
+
+
+
+### 如何禁用坐标轴鼠标拖动范围
+
+```python
+plot = pg.PlotWidget()
+plot.getViewBox().setMouseEnabled(x=False)
+```
+
+
+
+
+
+### 鼠标事件
+
+鼠标点击事件：[pyqtgraph.GraphicsScene.mouseEvents.MouseClickEvent](https://pyqtgraph.readthedocs.io/en/latest/api_reference/graphicsscene/mouseclickevent.html#pyqtgraph.GraphicsScene.mouseEvents.MouseClickEvent)
+
+[pyqtgraph.GraphicsScene](https://pyqtgraph.readthedocs.io/en/latest/api_reference/graphicsscene/graphicsscene.html)
+
+其他常用信号
+
+```python
+sigMouseClicked(event)
+sigMouseMoved(pos)
+sigMouseHover(items)
+```
+
+
+
+
+
+```python
+proxy = pg.SignalProxy(
+    p1.scene().sigMouseClicked, rateLimit=60, slot=mouse_clicked
+)
+
+def mouse_clicked(evt):
+    evt = evt[0]
+    print(evt)
+    if evt.double():
+        print("double click")
+    print("evt.button() = ", evt.button())
+    print("evt.pos() = ", evt.pos())  # plot的坐标
+    print("evt.scenePos() = ", evt.scenePos())  # 窗口的坐标
+    print("evt.screenPos() = ", evt.screenPos())  # 电脑屏幕的坐标
+```
+
+```
+<MouseClickEvent (110,28) button=1>
+evt.button() =  1
+evt.pos() =  Point(110.000000, 28.000000)
+evt.scenePos() =  Point(159.000000, 225.000000)
+evt.screenPos() =  Point(1341.000000, 447.000000)
+```
+
+对于`evt.button()`，左键是1，右键是2，中键是4
+
+### 信号代理SignalProxy
+
+```python
+proxy = pg.SignalProxy(p1.scene().sigMouseMoved, rateLimit=60, slot=mouseMoved)
+```
+
+`rateLimit=60`表示每秒钟最多调用回调函数60次。
+
+```python
+p1.scene().sigMouseMoved
+```
+
+获取曲线p1所在场景的鼠标移动事件`sigMouseMoved`。
+
+```python
+slot=mouseMoved
+```
+
+当检测到p1所在场景鼠标移动时，调用我们定义的`mouseMoved`方法。
+
+
+
+Pyqtgraph中的SignalProxy在数据发生变化时捕捉并对其进行处理。它能够监测任何已连接的信号，并在信号被触发时调用一个回调函数。SignalProxy被设计用于在实时数据流中获取数据、对数据进行处理、更新显示等。例如，当从网络流式传输数据时，SignalProxy可以用于捕捉数据的变化，并在数据发生变化时更新图表、图像等。
+
+`p1.scene()`
+
+在PyQtGraph中，一个PlotWidget（或其他绘图部件）包含了一个或多个子场景（scene），每个子场景都可以包含一个或多个绘图项（item）。在这种层次结构中，每个子场景都是一个 QGraphicsScene 对象。
+
+在上面的例子中，我们使用了p1.scene()方法来获取曲线所在的场景。具体来说，p1是一个GraphicsObject对象，代表了绘图中的曲线。在这个例子中，曲线被添加到PlotWidget中，因此它所在的场景实际上是 PlotWidget 的默认场景。因此，p1.scene()返回的是PlotWidget的默认场景对象，即 QGraphicsScene 对象。
+
+我们使用 SignalProxy 对象连接曲线的数据变化信号 sigDataChanged 和回调函数 updateData。为了监听此信号，我们需要获取到曲线所在的场景对象。因此，我们使用 curve.scene() 来获取曲线所在的场景对象，并将其作为 SignalProxy 对象的参数之一。这样，SignalProxy 对象就可以监听到曲线的数据变化信号，并在信号被触发时调用回调函数 updateData。
+
+sigMouseMoved是什么意思？
+
+`sigMouseMoved` 是一个 PyQtGraph 内置的信号(signal)，它在鼠标移动时被发出。当鼠标在 Pyqtgraph 的图形区域内移动时，该信号会被触发，并携带有关鼠标位置的信息。
+
+### 坐标轴位置移动
+
+https://pyqtgraph.readthedocs.io/en/latest/api_reference/graphicsItems/plotitem.html#pyqtgraph.PlotItem.getAxis
+
+https://pyqtgraph.readthedocs.io/en/latest/api_reference/graphicsItems/axisitem.html
+
+比如变成十字坐标系
+
+```python
+# 创建 AxisItem 对象
+xAxis = pg.AxisItem(orientation='bottom')
+
+# 将 AxisItem 添加到 PlotWidget 中
+pw.setAxisItems({'bottom': xAxis})
+
+# 将 AxisItem 的位置设置为 y=0 的位置
+xAxis.setPos(0)
+```
+
+直接获取坐标轴对象
+
+```python
+import pyqtgraph as pg
+
+# 创建 PlotWidget 对象
+pw = pg.PlotWidget()
+
+# 获取底部轴对象
+xAxis = pw.getAxis('bottom')
+# 获取左侧轴对象
+yAxis = pw.getAxis('left')
+
+```
+
+### showAxes
+
+https://pyqtgraph.readthedocs.io/en/latest/api_reference/graphicsItems/plotitem.html#pyqtgraph.PlotItem.showAxes
+
+第一个参数为True，表示显示所有的坐标轴
+
+```python
+# (left, top, right, bottom)
+self.p5.showAxes(True, showValues=(True, True, False, False), size=20)
+```
+
+showLabel(*axis*, *show=True*)
+
+设置Label的显示开关
+
+### 设置线条样式mkPen
+
+https://pyqtgraph.readthedocs.io/en/latest/api_reference/functions.html#pyqtgraph.mkPen
+
+pyqtgraph 如何设置绘图曲线的样式为虚线，线条样式有哪些？	
+
+在 PyQtGraph 中，您可以使用 `setPen()` 方法来设置绘图曲线的样式。要将线条样式设置为虚线，可以使用 `Qt.QtCore.Qt.DashLine` 作为 `QPen` 的参数之一。除了虚线，还有许多其他可用的线条样式，如实线、点线、点划线等。以下是一些常用的线条样式：
+
+- Qt.QtCore.Qt.SolidLine：实线
+- Qt.QtCore.Qt.DashLine：虚线
+- Qt.QtCore.Qt.DotLine：点线
+- Qt.QtCore.Qt.DashDotLine：点划线
+- Qt.QtCore.Qt.DashDotDotLine：双点划线
+
+```python
+import pyqtgraph as pg
+from PyQt5 import QtCore, QtGui
+
+app = QtGui.QApplication([])
+win = pg.GraphicsWindow()
+p = win.addPlot()
+pen = pg.mkPen(color='r', width=1, style=QtCore.Qt.DashLine)
+curve = p.plot([1, 2, 3, 4, 5], [1, 2, 3, 2, 1], pen=pen)
+
+```
+
+### 设置marker样式
+
+```python
+"""
+This example shows all the scatter plot symbols available in pyqtgraph.
+
+These symbols are used to mark point locations for scatter plots and some line
+plots, similar to "markers" in matplotlib and vispy.
+"""
+
+import pyqtgraph as pg
+
+app = pg.mkQApp("Symbols Examples")
+win = pg.GraphicsLayoutWidget(show=True, title="Scatter Plot Symbols")
+win.resize(1000,600)
+
+pg.setConfigOptions(antialias=True)
+
+plot = win.addPlot(title="Plotting with symbols")
+plot.addLegend()
+plot.plot([0, 1, 2, 3, 4], pen=(0,0,200), symbolBrush=(0,0,200), symbolPen='w', symbol='o', symbolSize=14, name="symbol='o'")
+plot.plot([1, 2, 3, 4, 5], pen=(0,128,0), symbolBrush=(0,128,0), symbolPen='w', symbol='t', symbolSize=14, name="symbol='t'")
+plot.plot([2, 3, 4, 5, 6], pen=(19,234,201), symbolBrush=(19,234,201), symbolPen='w', symbol='t1', symbolSize=14, name="symbol='t1'")
+plot.plot([3, 4, 5, 6, 7], pen=(195,46,212), symbolBrush=(195,46,212), symbolPen='w', symbol='t2', symbolSize=14, name="symbol='t2'")
+plot.plot([4, 5, 6, 7, 8], pen=(250,194,5), symbolBrush=(250,194,5), symbolPen='w', symbol='t3', symbolSize=14, name="symbol='t3'")
+plot.plot([5, 6, 7, 8, 9], pen=(54,55,55), symbolBrush=(55,55,55), symbolPen='w', symbol='s', symbolSize=14, name="symbol='s'")
+plot.plot([6, 7, 8, 9, 10], pen=(0,114,189), symbolBrush=(0,114,189), symbolPen='w', symbol='p', symbolSize=14, name="symbol='p'")
+plot.plot([7, 8, 9, 10, 11], pen=(217,83,25), symbolBrush=(217,83,25), symbolPen='w', symbol='h', symbolSize=14, name="symbol='h'")
+plot.plot([8, 9, 10, 11, 12], pen=(237,177,32), symbolBrush=(237,177,32), symbolPen='w', symbol='star', symbolSize=14, name="symbol='star'")
+plot.plot([9, 10, 11, 12, 13], pen=(126,47,142), symbolBrush=(126,47,142), symbolPen='w', symbol='+', symbolSize=14, name="symbol='+'")
+plot.plot([10, 11, 12, 13, 14], pen=(119,172,48), symbolBrush=(119,172,48), symbolPen='w', symbol='d', symbolSize=14, name="symbol='d'")
+plot.plot([11, 12, 13, 14, 15], pen=(253, 216, 53), symbolBrush=(253, 216, 53), symbolPen='w', symbol='arrow_down', symbolSize=22, name="symbol='arrow_down'")
+plot.plot([12, 13, 14, 15, 16], pen=(189, 189, 189), symbolBrush=(189, 189, 189), symbolPen='w', symbol='arrow_left', symbolSize=22, name="symbol='arrow_left'")
+plot.plot([13, 14, 15, 16, 17], pen=(187, 26, 95), symbolBrush=(187, 26, 95), symbolPen='w', symbol='arrow_up', symbolSize=22, name="symbol='arrow_up'")
+plot.plot([14, 15, 16, 17, 18], pen=(248, 187, 208), symbolBrush=(248, 187, 208), symbolPen='w', symbol='arrow_right', symbolSize=22, name="symbol='arrow_right'")
+plot.setXRange(-2, 4)
+
+if __name__ == '__main__':
+    pg.exec()
+
+```
+
+
+
+### 文本
+
+```python
+
+# 创建一个 DraggableTextItem 对象，并将其添加到 PlotItem 中
+text = pg.TextItem("Hello World")
+text.setPos(0, 0)  # 设置文本的位置
+plot.addItem(text)
+```
+
+### 如何设置标题字体
+
+首先可以通过
+
+```
+plot.setTitle("title")
+```
+
+设置标题的文本格式，直接写html格式
+
+```
+plot.setTitle("<span style='font-size: 18px; font-weight: bold'></span>")
+```
+
+
+
+### 如何修改图像比例
+
+https://stackoverflow.com/questions/64402919/how-set-stretch-factor-for-chart-in-pyqtgraph
+
+### ROI 可拖动的矩形框
+
+https://pyqtgraph.readthedocs.io/en/latest/api_reference/graphicsItems/roi.html
+
+region-of-interest 
 
 
 
@@ -537,41 +892,7 @@ if p1.sceneBoundingRect().contains(pos):
 mousePoint = vb.mapSceneToView(pos)
 ```
 
-### SignalProxy
 
-```python
-proxy = pg.SignalProxy(p1.scene().sigMouseMoved, rateLimit=60, slot=mouseMoved)
-```
-
-`rateLimit=60`表示每秒钟最多调用回调函数60次。
-
-```python
-p1.scene().sigMouseMoved
-```
-
-获取曲线p1所在场景的鼠标移动事件`sigMouseMoved`。
-
-```python
-slot=mouseMoved
-```
-
-当检测到p1所在场景鼠标移动时，调用我们定义的`mouseMoved`方法。
-
-
-
-Pyqtgraph中的SignalProxy在数据发生变化时捕捉并对其进行处理。它能够监测任何已连接的信号，并在信号被触发时调用一个回调函数。SignalProxy被设计用于在实时数据流中获取数据、对数据进行处理、更新显示等。例如，当从网络流式传输数据时，SignalProxy可以用于捕捉数据的变化，并在数据发生变化时更新图表、图像等。
-
-`p1.scene()`
-
-在PyQtGraph中，一个PlotWidget（或其他绘图部件）包含了一个或多个子场景（scene），每个子场景都可以包含一个或多个绘图项（item）。在这种层次结构中，每个子场景都是一个 QGraphicsScene 对象。
-
-在上面的例子中，我们使用了p1.scene()方法来获取曲线所在的场景。具体来说，p1是一个GraphicsObject对象，代表了绘图中的曲线。在这个例子中，曲线被添加到PlotWidget中，因此它所在的场景实际上是 PlotWidget 的默认场景。因此，p1.scene()返回的是PlotWidget的默认场景对象，即 QGraphicsScene 对象。
-
-我们使用 SignalProxy 对象连接曲线的数据变化信号 sigDataChanged 和回调函数 updateData。为了监听此信号，我们需要获取到曲线所在的场景对象。因此，我们使用 curve.scene() 来获取曲线所在的场景对象，并将其作为 SignalProxy 对象的参数之一。这样，SignalProxy 对象就可以监听到曲线的数据变化信号，并在信号被触发时调用回调函数 updateData。
-
-sigMouseMoved是什么意思？
-
-`sigMouseMoved` 是一个 PyQtGraph 内置的信号(signal)，它在鼠标移动时被发出。当鼠标在 Pyqtgraph 的图形区域内移动时，该信号会被触发，并携带有关鼠标位置的信息。
 
 ## 可以拖动的垂直线
 
