@@ -1,5 +1,47 @@
 # argparse
 
+## 复习
+
+现在有这样一个程序，要求使用`argparse`库完善下面的代码，实现从命令行传入参数给say_hello()函数并正确运行
+
+```python
+# 导入命令行解析库
+
+def say_hello(name, age):
+    print(f"hello {name}, you are {age} years old.")
+    
+if __name__ == "__main__":
+    # 创建解析对象
+    # 添加name和age参数
+    # 解析命令行参数
+    # 调用say_hello函数，并传递解析后的参数
+
+```
+
+完整版
+
+```python
+# 导入命令行解析库
+import argparse
+
+def say_hello(name, age):
+    print(f"hello {name}, you are {age} years old.")
+
+if __name__ == "__main__":
+    # 创建ArgumentParser对象
+    parser = argparse.ArgumentParser(description="a program to say hello")
+    # 添加name和age参数
+    parser.add_argument("--name", help="your name", type=str)
+    parser.add_argument("--age", help="your age", type=int)
+    # 解析命令行参数
+    args = parser.parse_args()
+    # 调用say_hello函数，并传递解析后的参数
+    say_hello(args.name, args.age)
+
+```
+
+
+
 https://docs.python.org/zh-cn/3/howto/argparse.html#id1
 
 就是在命令行用python运行脚本文件时，可以附带参数命令。
