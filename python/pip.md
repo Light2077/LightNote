@@ -233,5 +233,81 @@ pip install -r requirements.txt
 
 
 
-## pip查看某个包的依赖包
+## chatgpt教你迁移环境
 
+在这种情况下，尝试使用`pip`的`wheel`功能在源服务器上创建二进制分发包，然后将这些包复制到目标服务器上。请按照以下步骤操作：
+
+在源服务器上，确保已安装`wheel`库：
+
+```
+pip install wheel
+```
+
+激活源服务器上的虚拟环境并导出`requirements.txt`文件：
+
+```bash
+source demo_env/bin/activate
+pip freeze > requirements.txt
+```
+
+在源服务器上，为`requirements.txt`中列出的所有包创建`wheel`文件：
+
+```bash
+pip wheel --wheel-dir wheelhouse -r requirements.txt
+```
+
+这将在`wheelhouse`目录中为每个包创建一个`.whl`文件。
+
+将`wheelhouse`目录和`requirements.txt`文件复制到目标服务器。
+
+在目标服务器上，创建一个新的虚拟环境并激活它：
+
+```bash
+python3.9 -m venv demo_env
+source demo_env/bin/activate
+```
+
+使用`requirements.txt`文件和`wheelhouse`目录在目标服务器上的新虚拟环境中离线安装包：
+
+```bash
+pip install --no-index --find-links=wheelhouse -r requirements.txt
+```
+
+这将从`wheelhouse`目录中的`.whl`文件安装所需的包，而不会尝试从互联网上下载任何内容。这样，您可以在无法访问互联网的目标服务器上设置虚拟环境。
+
+
+
+> ​	按照上面的方法迁移时报了错
+
+```
+ERROR: cryptography-39.0.2-cp36-abi3-manylinux_2_24_x86_64.whl is not a supported wheel on this platform.
+```
+
+在源服务器上创建的`.whl`文件不兼容目标服务器的平台。这可能是因为源服务器和目标服务器之间的Python版本、操作系统或体系结构不同。
+
+在这种情况下，我建议您在目标服务器上尝试从源代码构建包。为此，您可以遵循以下步骤：
+
+在源服务器上，获取`requirements.txt`中列出的所有包的源代码。您可以使用`pip download`命令将源代码包下载到一个目录中：
+
+```bash
+pip download --no-binary=:all: --dest packages -r requirements.txt
+```
+
+这将下载源代码包（通常是`.tar.gz`格式）到名为`packages`的目录。
+
+将`packages`目录和`requirements.txt`文件复制到目标服务器。
+
+在目标服务器上，创建一个新的虚拟环境并激活它（如果尚未创建）：
+
+```bash
+python3.9 -m venv demo_env
+source demo_env/bin/activate
+```
+
+在目标服务器上的新虚拟环境中离线安装包：
+
+```bash
+pip install --no-index --find-links=packages -r requirements.txt
+```
+
+这将从`packages`目录中的源代码包安装所需的包，而不会尝试从互联网上下载任何内容。如果目标服务器上有必要的编译工具和库，这应该可以解决兼容性问题。
