@@ -354,48 +354,15 @@ plt.show()
 
 matplotlib
 
-水平柱状图
+### 垂直柱状图
 
 ```python
 import matplotlib.pyplot as plt
 import numpy as np
 
 # 准备数据
-y = ['A', 'B', 'C', 'D', 'E']
-x = [10, 24, 36, 42, 55]
-
-# 绘制图形
-fig, ax = plt.subplots()
-rects = ax.barh(y, x)
-
-# 添加标签和标题
-ax.set_xlabel('Value')
-ax.set_ylabel('Category')
-ax.set_title('Horizontal Bar Chart')
-
-# 显示数值标签
-for rect in rects:
-    width = rect.get_width()
-    ax.annotate('{}'.format(width),
-                xy=(width, rect.get_y() + rect.get_height() / 2),
-                xytext=(3, 0),  # 3 points horizontal offset
-                textcoords="offset points",
-                ha='left', va='center')
-
-# 显示图形
-plt.show()
-
-```
-
-垂直柱状图
-
-```python
-import matplotlib.pyplot as plt
-import numpy as np
-
-# 准备数据
-x = ['A', 'B', 'C', 'D', 'E']
-y = [10, 24, 36, 42, 55]
+x = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
+y = [31, 24, 36, 18, 55, 27, 35, 44]
 
 # 绘制图形
 fig, ax = plt.subplots()
@@ -407,20 +374,47 @@ ax.set_ylabel('Value')
 ax.set_title('Vertical Bar Chart')
 
 # 显示数值标签
-for rect in rects:
-    height = rect.get_height()
-    ax.annotate('{}'.format(height),
-                xy=(rect.get_x() + rect.get_width() / 2, height),
-                xytext=(0, 3),  # 3 points vertical offset
-                textcoords="offset points",
-                ha='center', va='bottom')
+plt.bar_label(rects, padding=3)
+# for rect in rects:
+#     height = rect.get_height()
+#     ax.annotate('{}'.format(height),
+#                 xy=(rect.get_x() + rect.get_width() / 2, height),
+#                 xytext=(0, 3),  # 3 points vertical offset
+#                 textcoords="offset points",
+#                 ha='center', va='bottom')
 
 # 显示图形
 plt.show()
 
 ```
 
+<img src="images/垂直柱状图.png" alt="image-20230418172126117" style="zoom: 67%;" />
 
+### 水平柱状图
+
+```python
+import matplotlib.pyplot as plt
+import numpy as np
+
+# 准备数据
+y = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
+x = [31, 24, 36, 18, 55, 27, 35, 44]
+
+# 绘制图形
+fig, ax = plt.subplots()
+rects = ax.barh(y, x)
+
+# 添加标签和标题
+ax.set_xlabel('Value')
+ax.set_ylabel('Category')
+ax.set_title('Horizontal Bar Chart')
+plt.bar_label(rects, padding=3)
+
+# 显示图形
+plt.show()
+```
+
+<img src="images/水平柱状图.png" alt="image-20230418172312596" style="zoom:67%;" />
 
 ### 堆积柱状图
 
@@ -428,15 +422,16 @@ plt.show()
 import matplotlib.pyplot as plt
 import numpy as np
 
-plt.figure(figsize=(3, 4))
+fig, ax = plt.subplots(figsize=(3, 4))
 x = np.array([0, 1, 2])
 y1 = np.array([1, 2, 3])
 y2 = np.array([3, 2, 1])
 y3 = np.array([1, 1, 1])
-plt.bar(x, y1)
-plt.bar(x, y2, bottom=y1, color='c')
-plt.bar(x, y3, bottom=y1+y2, color='lightblue')
-plt.savefig('堆积柱状图.png')
+
+ax.bar(x, y1)
+ax.bar(x, y2, bottom=y1, color='c')
+ax.bar(x, y3, bottom=y1+y2, color='lightblue')
+# ax.savefig('堆积柱状图.png')
 plt.show()
 ```
 
@@ -448,31 +443,28 @@ plt.show()
 import matplotlib.pyplot as plt
 import numpy as np
 
-zh = {"family": "STSong"}
-labels = ['文本', '疾病和诊断', '检查', '检验', '手术', '药物', '解剖部位']  # , '总数'
-train = np.array([1000, 2116, 222, 318, 765, 456, 1486])
-test = np.array([379, 682, 91, 193, 140, 263, 447])
+
+labels = ['A', 'B', 'C', 'D', 'E', 'F', 'G']
+y1 = np.array([1000, 2116, 222, 318, 765, 456, 1486])
+y2 = np.array([379, 682, 91, 193, 140, 263, 447])
 
 x = np.arange(len(labels))
 
-fig, ax = plt.subplots(figsize=(10, 4))
+fig, ax = plt.subplots(figsize=(8, 3), dpi=100)
 width = 0.35  # the width of the bars
+rects1 = ax.bar(x - width/2, y1, width, label='y1', color="deepskyblue", edgecolor='k')
+rects2 = ax.bar(x + width/2, y2, width, label='y2', color="lightcoral", edgecolor='k')
 
-rects1 = ax.bar(x - width/2, train, width, label='train', color="deepskyblue")
-rects2 = ax.bar(x + width/2, test, width, label='test', color="red", alpha=0.5)
-
-ax.set_ylim([0, 2400])
 ax.set_xticks(x)
-ax.set_xticklabels(labels, font=zh)
+ax.set_xticklabels(labels)
 ax.legend()
 
 ax.bar_label(rects1, padding=3)
 ax.bar_label(rects2, padding=3)
-
 plt.show()
 ```
 
-![image-20210415112449359](images/image-20210415112449359.png)
+![image-20230418172717531](images/并列柱状图.png)
 
 ### 设置边框
 
@@ -485,6 +477,11 @@ plt.show()
 https://matplotlib.org/stable/gallery/shapes_and_collections/hatch_demo.html#sphx-glr-gallery-shapes-and-collections-hatch-demo-py
 
 ![hatch demo](images/sphx_glr_hatch_demo_001.png)
+
+### 柱子颜色与高度挂钩
+
+```python
+```
 
 
 
