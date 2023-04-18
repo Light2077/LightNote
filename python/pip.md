@@ -22,6 +22,17 @@ pip install -i https://pypi.tuna.tsinghua.edu.cn/simple some-package
 pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
 ```
 
+设置为腾讯源
+
+查看pip config 配置位置，一般在`~/.pip/pip.conf`
+
+```
+pip config set global.index-url http://mirrors.tencentyun.com/pypi/simple
+pip config set global.trusted-host mirrors.tencentyun.com
+```
+
+
+
 ### 配置多个镜像源
 
 如果您想配置多个镜像源平衡负载，可在已经替换 `index-url` 的情况下通过以下方式继续增加源站：
@@ -311,3 +322,235 @@ pip install --no-index --find-links=packages -r requirements.txt
 ```
 
 这将从`packages`目录中的源代码包安装所需的包，而不会尝试从互联网上下载任何内容。如果目标服务器上有必要的编译工具和库，这应该可以解决兼容性问题。
+
+## 用docker帮助环境迁移
+
+原因：
+
+- 内网无法用pip联网安装包，需要下载好whl文件
+- 在ubuntu系统下载的whl文件，可能无法在centos中顺利安装。
+
+这时候需要找一台联网的服务器，安装docker，配一个centos的环境
+
+首先查看目标服务器的具体版本
+
+centos服务器
+
+```
+cat /etc/centos-release
+```
+
+```
+CentOS Linux release 7.9.2009 (Core)
+```
+
+ubuntu服务器
+
+```
+lsb_release -a
+```
+
+```
+No LSB modules are available.
+Distributor ID: Ubuntu
+Description:    Ubuntu 18.04.4 LTS
+Release:        18.04
+Codename:       bionic
+```
+
+
+
+安装docker
+
+```
+sudo apt-get update
+sudo apt-get install docker.io
+```
+
+下载并启动 CentOS Docker 镜像
+
+```
+sudo docker run -it centos:7 /bin/bash
+# 具体设定版本
+sudo docker run -it centos:7.9.2009 /bin/bash
+```
+
+启动并进入镜像
+
+```
+sudo docker run -it centos:7.9.2009 /bin/bash
+```
+
+更新系统软件包
+
+```shell
+yum update -y
+```
+
+安装编译工具
+
+```
+yum install -y make
+```
+
+安装sqlite
+
+```
+yum install sqlite-devel
+```
+
+
+
+安装 Python 3.9
+
+在容器中运行以下命令
+
+> https://registry.npmmirror.com/-/binary/python/3.9.6/Python-3.9.6.tgz
+
+```shell
+yum install -y gcc openssl-devel bzip2-devel libffi-devel
+yum install -y wget
+# wget https://www.python.org/ftp/python/3.9.10/Python-3.9.10.tgz
+wget https://registry.npmmirror.com/-/binary/python/3.9.6/Python-3.9.6.tgz
+tar xzf Python-3.9.6.tgz
+cd Python-3.9.6
+./configure --enable-optimizations
+make altinstall
+
+```
+
+验证是否安装成功
+
+```
+python3.9
+pip3.9
+```
+
+映射到python3和pip3
+
+```
+ln -s /usr/local/bin/python3.9 /usr/local/bin/python3
+ln -s /usr/local/bin/pip3.9 /usr/local/bin/pip3
+```
+
+有时候，需要重新编译安装python，比如sqlite版本不够，不能运行某些项目，需要升级，升级sqlite后就得重新编译安装python
+
+```
+cd /home/projects/python/Python-3.9.6
+make clean
+./configure --enable-optimizations --with-openssl=/usr/local/openssl --with-system-ffi --enable-loadable-sqlite-extensions
+make
+make altinstall
+```
+
+
+
+将容器打包为一个镜像
+
+```
+docker ps
+```
+
+```
+CONTAINER ID   IMAGE             COMMAND       CREATED       STATUS       PORTS     NAMES
+77ed7cc020f7   centos:7.9.2009   "/bin/bash"   2 hours ago   Up 2 hours             wonderful_liskov
+```
+
+打包
+
+```
+docker commit wonderful_liskov centos7.9_python3.9
+```
+
+然后启动这个打包好的镜像
+
+如果要配置端口映射
+
+```
+docker run -d -p 8080:8080 --name mycentos centos7.9_python3.9 /bin/bash
+docker exec -it [容器名或id] /bin/bash
+```
+
+不配置
+
+```
+docker run -it --name mycentos centos7.9_python3.9 /bin/bash
+```
+
+创建并进入文件夹
+
+```
+mkdir -p /home/projects/example
+cd /home/projects/example
+```
+
+创建并启动虚拟环境
+
+```
+python3 -m venv venv
+source venv/bin/activate
+```
+
+配置好需要的虚拟环境后
+
+
+
+在源服务器上，确保已安装`wheel`库：
+
+```
+pip install wheel
+```
+
+激活源服务器上的虚拟环境并导出`requirements.txt`文件：
+
+```
+source demo_env/bin/activate
+pip freeze > requirements.txt
+```
+
+在源服务器上，为`requirements.txt`中列出的所有包创建`wheel`文件：
+
+```
+pip wheel --wheel-dir wheelhouse -r requirements.txt
+```
+
+这将在`wheelhouse`目录中为每个包创建一个`.whl`文件。
+
+打包
+
+```
+tar czvf package.tar.gz wheelhouse/ requirements.txt
+```
+
+将文件拷贝出来解压到目标服务器。
+
+> 如果用的是docker
+
+```
+docker cp <容器名或容器 ID>:/home/package.tar.gz /home/local/
+
+```
+
+
+
+将`wheelhouse`目录和`requirements.txt`文件复制到
+
+
+
+
+
+在目标服务器上，创建一个新的虚拟环境并激活它：
+
+```
+python3.9 -m venv demo_env
+source demo_env/bin/activate
+```
+
+使用`requirements.txt`文件和`wheelhouse`目录在目标服务器上的新虚拟环境中离线安装包：
+
+```
+pip install --no-index --find-links=wheelhouse -r requirements.txt
+```
+
+这将从`wheelhouse`目录中的`.whl`文件安装所需的包，而不会尝试从互联网上下载任何内容。这样，您可以在无法访问互联网的目标服务器上设置虚拟环境。
+
