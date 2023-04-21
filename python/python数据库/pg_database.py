@@ -40,6 +40,10 @@ class PostgreDataBase:
 
     # 获取某个表的所有列名
     def get_table_column_names(self, table_name):
+        """
+        SELECT column_name FROM information_schema.columns
+            WHERE table_name='xxxxxxxxxxxxxxx'
+        """
         sql = f"SELECT column_name FROM information_schema.columns \n" \
               f"WHERE table_name='{table_name}'"
 

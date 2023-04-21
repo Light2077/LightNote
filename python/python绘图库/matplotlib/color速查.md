@@ -94,7 +94,7 @@ plt.show()
 
 # 代码
 
-https://matplotlib.org/gallery/color/colormap_reference.html#sphx-glr-gallery-color-colormap-reference-py
+[Colormap reference — Matplotlib 3.7.1 documentation](https://matplotlib.org/stable/gallery/color/colormap_reference.html)
 
 ```python
 
@@ -159,3 +159,44 @@ from matplotlib import colors as c
 cmap = c.ListedColormap(['lightblue','w'])
 ```
 
+例如，论文经典配色
+
+```python
+from matplotlib import colors as c
+colors = [
+    '#4e62ab', '#469eb4', '#87cfa4', '#cbe99d', '#f5fbb1', 
+    '#fee89a', '#fdb96a', '#f57547', '#d6404e', '#9e0142']
+
+cmap = c.ListedColormap(colors, name="my_color_map", N=10)
+cmap
+```
+
+<img src="images/经典配色.png" alt="image-20230419114524494" style="zoom:67%;" />
+
+# 配色
+
+[跟顶刊学配色！SCI论文插图经典配色实例第1期 - 知乎 (zhihu.com)](https://zhuanlan.zhihu.com/p/593320758)
+
+[审美积累~SCI论文插图经典配色实例第2期 - 知乎 (zhihu.com)](https://zhuanlan.zhihu.com/p/594161488)
+
+[跟着顶刊学配色！SCI论文插图经典配色实例第3期 - 知乎 (zhihu.com)](https://zhuanlan.zhihu.com/p/594927077)
+
+[不会配色？看这里~SCI论文插图经典配色实例第4期 - 知乎 (zhihu.com)](https://zhuanlan.zhihu.com/p/596176944)
+
+[论文配色还能这样？SCI论文插图经典配色实例第5期 - 知乎 (zhihu.com)](https://zhuanlan.zhihu.com/p/596724941)
+
+[不会配色？跟顶刊学习~SCI论文插图经典配色实例第6期 - 知乎 (zhihu.com)](https://zhuanlan.zhihu.com/p/597892222)
+
+[跟顶刊学配色~SCI论文插图经典配色实例第7期 - 知乎 (zhihu.com)](https://zhuanlan.zhihu.com/p/599589346)
+
+[不会配色看这里~SCI论文插图经典配色实例第8期 - 知乎 (zhihu.com)](https://zhuanlan.zhihu.com/p/602135863)
+
+[用这套配色拿下审稿专家！SCI论文插图经典配色实例第9期 - 知乎 (zhihu.com)](https://zhuanlan.zhihu.com/p/607356250)
+
+[纯蓝清冷配色~SCI论文插图经典配色实例第10期 - 知乎 (zhihu.com)](https://zhuanlan.zhihu.com/p/609301843)
+
+[橙色活力配色~SCI论文插图经典配色实例第11期 - 知乎 (zhihu.com)](https://zhuanlan.zhihu.com/p/611114599)
+
+[不会配色？看这里~SCI论文插图经典配色实例第12期 - 知乎 (zhihu.com)](https://zhuanlan.zhihu.com/p/612574781)
+
+[不会配色看这里！SCI论文插图经典配色实例第13期 - 知乎 (zhihu.com)](https://zhuanlan.zhihu.com/p/615171651)

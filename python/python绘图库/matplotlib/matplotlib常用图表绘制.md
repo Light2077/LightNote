@@ -439,19 +439,25 @@ plt.show()
 
 ### 并列柱状图
 
+参数：
+
+- labels，list，标签
+- data，arraylike，比如二维列表
+- colormap，配色
+
 ```python
 import matplotlib.pyplot as plt
 import numpy as np
 
-
-labels = ['A', 'B', 'C', 'D', 'E', 'F', 'G']
-y1 = np.array([1000, 2116, 222, 318, 765, 456, 1486])
-y2 = np.array([379, 682, 91, 193, 140, 263, 447])
+# 简单版
+labels = ['A', 'B', 'C', 'D']
+y1 = np.array([3, 7, 9, 2])
+y2 = np.array([6, 4, 5, 8])
 
 x = np.arange(len(labels))
+fig, ax = plt.subplots(figsize=(3, 2))
+width = 0.35  # 柱子宽度
 
-fig, ax = plt.subplots(figsize=(8, 3), dpi=100)
-width = 0.35  # the width of the bars
 rects1 = ax.bar(x - width/2, y1, width, label='y1', color="deepskyblue", edgecolor='k')
 rects2 = ax.bar(x + width/2, y2, width, label='y2', color="lightcoral", edgecolor='k')
 
@@ -459,12 +465,72 @@ ax.set_xticks(x)
 ax.set_xticklabels(labels)
 ax.legend()
 
+# 添加数据标签
 ax.bar_label(rects1, padding=3)
 ax.bar_label(rects2, padding=3)
+# plt.savefig(r'.\images\并列柱状图1.png')
+
 plt.show()
 ```
 
-![image-20230418172717531](images/并列柱状图.png)
+![](./images/并列柱状图1.png)
+
+函数封装
+
+```python
+def barplot(labels, data, colors, gap=0.2):
+    # 验证数据准确性
+    nlabel = len(labels)
+    nbar = data.shape[0]
+    assert nlabel == data.shape[1]
+
+    # 设定配色
+    if colors is not None:
+        assert nbar <= len(colors)
+        cmap = c.ListedColormap(colors, N=nbar)
+    else:
+        cmap = plt.get_cmap("Spectral", lut=nbar)
+
+    align = 'edge' if nbar % 2 == 0 else 'center'
+
+    # 用于绘图的计算参数
+    # def barplot():
+    width = (1 - gap) / len(data)
+    x = np.array(range(nlabel))
+
+    start = (-nbar + 1) // 2
+
+    fig, ax = plt.subplots()
+    ax.grid(axis='y')
+
+    for i, xd in enumerate(range(start, start + nbar)):
+        print(xd)
+        ax.bar(x + xd * width, data[i], width=width, align=align, color=cmap(i), edgecolor='k', zorder=10)
+
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    ax.set_xticks(x)
+    ax.set_xticklabels(labels)
+```
+
+```python
+np.random.seed(2026)
+
+# 输入参数
+labels = ['A', 'B', 'C', 'D']
+data = np.random.uniform(0.2, 0.6, size=(4, len(labels)))
+colors = ['#4e62ab', '#469eb4', '#87cfa4', '#f5fbb1']
+gap = 0.2  # 两堆柱状图的间隔
+barplot(labels, data, colors)
+```
+
+
+
+<img src="images/image-20230421104309245.png" alt="image-20230421104309245" style="zoom:67%;" />
+
+并列柱状图的核心在于分配每个柱子的位置。
+
+以及对齐方式，
 
 ### 设置边框
 
@@ -1021,4 +1087,57 @@ fig.canvas.draw()
 ```
 
 ![index](images/index-1676518177468-6.png)
+
+## 标记线
+
+```python
+import matplotlib.pyplot as plt
+
+
+def plot_line(ax, p1, p2, text=""):
+    # 设置两个点的坐标，例如 (x1, y1) 和 (x2, y2)
+    x1, y1 = p1
+    x2, y2 = p2
+    ax.plot([x1, x2], [y1, y2], color='k')
+
+    # 添加两个小竖线
+    line_length = 0.2  # 设置小竖线的长度
+    
+    arrowprops = dict(arrowstyle='-', color='black')
+    ax.annotate('', (x1, y1 - line_length / 2), (x1, y1 + line_length / 2), arrowprops=arrowprops)
+    ax.annotate('', (x2, y2 - line_length / 2), (x2, y2 + line_length / 2), arrowprops=arrowprops)
+    
+    tx = (x1 + x2) / 2
+    ty = (y1 + y2) / 2
+        
+    ax.text((x1 + x2)/2, (y1 + y2)/2, text, va="bottom", ha="center")
+```
+
+```python
+fig, ax = plt.subplots()
+ax.set_ylim(0, 1)
+ax.set_xlim(0, 1)
+plot_line(ax, [0.2, 0.5], [0.8, 0.5], text="text")
+```
+
+<img src="images/image-20230421111245223.png" alt="image-20230421111245223" style="zoom:67%;" />
+
+### 简化版
+
+[Angle annotations on bracket arrows — Matplotlib 3.7.1 documentation](https://matplotlib.org/stable/gallery/text_labels_and_annotations/angles_on_bracket_arrows.html#sphx-glr-gallery-text-labels-and-annotations-angles-on-bracket-arrows-py)
+
+```python
+import matplotlib.pyplot as plt
+from matplotlib.patches import FancyArrowPatch
+fig, ax = plt.subplots()
+
+arrow_centers = ((0.2, .5), (0.8, .5))
+bracket = FancyArrowPatch(
+    *arrow_centers, 
+    arrowstyle="|-|",
+    mutation_scale=6
+)
+ax.add_patch(bracket)
+plt.show()
+```
 

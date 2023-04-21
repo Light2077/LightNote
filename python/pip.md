@@ -13,7 +13,7 @@ https://mirrors.tuna.tsinghua.edu.cn/help/pypi/
 ### 临时使用
 
 ```
-pip install -i https://pypi.tuna.tsinghua.edu.cn/simple some-package
+pip install flask -i https://pypi.tuna.tsinghua.edu.cn/simple
 ```
 
 ### 设为默认
@@ -275,7 +275,7 @@ pip wheel --wheel-dir wheelhouse -r requirements.txt
 
 ```bash
 python3.9 -m venv demo_env
-source demo_env/bin/activate
+source venv/bin/activate
 ```
 
 使用`requirements.txt`文件和`wheelhouse`目录在目标服务器上的新虚拟环境中离线安装包：
