@@ -1,5 +1,7 @@
 [What is Airflow? — Airflow Documentation --- 什么是气流？ — 气流文档 (apache.org)](https://airflow.apache.org/docs/apache-airflow/stable/index.html)
 
+https://help.aliyun.com/document_detail/301707.html?spm=a2c4g.337789.0.0.3b3a798cHR7wcI
+
 目前的直观理解是，Airflow是一个工作流可视化平台，可以：
 
 - 在平台上显示工作任务
@@ -17,26 +19,30 @@
 
 ## Airflow安装
 
-首先用conda创建一个虚拟环境
+如果python版本跟需要的版本不一致，可以用conda创建一个虚拟环境
 
 ```
 conda create -n py39 python=3.9
+conda activate py39
 ```
 
-> 然后根据chatgpt4 教的来安装airflow
-
-以下是在您的Linux服务器上安装Airflow的逐步指南。我们将遵循官方文档并使用pip作为安装工具。在开始之前，请确保您已经安装了Python 3.9。
-
-首先，我们需要为Python和Airflow创建一个新的虚拟环境。这样可以确保我们的安装不会干扰其他Python项目。打开终端并运行以下命令：
+创建一个文件夹方便管理
 
 ```
-python3.9 -m venv airflow_venv
+mkdir /home/airflow
+cd /home/airflow
 ```
 
-接下来，激活刚刚创建的虚拟环境：
+创建虚拟环境
 
 ```
-source airflow_venv/bin/activate
+python -m venv venv
+```
+
+激活虚拟环境：
+
+```
+source venv/bin/activate
 ```
 
 使用以下命令安装Airflow（这个例子使用了Celery执行器，根据您的需求选择适当的执行器）：
@@ -54,15 +60,15 @@ pip install "apache-airflow[celery]==${AIRFLOW_VERSION}" --constraint "${CONSTRA
 pip install pandas
 ```
 
+现在，Airflow应该已经安装完成。
 
-
-现在，Airflow应该已经安装完成。接下来，我们需要初始化Airflow的元数据库。运行以下命令：
+初始化Airflow的元数据库。
 
 ```
 airflow db init
 ```
 
-如果报错
+如果报错（SQLite C library的版本太低）
 
 ```
 airflow.exceptions.AirflowConfigException: error: sqlite C library version too old (< 3.15.0). See https://airflow.apache.org/docs/apache-airflow/2.5.3/howto/set-up-database.html#setting-up-a-sqlite-database
@@ -106,19 +112,37 @@ make install
 export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
 ```
 
+最后再启动
+
+```
+airflow db init
+```
+
 
 
 创建一个Airflow用户并设置用户名和密码：
 
 ```
-airflow users create --username <your_username> --password <your_password> --firstname <your_firstname> --lastname <your_lastname> --role Admin --email <your_email>
-
+airflow users create \
+  --username <your_username> \
+  --password <your_password> \
+  --firstname <your_firstname> \
+  --lastname <your_lastname> \
+  --role Admin \
+  --email <your_email>
 ```
 
 例如
 
 ```
-airflow users create --username admin --password 123456 --firstname admin --lastname admin --role Admin --email admin@admin.com
+airflow users create \
+  --username admin \
+  --password 123456 \
+  --firstname admin \
+  --lastname admin \
+  --role Admin \
+  --email admin@admin.com
+
 ```
 
 将 `<your_username>`，`<your_password>`，`<your_firstname>`，`<your_lastname>` 和 `<your_email>` 替换为您的个人信息。
@@ -126,7 +150,7 @@ airflow users create --username admin --password 123456 --firstname admin --last
 最后，启动Airflow Web服务器：
 
 ```
-airflow webserver --port 8080
+airflow webserver --port 4399
 ```
 
 在另一个终端中（不启动scheduler则无法显示dag）
@@ -138,6 +162,9 @@ airflow scheduler
 后台启动这两个
 
 ```
+export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
+nohup airflow webserver --port 3030 >/dev/null &
+nohup airflow scheduler >/dev/null &
 ```
 
 
@@ -160,7 +187,7 @@ from airflow.decorators import task
 from airflow.operators.bash import BashOperator
 
 # A DAG represents a workflow, a collection of tasks
-with DAG(dag_id="demo", start_date=datetime(2022, 1, 1), schedule="0 0 * * *") as dag:
+with DAG(dag_id="demo", start_date=datetime(2022, 1, 1), schedule="*/1 * * * *") as dag:
     # Tasks are represented as operators
     hello = BashOperator(task_id="hello", bash_command="echo hello")
 
