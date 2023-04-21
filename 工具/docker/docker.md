@@ -1,10 +1,10 @@
-## docker
+# docker
 
 https://docs.docker.com/
 
 ## docker 安装
 
-docker 安装
+### 安装
 
 ```shell
 curl -fsSL https://get.docker.com | bash -s docker --mirror Aliyun
@@ -26,7 +26,7 @@ docker run hello-world
 
 https://cloud.tencent.com/document/product/213/46000
 
-## 配置镜像加速
+### 配置镜像加速
 
 创建`daemon.json`文件
 
@@ -49,11 +49,13 @@ systemctl daemon-reload
 systemctl restart docker
 ```
 
-## 配置docker 私有仓库的安全地址
-
-修改`/etc/docker/daemon.json`
+### 配置docker 私有仓库的安全地址
 
 ```
+vim /etc/docker/daemon.json
+```
+
+```json
 {
     "registry-mirrors": ["https://y4tay211.mirror.aliyuncs.com"],
     "insecure-registries": ["10.35.166.143:5000"]
@@ -79,7 +81,7 @@ systemctl restart docker
 
 ```shell
 sudo docker pull ubuntu:12.04
-# 相当于
+# 指定镜像源
 sudo docker pull registry.hub.docker.com/ubuntu:12.04
 ```
 
@@ -101,7 +103,7 @@ https://cr.console.aliyun.com/
 
 
 ```shell
-docker run -t -i ubuntu:15.10 /bin/bash 
+docker run -it ubuntu:15.10 /bin/bash 
 ```
 
 - -i 交互式操作
@@ -140,7 +142,7 @@ docker attach container_name/container_id
 运行容器中的镜像
 
 ```shell
-docker run -t -i container_name/container_id /bin/bash
+docker run -it container_name/container_id /bin/bash
 ```
 
 
@@ -174,11 +176,11 @@ docker rmi image_name
 
 ## Dockerfile
 
-可以轻松定义镜像内容。
+用于定义镜像内容。
 
-我们从上图中可以看到，Dockerfile 可以自定义镜像，通过 Docker 命令去运行镜像，从而达到启动容器的目的。Dockerfile 是由一行行命令语句组成，并且支持已 # 开头的注释行。
+Dockerfile 由一行行命令语句组成， 注释行以# 开头。
 
-一般来说，我们可以将 Dockerfile 分为四个部分：
+ Dockerfile 分为四个部分：
 
 - 基础镜像（父镜像）信息指令 FROM。
 - 维护者信息指令 MAINTAINER。
@@ -190,17 +192,21 @@ docker rmi image_name
 
 ```dockerfile
 FROM python:2.7
-MAINTAINER Angel_Kitty <angelkitty6698@gmail.com>COPY . /app
+
+MAINTAINER Angel_Kitty <angelkitty6698@gmail.com>
+COPY . /app
 WORKDIR /app
 RUN pip install -r requirements.txt
-EXPOSE 5000ENTRYPOINT ["python"]CMD ["app.py"]
+EXPOSE 5000
+ENTRYPOINT ["python"] 
+CMD ["app.py"]
 ```
 
 我们可以分析一下上面这个过程：
 
 - 从 Docker Hub 上 Pull 下 Python 2.7 的基础镜像。
 - 显示维护者的信息。
-- Copy 当前目录到容器中的 /App 目录下 复制本地主机的 <src> ( Dockerfile 所在目录的相对路径)到容器里 <dest>。
+- Copy 当前目录到容器中的 /App 目录下 复制本地主机的 `<src> `( Dockerfile 所在目录的相对路径)到容器里 `<dest>`。
 - 指定工作路径为 /App。
 - 安装依赖包。
 - 暴露 5000 端口。
@@ -217,7 +223,7 @@ EXPOSE 5000ENTRYPOINT ["python"]CMD ["app.py"]
 
 #### FROM
 
-FROM 是用于指定基础的 images ，一般格式为 FROM <image> or FORM <image>:<tag>。
+FROM 是用于指定基础的 images ，一般格式为 FROM` <image>` or FORM `<image>:<tag>`。
 
 所有的 Dockerfile 都应该以 FROM 开头，FROM 命令指明 Dockerfile 所创建的镜像文件以什么镜像为基础，FROM 以后的所有指令都会在 FROM 的基础上进行创建镜像。
 
@@ -389,3 +395,9 @@ docker run --name nginx_web -d -p 8080:80   angelkitty/nginx_web:v1
 这样我们可以用浏览器去访问这个 Nginx 服务器：http://localhost:8080/ 或者 http://本机的 IP 地址：8080/，页面返回信息：
 
 http://119.45.58.134:8080/
+
+用Docker配置Flask项目
+
+```
+```
+

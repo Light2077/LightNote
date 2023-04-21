@@ -4,7 +4,7 @@
 docker search python
 ```
 
-### 从镜像启动一个容器
+### 基于镜像启动容器
 
 ```
 docker run -it --name my-container centos:7 /bin/bash
@@ -20,10 +20,26 @@ docker run -it --name my-container centos:7 /bin/bash
 - `centos:7` 表示使用 CentOS 7 镜像创建容器。如果在本地不存在该镜像，则 Docker 会自动从 Docker Hub 上下载该镜像。
 - `/bin/bash` 表示在容器内部运行的命令。在本例中，我们使用 Bash shell。因此，当你运行该命令后，Docker 将会在一个新的 CentOS 7 容器中启动一个交互式的 Bash shell，并将其绑定到当前的终端上。
 
-### 进入某个容器
+#### 设置IP映射
+
+如果要映射IP就不能使用`-it`选项了
+
+格式：`<宿主机IP>:<容器IP>`
 
 ```
-docker run -it ubuntu /bin/bash
+docker run -p 8080:80 <image_name>
+```
+
+映射多个IP
+
+```
+docker run -p 192.168.1.100:8080:80 -p 192.168.1.101:8080:80 <image_name>
+```
+
+#### 设置路径挂载
+
+```
+docker run -v /host/dir:/container/dir <image_name>
 ```
 
 
@@ -33,8 +49,6 @@ docker run -it ubuntu /bin/bash
 ```
 docker ps
 ```
-
-
 
 ### 查看所有容器
 
@@ -87,10 +101,6 @@ docker commit -a "Lyra" -m "注释信息" ec6fea995006 registry.xxxx
 ```
 docker commit my_container my_image
 ```
-
-
-
-
 
 ### 启动容器
 
