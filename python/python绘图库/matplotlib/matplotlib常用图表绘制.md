@@ -549,6 +549,18 @@ https://matplotlib.org/stable/gallery/shapes_and_collections/hatch_demo.html#sph
 ```python
 ```
 
+## 区域绘制
+
+```python
+import matplotlib.pyplot as plt
+
+fig, ax = plt.subplots()
+ax.broken_barh([(2, 3), (6, 1)], (2, 3), facecolors=["tab:blue", "tab:red"])
+ax.set_ylim(0, 7)
+ax.grid()
+plt.show()
+```
+
 
 
 ## 极坐标图
@@ -1087,6 +1099,113 @@ fig.canvas.draw()
 ```
 
 ![index](images/index-1676518177468-6.png)
+
+### 正态分布偏度峰度
+
+
+
+峰度
+
+```python
+import matplotlib.pyplot as plt
+import numpy as np
+fig, ax = plt.subplots(dpi=100)
+
+mu = 0
+sigma = 1
+x = np.linspace(-4 * sigma, 4 * sigma, 200)
+y = 1 / (np.sqrt(2 * np.pi) * sigma) * np.exp ** (- (x - mu) ** 2 / (2 * sigma ** 2))
+
+ax.plot(x, y)
+```
+
+偏态分布曲线
+
+```python
+import matplotlib.pyplot as plt
+import numpy as np
+from scipy.stats import norm, skewnorm
+plt.figure(figsize=(4.5, 3), dpi=100)
+# 生成数据
+x = np.linspace(-3, 3, 1000)
+
+# 绘制正偏态分布曲线
+plt.plot(x, skewnorm.pdf(x, 1), label='负偏态', lw=2)
+
+# 绘制负偏态分布曲线
+plt.plot(x, skewnorm.pdf(x, -1), label='正偏态', lw=2)
+
+# 绘制正态分布曲线
+plt.plot(x, norm.pdf(x), label='正态', lw=2)
+
+# 添加图例和标题
+plt.legend()
+plt.title('偏态对比')
+
+# 显示图形
+plt.show()
+
+```
+
+过程图
+
+```python
+fig, axes = plt.subplots(1, 2, figsize=(10, 3), dpi=100, sharey=False,)
+fig.subplots_adjust(wspace=0)
+
+ax = axes[0]
+ax.set_yticks([])
+ax.set_xticks([])
+ax.spines['top'].set_visible(False)
+ax.spines['left'].set_visible(False)
+
+x = np.linspace(-4, 4)
+y = get_norm(x, sigma=.8) * 2
+x += 1.3
+
+ax.set_ylim(y.min(), 1.2)
+ax.plot(x, y,color='k')
+ax.bar([8], 1, width=1.5, edgecolor="k", facecolor='g')
+ax.set_xlim(-5, 12)
+# 
+ax.fill_between(x, y, 0, where=x < -2,color='red', alpha=.5)
+ax.fill_between(x, y, 0, where=x > -2,color='g', alpha=.5)
+
+ax.axvline(-2, 0,0.5, c='r', lw=2)
+ax.axvline(5, 0,0.5, c='r', lw=2)
+ax.text(-2, 0.65, "$LSL$", ha='center')
+ax.text(5, 0.65, "$USL$", ha='center')
+
+ax = axes[1]
+ax.set_xticks([])
+ax.set_yticks([])
+t = ax.set_title("$Cpk$")
+t.set_x(0)
+ax.spines['top'].set_visible(False)
+ax.spines['right'].set_visible(False)
+ax.set_yticks([0.2, 0.4, 0.6, 0.8, 1])
+ax.tick_params(direction="inout", length =12)
+
+ax.set_ylim(0, 1.2)
+
+ax.set_xlim(-12, 5)
+ax.bar([-8], 1, width=1.5, edgecolor="k", facecolor='g')
+
+ax.axvline(2, 0,0.5, c='r', lw=2)
+ax.axvline(-5, 0,0.5, c='r', lw=2)
+ax.text(2, 0.65, "$LSL$", ha='center')
+ax.text(-5, 0.65, "$USL$", ha='center')
+
+x = np.linspace(-4, 4)
+y = get_norm(x, sigma=.8) * 2
+x -= 1.3
+ax.plot(x, y,color='k')
+ax.fill_between(x, y, 0, where=x < 2,color='g', alpha=.5)
+ax.fill_between(x, y, 0, where=x > 2,color='r')
+
+```
+
+![image-20230425153625543](images/image-20230425153625543.png)
 
 ## 标记线
 
