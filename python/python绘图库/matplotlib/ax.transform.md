@@ -40,6 +40,7 @@ import matplotlib.pyplot as plt
 fig, ax = plt.subplots()
 x, y = 1, 1
 width, height = 5, 5
+# 按数值绘制
 rect = Rectangle((x, y), width, height, transform=ax.transData, color='r', alpha=.3)
 ax.add_patch(rect)
 ax.set_ylim(0, 10)
@@ -55,6 +56,7 @@ import matplotlib.pyplot as plt
 fig, ax = plt.subplots()
 x, y = 0.1, 0.1
 width, height = 0.5, 0.5
+# 按比例绘制
 rect = Rectangle((x, y), width, height, transform=ax.transAxes, color='r', alpha=.3)
 ax.add_patch(rect)
 ax.set_ylim(0, 10)
@@ -68,7 +70,7 @@ import matplotlib.pyplot as plt
 import matplotlib.transforms as transforms
 
 fig, ax = plt.subplots()
-
+# 展示图例
 bbox = transforms.Bbox([[0.25, 0.25], [0.75, 0.75]])
 
 ax.annotate("Text", xy=(0.5, 0.5), xycoords='data', 

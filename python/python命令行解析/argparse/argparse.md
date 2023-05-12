@@ -1,5 +1,7 @@
 # argparse
 
+https://docs.python.org/3/library/argparse.html
+
 ## 复习
 
 现在有这样一个程序，要求使用`argparse`库完善下面的代码，实现从命令行传入参数给say_hello()函数并正确运行
@@ -222,6 +224,8 @@ optional arguments:
 
 ## 例4：短选项
 
+就是True和False的选项
+
 ```python
 import argparse
 parser = argparse.ArgumentParser()
@@ -283,4 +287,78 @@ options:
 ```
 
 注意 `[-v | -q]`，它的意思是说我们可以使用 `-v` 或 `-q`，但不能同时使用两者
+
+## 例6：传入list
+
+```python
+# demo.py
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--mylist', nargs='+', help='list of integers')
+args = parser.parse_args()
+
+mylist = args.mylist
+print(mylist)
+```
+
+在命令行中
+
+```
+python demo.py --mylist 1 2 3 4 5
+```
+
+## 手动传参进行测试
+
+```python
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument("name")
+parser.add_argument("-l", "--level", help="等级")
+parser.add_argument("--items", nargs="+", help="物品")
+parser.add_argument("--hero", action="store_true", help="是否是英雄单位")
+
+# 相当于 python demo.py tom - 60 --items weapon armor -h
+args = parser.parse_args(["tom", "-l", "60", "--items", "weapon", "armor", "--hero"])
+
+print(args)
+# Namespace(hero=True, items=['weapon', 'armor'], level='60', name='tom')
+```
+
+查看帮助文档
+
+```python
+parser.print_help()
+```
+
+```
+usage: ipykernel_launcher.py [-h] [-l LEVEL] [--items ITEMS [ITEMS ...]] [--hero] name
+
+positional arguments:
+  name
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -l LEVEL, --level LEVEL
+                        等级
+  --items ITEMS [ITEMS ...]
+                        物品
+  --hero                是否是英雄单位
+```
+
+因为我是在jupyter中测试的，所以usage中显示的是`ipykernel_launcher.py`
+
+## ArumentParser的参数
+
+```python
+parser = argparse.ArumentParser(
+    prog="program name",  # default: sys.argv[0]
+    usage="usage message",
+    description="A description of what the program does",
+    epilog="Text following the argument descriptions",
+)
+```
+
+
 
