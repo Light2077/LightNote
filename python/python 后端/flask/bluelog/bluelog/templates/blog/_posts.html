@@ -1,0 +1,18 @@
+{% for post in posts %}
+<article>
+  <h4 class="text-primary"><a href="{{ url_for('.show_post', post_id=post.id) }}">{{ post.title }}</a></h4>
+  <p>
+    {{ post.body|truncate }}
+    <small><a href="{{ url_for('.show_post', post_id=post.id) }}">Read More</a></small>
+  </p>
+  <small>
+    Comments: <a href="{{ url_for('.show_post', post_id=post.id) }}#comments">{{ post.comments|length }}</a>&nbsp;&nbsp;
+    Category: <a href="{{ url_for('.show_category', category_id=post.category.id) }}">{{ post.category.name }}</a>
+    <span class="float-end">{{ post.timestamp }}</span>
+  </small>
+  <!-- 只要不是最后一盘文章，都在文章底部放个hr水平分隔线 -->
+  {% if not loop.last %}
+  <hr>
+  {% endif %}
+</article>
+{% endfor %}

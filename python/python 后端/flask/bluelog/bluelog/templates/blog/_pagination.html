@@ -1,0 +1,37 @@
+<!-- 文章分页器 -->
+<!-- <div class="page-footer">
+  <ul class="pagination">
+    <li class="page-item {% if not pagination.has_prev %}disabled{% endif %}">
+      <a class="page-link" href="{{ request.path }}?page=1">首页</a>
+    </li>
+    <li class="page-item {% if not pagination.has_prev %}disabled{% endif %}">
+      <a class="page-link" href="{{ request.path }}?page={{ pagination.prev_num}}">← Previous
+      </a>
+    </li>
+    <li class="page-item {% if not pagination.has_next %}disabled{% endif %}">
+      <a class="page-link" href="{{ request.path }}?page={{ pagination.next_num}}">Next →</a>
+    </li>
+    <li class="page-item {% if not pagination.has_next %}disabled{% endif %}">
+      <a class="page-link" href="{{ request.path }}?page={{ pagination.pages }}">尾页</a>
+    </li>
+  </ul>
+</div> -->
+<div class="page-footer">
+  <ul class="pagination">
+    <li class="page-item {% if not pagination.has_prev %}disabled{% endif %}">
+      <a class="page-link" href="{{ url_for(request.endpoint, page=1, **request.view_args) }}">首页</a>
+    </li>
+    <li class="page-item {% if not pagination.has_prev %}disabled{% endif %}">
+      <a class="page-link" href="{{ url_for(request.endpoint, page=pagination.prev_num, **request.view_args) }}">←
+        Previous
+      </a>
+    </li>
+    <li class="page-item {% if not pagination.has_next %}disabled{% endif %}">
+      <a class="page-link" href="{{ url_for(request.endpoint, page=pagination.next_num, **request.view_args) }}">Next
+        →</a>
+    </li>
+    <li class="page-item {% if not pagination.has_next %}disabled{% endif %}">
+      <a class="page-link" href="{{ url_for(request.endpoint, page=pagination.pages, **request.view_args) }}">尾页</a>
+    </li>
+  </ul>
+</div>

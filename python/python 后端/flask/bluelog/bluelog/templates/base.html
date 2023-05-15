@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+
+<head>
+  {% block head %}
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}{% endblock %}</title>
+  <!-- bootstrap -->
+  <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/5.1.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/static/style.css">
+  {% endblock head %}
+</head>
+
+<body>
+  <!-- 导航栏 -->
+  <nav class="navbar navbar-expand-sm bg-primary navbar-dark mb-3">
+    {% block nav %}
+    <div class="container">
+      <a class="navbar-brand" href="{{ url_for('blog.index') }}">Blog</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#collapsibleNavbar">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="collapsibleNavbar">
+        <!-- 【导航栏左侧】Bluelog / Home / About -->
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link {% if request.endpoint=='blog.index' %}active{% endif %}"
+              href="{{ url_for('blog.index') }}">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if request.endpoint=='blog.about' %}active{% endif %}"
+              href="{{ url_for('blog.about') }}">About</a>
+          </li>
+        </ul>
+
+        <!-- 【导航栏右侧】New▽ / Manage▽ / Settings -->
+        <ul></ul>
+      </div>
+    </div>
+    {% endblock nav %}
+  </nav>
+  <!-- 核心内容 -->
+  <main class="container">
+    <!-- flash弹窗 -->
+    {% for message in get_flashed_messages(with_categories=True) %}
+    <div class="alert alert-{{ message[0] }} alert-dismissible">
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      {{ message[1] }}
+    </div>
+    {% endfor %}
+    <div class="row">
+      {% block content %}
+      {% endblock content %}
+    </div>
+
+    <footer>
+      {% block footer %}
+      <p class="float-start">
+        <small> &copy; 2018 <a href="#" title="Written by Grey Li">Grey Li</a> -
+          <a href="#" title="Fork me on GitHub">GitHub</a> -
+          <a href="#" title="A HelloFlask project">HelloFlask</a>
+        </small>
+      </p>
+      <p class="float-end">
+        <small>
+          {% if current_user.is_authenticated %}
+          <!-- 如果未登录，隐藏下面这行 -->
+          <a href="{{ url_for('auth.logout', next=request.full_path) }}">Logout</a>
+          {% else %}
+          <!-- 如果已登录，隐藏下面这行 -->
+          <a href="{{ url_for('auth.login', next=request.full_path) }}">Login</a>
+          {% endif %}
+        </small>
+      </p>
+      {% endblock footer %}
+    </footer>
+  </main>
+  <!-- 引入script -->
+  {% block scripts %}
+  <script src="https://cdn.staticfile.org/twitter-bootstrap/5.1.1/js/bootstrap.bundle.min.js"></script>
+  {% endblock scripts %}
+</body>

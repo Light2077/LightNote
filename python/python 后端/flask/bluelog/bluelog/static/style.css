@@ -1,0 +1,42 @@
+footer {
+    margin-top: 30px;
+    padding: 10px 0 40px;
+    color: #999;
+    border-top: 1px solid #e5e5e5;
+}
+
+.page-header {
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+
+.page-footer {
+    padding-top: 40px;
+}
+
+.inline {
+    display: inline;
+}
+
+.comments {
+    margin: 20px 0;
+}
+
+.tip {
+    /* from github.com */
+    color: black !important;
+    position: relative;
+    padding: 40px;
+    text-align: center;
+    background-color: #fafbfc;
+    border: 1px solid #e1e4e8;
+    border-radius: 3px;
+    box-shadow: inset 0 0 10px rgba(27, 31, 35, 0.05);
+}
+
+a {
+    color: #2780E3;
+    text-decoration: none;
+    /* 不显示链接的下划线 */
+    background-color: transparent;
+}
