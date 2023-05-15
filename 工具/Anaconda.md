@@ -53,3 +53,30 @@ pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
 ## TensorFlow 2.4
 
 https://tf.wiki/
+
+## 使用代理时报错
+
+在创建新的环境时，如果开着代理，会报错。
+
+```
+conda create -n streamlit python=3.9
+```
+
+```
+Collecting package metadata (current_repodata.json): failed
+
+ProxyError: Conda cannot proceed due to an error in your proxy configuration.
+Check for typos and other configuration errors in any '.netrc' file in your home directory,
+any environment variables ending in '_PROXY', and any other system-wide proxy
+configuration settings.
+```
+
+可以修改`.condarc`来设置不使用任何代理。
+
+```
+proxy_servers:
+  http:
+  https:
+```
+
+一般在`C:\Users\<username>\.condarc`
