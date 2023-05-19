@@ -265,3 +265,20 @@ python -m unittest tests.test_vector.TestVector.test_add
 上面演示了一个执行到最底层的测试。
 
 可以放宽测试范围再看看测试结果。
+
+## 配置vscode
+
+目录结构
+
+```
+└── myproject/
+   └── src/
+      └── tests/
+         ├── __init__.py  # 这个文件不能少，否则就会出错
+         └── test_app.py
+```
+
+ctrl + shift + p 输入 python configure tests就可以一步步配置单元测试了。
+
+
+
