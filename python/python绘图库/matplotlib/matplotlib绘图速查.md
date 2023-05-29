@@ -42,6 +42,16 @@ ax.set_xticklabels(ticks, fontfamily='simsong')
 ax.legend(prop={'family': 'SimHei'})
 ```
 
+## axes设置
+
+### 清除某个子图
+
+```python
+ax.remove()
+```
+
+
+
 ## 坐标轴
 
 刻度线的各种设置

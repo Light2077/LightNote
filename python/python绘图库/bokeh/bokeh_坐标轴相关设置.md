@@ -2,7 +2,7 @@
 
 [Ranges and axes — Bokeh 3.1.1 Documentation](https://docs.bokeh.org/en/latest/docs/user_guide/basic/axes.html)
 
-## 坐标轴范围设置
+### 设置坐标轴范围
 
 ```python
 from bokeh.models import Range1d
@@ -12,15 +12,15 @@ p = figure(width=300, height=300, x_range=(0, 20))
 p.x_range = Range1d(0, 100)
 ```
 
+### 设置坐标轴移动边界
+
 设置移动边界，这样平移或者缩放的范围就被限定了
 
 ```python
 p.y_range = Range1d(0, 15, bounds=(0, None))
 ```
 
-## 轴类型
 
-正常情况下，都使用数值类型的轴，但有时候也会用字符串、时间轴
 
 ### 类别型轴
 
@@ -102,23 +102,23 @@ p.circle(x, y, fill_color="white", size=8)
 show(p)
 ```
 
-## 双轴
+### 双轴
 
 类似于matplotlib的`twinx()`和`twiny()`
 
-### 创建新的坐标轴范围
+创建新的坐标轴范围
 
 ```python
 p.extra_y_ranges['foo'] = Range1d(0, 100)
 ```
 
-### 按照新坐标轴范围绘图
+按照新坐标轴范围绘图
 
 ```python
 p.scatter(x, y2, color="navy", size=8, y_range_name="foo")
 ```
 
-### 创建新的坐标轴
+创建新的坐标轴
 
 ```python
 ax2 = LinearAxis(y_range_name="foo", axis_label="blue circles")
@@ -126,7 +126,7 @@ ax2.axis_label_text_color ="navy"
 p.add_layout(ax2, 'left')
 ```
 
-### 完整案例
+完整案例
 
 ```python
 from bokeh.models import LinearAxis, Range1d
@@ -163,9 +163,11 @@ show(p)
 比如可以将坐标轴设置成常见的，在原点的坐标轴
 
 ```python
+p.xaxis.fixed_location = 0
+p.yaxis.fixed_location = 0
 ```
 
-完整案例
+案例
 
 ```python
 import numpy as np

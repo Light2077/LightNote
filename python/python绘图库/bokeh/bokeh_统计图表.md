@@ -1,0 +1,241 @@
+# Statistical plots
+
+[Statistical plots — Bokeh 3.1.1 Documentation](https://docs.bokeh.org/en/latest/docs/user_guide/topics/stats.html)
+
+## 直方图
+
+
+
+```python
+import numpy as np
+
+from bokeh.plotting import figure, show
+
+# 创建一个随机数生成器
+rng = np.random.default_rng()
+x = rng.normal(loc=0, scale=1, size=1000)
+
+# 用numpy创建直方图所需数据
+bins = np.linspace(-3, 3, 40)
+hist, edges = np.histogram(x, density=True, bins=bins)
+
+# 概率密度函数Probability Density Function
+x = np.linspace(-3.0, 3.0, 100)
+pdf = np.exp(-0.5*x**2) / np.sqrt(2.0*np.pi)
+
+# 创建bokeh图
+p = figure(width=670, height=400, toolbar_location=None,
+           title="Normal (Gaussian) Distribution")
+
+# 绘制直方图
+p.quad(top=hist, bottom=0, left=edges[:-1], right=edges[1:],
+         fill_color="skyblue", line_color="white",
+         legend_label="1000 random samples")
+
+# 绘制概率密度图
+p.line(x, pdf, line_width=2, line_color="navy",
+       legend_label="Probability Density Function")
+
+p.y_range.start = 0
+p.xaxis.axis_label = "x"
+p.yaxis.axis_label = "PDF(x)"
+
+show(p)
+```
+
+![](images/bokeh_直方图.png)
+
+## 箱线图
+
+原理
+
+```
+     Q1-1.5IQR   Q1   median  Q3   Q3+1.5IQR
+                  |-----:-----|
+  o      |--------|     :     |--------|    o  o
+                  |-----:-----|
+flier             <----------->            fliers
+                       IQR
+```
+
+需要计算箱线图统计量
+
+
+
+案例
+
+```python
+import numpy as np
+import pandas as pd
+
+from bokeh.models import ColumnDataSource, Whisker
+from bokeh.plotting import figure, show
+from bokeh.transform import factor_cmap
+
+# 计算绘制箱线图所需的统计量
+def compute_boxplot_stats(df, group_col="kind", val_col="val"):
+    stat = df.groupby("kind")["val"].quantile([0.25, 0.5, 0.75])
+    stat = stat.unstack().reset_index()
+    stat.columns = ["kind", "q1", "med", "q3"]
+    iqr = stat.q3 - stat.q1
+    stat["upper"] = stat.q3 + 1.5 * iqr
+    stat["lower"] = stat.q1 - 1.5 * iqr
+    return stat
+
+
+# 构建基础数据
+d1 = pd.DataFrame({"val": np.random.normal(0, 1, 100), "kind": "A"})
+d2 = pd.DataFrame({"val": np.random.normal(-2, 0.75, 100), "kind": "B"})
+d3 = pd.DataFrame({"val": np.random.normal(2, 1.5, 100), "kind": "C"})
+df = pd.concat([d1, d2, d3]).reset_index(drop=True)
+
+# 计算统计量
+stat = compute_boxplot_stats(df)
+df = pd.merge(df, stat, on="kind", how="left")
+
+# 构建数据集
+source = ColumnDataSource(stat)
+kinds = df.kind.unique()
+
+# 构建图像
+p = figure(x_range=kinds, tools="", toolbar_location=None,
+           title="box plot demo",
+           background_fill_color="#eaefef", y_axis_label="val")
+
+# outlier range
+whisker = Whisker(base="kind", upper="upper", lower="lower", source=source)
+whisker.upper_head.size = whisker.lower_head.size = 20
+p.add_layout(whisker)
+
+# quantile boxes
+cmap = factor_cmap("kind", "TolRainbow7", kinds)
+p.vbar("kind", 0.7, "med", "q3", source=source, color=cmap, line_color="black")
+p.vbar("kind", 0.7, "q1", "med", source=source, color=cmap, line_color="black")
+
+# outliers
+outliers = df[~df["val"].between(df.lower, df.upper)]
+p.scatter("kind", "val", source=outliers, size=6, color="black", alpha=0.3)
+
+# 为了完整显示
+p.scatter("kind", "upper", source=source, alpha=0)
+p.scatter("kind", "lower", source=source, alpha=0)
+
+p.xgrid.grid_line_color = None
+p.axis.major_label_text_font_size="14px"
+p.axis.axis_label_text_font_size="12px"
+
+show(p)
+```
+
+![image-20230522155607908](images/bokeh_箱线图.png)
+
+如果希望鼠标移动上去可以看到提示，修改一下
+
+```python
+tools = ["pan"]
+tooltip = [("q1","@q1"), ("q3", "@q3")]
+hover = HoverTool(tooltips=tooltip)
+
+# 构建图像
+p = figure(x_range=kinds, tools=tools, toolbar_location=None,
+           title="box plot demo",
+           background_fill_color="#eaefef", y_axis_label="val")
+p.add_tools(hover)
+```
+
+## 散点图
+
+绘制一个散点图，用于对比两个值
+
+鼠标放在散点上可以显示值，散点用“△”和“○”进行区分。
+
+### 交互的散点图
+
+可以选择x，或 y
+
+```python
+from bokeh.models import Select, ColumnDataSource
+from bokeh.plotting import figure
+from bokeh.layouts import column
+from bokeh.io import curdoc
+import pandas as pd
+import numpy as np
+# 假设你的DataFrame是df，并且它有5个特征 A, B, C, D, E
+# df = pd.DataFrame(...)  # 您的原始DataFrame
+df = pd.DataFrame(np.random.randn(10, 5), columns=list("ABCDE"))
+
+source = ColumnDataSource(data=df)
+
+# 创建初始散点图（这里假设初始状态为 A-B）
+p = figure(plot_width=400, plot_height=400)
+p.circle('A', 'B', source=source)
+
+# 创建一个选择器，初始选项为 'A-B'，选项为你的所有可能的特征组合
+select = Select(title='Feature', value='A-B', options=['A-B', 'C-D', 'A-C', 'A-D', 'A-E', 'B-C', 'B-D', 'B-E', 'C-E', 'D-E'])
+
+# 定义一个回调函数，当选择器的值发生改变时，更新散点图的数据
+def update(attr, old, new):
+    x, y = select.value.split('-')
+    p.xaxis.axis_label = x
+    p.yaxis.axis_label = y
+    p.renderers[0].glyph.x = x
+    p.renderers[0].glyph.y = y
+
+# 当选择器的值发生改变时，调用回调函数
+select.on_change('value', update)
+
+# 将散点图和选择器组合在一起并显示
+layout = column(select, p)
+curdoc().add_root(layout)
+
+```
+
+
+
+js回调
+
+```python
+from bokeh.models import Select, ColumnDataSource, CustomJS
+from bokeh.plotting import output_notebook
+output_notebook()
+from bokeh.plotting import figure
+from bokeh.layouts import column
+from bokeh.io import curdoc
+import pandas as pd
+import numpy as np
+# 假设你的DataFrame是df，并且它有5个特征 A, B, C, D, E
+# df = pd.DataFrame(...)  # 您的原始DataFrame
+df = pd.DataFrame(np.random.randn(10, 5), columns=list("ABCDE"))
+cols = df.columns
+source = ColumnDataSource(data=df)
+
+# 创建初始散点图（这里假设初始状态为 A-B）
+p = figure(width=400, height=400)
+circles = p.circle('A', 'B', source=source)
+
+
+# 创建两个选择器，用于选择散点图的x和y
+select_x = Select(title='x', value=cols[0], options=cols.tolist())
+select_y = Select(title='y', value=cols[1], options=cols.tolist())
+
+# 当选择器的值发生改变时，调用回调函数
+# select.on_change('value', update)
+callback_x = CustomJS(args=dict(circles=circles, source=source, select=select_x), code="""
+    var f = select.value;
+    circles.glyph.x.field = f;
+    source.change.emit();
+""")
+callback_y = CustomJS(args=dict(circles=circles, source=source, select=select_y), code="""
+    var f = select.value;
+    circles.glyph.y.field = f;
+    source.change.emit();
+""")
+
+select_x.js_on_change('value', callback_x)
+select_y.js_on_change('value', callback_y)
+# 将散点图和选择器组合在一起并显示
+layout = column(select_x, select_y, p)
+curdoc().add_root(layout)
+show(layout)
+```
+
