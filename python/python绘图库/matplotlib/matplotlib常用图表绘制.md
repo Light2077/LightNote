@@ -1260,3 +1260,26 @@ ax.add_patch(bracket)
 plt.show()
 ```
 
+## 混淆矩阵
+
+```python
+from sklearn.metrics import confusion_matrix
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# 假设y_true和y_pred如下：
+y_true = [0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2]
+y_pred = [0, 0, 0, 0, 1, 1, 1, 2, 1, 1, 0, 1, 2, 2, 2]
+labels = ["apple", "banana", "pear"]
+# 使用sklearn.metrics.confusion_matrix生成混淆矩阵
+cm = confusion_matrix(y_true, y_pred)
+fig, ax = plt.subplots()
+# 或者使用seaborn.heatmap进行可视化
+sns.heatmap(cm, annot=True, cmap='Blues', square=True, linewidths=0.5, linecolor='white', ax=ax)
+ax.set_xticklabels(labels)
+plt.xlabel('Predicted Labels')
+plt.ylabel('True Labels')
+plt.show()
+```
+
+<img src="images/混淆矩阵.png" alt="混淆矩阵" style="zoom: 67%;" />

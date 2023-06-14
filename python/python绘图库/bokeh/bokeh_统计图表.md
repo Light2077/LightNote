@@ -45,6 +45,45 @@ show(p)
 
 ![](images/bokeh_直方图.png)
 
+转换为函数
+
+只画直方图，不画概率密度
+
+```python
+def histplot(y, title="", xlabel="", width=400, height=400):
+    # 只绘 5% - 95% 分位数区间的数据的直方图
+    xmin, xmax = np.percentile(y, [5, 95])
+    bins = np.linspace(xmin, xmax, 50)
+    hist, edges = np.histogram(y, density=False, bins=bins)
+
+    # 创建bokeh图
+    p = figure(
+        width=width,
+        height=height,
+        # toolbar_location=None,
+        title=title,
+        tools="pan,box_zoom,wheel_zoom,save,reset",
+    )
+
+    # 绘制直方图
+    p.quad(
+        top=hist,
+        bottom=0,
+        left=edges[:-1],
+        right=edges[1:],
+        fill_color="skyblue",
+        line_color="white",
+        legend_label="样本分布",
+    )
+    p.y_range.start = 0
+    p.xaxis.axis_label = xlabel
+    p.yaxis.axis_label = ""
+    p.toolbar.logo = None  # 去除 bokeh的logo
+    return p
+```
+
+
+
 ## 箱线图
 
 原理
@@ -239,3 +278,45 @@ curdoc().add_root(layout)
 show(layout)
 ```
 
+## band 图
+
+[band — Bokeh 3.1.1 Documentation](https://docs.bokeh.org/en/latest/docs/examples/basic/annotations/band.html)
+
+```python
+import numpy as np
+import pandas as pd
+
+from bokeh.models import Band, ColumnDataSource
+from bokeh.plotting import figure, show
+
+# Create some random data
+x = np.random.random(2500) * 140 +20
+y = np.random.normal(size=2500) * 2 + 6 * np.log(x)
+
+df = pd.DataFrame(data=dict(x=x, y=y)).sort_values(by="x")
+
+df2 = df.y.rolling(window=300).agg({"y_mean": np.mean, "y_std": np.std})
+
+df = pd.concat([df, df2], axis=1)
+df["lower"] = df.y_mean - df.y_std
+df["upper"] = df.y_mean + df.y_std
+
+source = ColumnDataSource(df.reset_index())
+
+p = figure(tools="", toolbar_location=None, x_range=(40, 160))
+p.title.text = "Rolling Standard Deviation"
+p.xgrid.grid_line_color=None
+p.ygrid.grid_line_alpha=0.5
+
+p.scatter(x="x", y="y", marker="dot", size=10, alpha=0.4, source=source)
+
+p.line("x", "y_mean", line_dash=(10, 7), line_width=2, source=source)
+
+band = Band(base="x", lower="lower", upper="upper", source=source,
+            fill_alpha=0.3, fill_color="gray", line_color="black")
+p.add_layout(band)
+
+show(p)
+```
+
+<img src="images/image-20230530095923453.png" alt="image-20230530095923453" style="zoom:67%;" />

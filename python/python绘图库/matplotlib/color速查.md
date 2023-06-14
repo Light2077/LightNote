@@ -162,18 +162,27 @@ cmap = c.ListedColormap(['lightblue','w'])
 例如，论文经典配色
 
 ```python
-from matplotlib import colors as c
+import matplotlib as mpl
 colors = [
     '#4e62ab', '#469eb4', '#87cfa4', '#cbe99d', '#f5fbb1', 
     '#fee89a', '#fdb96a', '#f57547', '#d6404e', '#9e0142']
-
-cmap = c.ListedColormap(colors, name="my_color_map", N=10)
+cmap = mpl.colors.ListedColormap(colors, name="my_color_map", N=10)
 cmap
 ```
 
 <img src="images/经典配色.png" alt="image-20230419114524494" style="zoom:67%;" />
 
 # 配色
+
+### 柱状图配色推荐
+
+```python
+fc = "dodgeblue"
+```
+
+
+
+### 资料
 
 [跟顶刊学配色！SCI论文插图经典配色实例第1期 - 知乎 (zhihu.com)](https://zhuanlan.zhihu.com/p/593320758)
 

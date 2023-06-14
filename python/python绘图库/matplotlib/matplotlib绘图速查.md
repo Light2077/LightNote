@@ -112,6 +112,18 @@ labels = ax.get_xticklabels()
 plt.setp(labels, rotation=45, horizontalalignment='center')
 ```
 
+倾斜
+
+```python
+# 倾斜 x 轴坐标轴标签
+ax.set_xticklabels(x, rotation=45)
+
+# 最佳
+ax.tick_params(axis='x', rotation=45)
+```
+
+
+
 ### 共享y轴
 
 ```python
