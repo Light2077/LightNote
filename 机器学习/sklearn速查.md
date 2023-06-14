@@ -1,3 +1,20 @@
+### 线性回归
+
+```python
+from sklearn.linear_model import LinearRegression
+import numpy as np
+
+x = np.random.randn(10)
+y = np.random.randn(10)
+
+model = LinearRegression()
+model.fit(x, y)
+
+print(model.coef_, model.intercept_)
+```
+
+
+
 ### kfold交叉验证
 
 注意split后迭代，迭代的元素是索引
