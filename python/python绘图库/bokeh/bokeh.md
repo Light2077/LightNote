@@ -54,6 +54,30 @@ from bokeh.plotting import output_notebook
 output_notebook()
 ```
 
+## 导包常用
+
+正常情况下
+
+```python
+from bokeh.models import ColumnDataSource
+from bokeh.plotting import figure, show
+
+# 颜色映射
+from bokeh.transform import linear_cmap
+
+```
+
+
+
+notebook下，加入
+
+```python
+from bokeh.plotting import output_notebook
+output_notebook()
+```
+
+
+
 # 基本图表的绘制
 
 ## 散点图
@@ -511,3 +535,173 @@ show(p)
 ```
 
 ![image-20230519165312987](images/image-20230519165312987.png)
+
+## 颜色
+
+[bokeh.palettes — Bokeh 3.1.1 Documentation](https://docs.bokeh.org/en/latest/docs/reference/palettes.html#module-bokeh.palettes)
+
+
+
+使用颜色
+
+```python
+from bokeh.transform import linear_cmap
+linear_cmap('value', "Blues9", low=color_max, high=color_min)
+```
+
+
+
+## 相关系数图
+
+```python
+
+from bokeh.models import ColumnDataSource
+from bokeh.transform import linear_cmap
+from bokeh.plotting import figure, show, output_notebook
+import pandas as pd
+import numpy as np
+output_notebook()
+
+def heatmap(df_corr, color_min=-1, color_max=1):
+    # 创建绘图所需的数据源
+    columns = df_corr.columns.tolist()
+    df = df_corr.stack().reset_index(name="value").round(2)
+    
+    # 如果数值超过75%，就把字体颜色标为白色
+    font_color_switch = color_min + (color_max - color_min) * 0.75
+    df["font_color"] = df['value'].apply(lambda x: 'white' if x > font_color_switch else 'black')
+    
+    source = ColumnDataSource(df)
+    
+    # 创建绘图对象
+    p = figure(x_range=columns, y_range=columns, width=200, height=200,
+            title='', toolbar_location=None, tools='')
+
+
+    # 绘制热图
+    p.rect(x='level_0', y='level_1', width=1, height=1, source=source,
+        fill_color=linear_cmap('value', "Blues9", low=color_max, high=color_min), line_color="black", line_width=1)
+
+
+    # 添加相关性数值
+    
+    p.text(x='level_0', y='level_1', text='value', text_font_size='10pt',
+           text_color="font_color", text_baseline='middle', text_align='center',
+           text_font_style="bold",
+           source=source)
+
+
+    # 设置坐标轴标签
+    p.xaxis.axis_label = '指标'
+    p.yaxis.axis_label = '指标'
+    p.outline_line_color = 'black'  # 设置图像的边框线颜色为黑色
+    p.outline_line_width = 3  # 设置图像的边框线粗细为2个像素
+
+
+    # 将 x 轴标签显示为竖直方向
+    p.xaxis.major_label_orientation = "vertical"
+    
+    return p
+```
+
+案例
+
+```python
+df_corr = pd.DataFrame(np.random.randn(3, 3), columns=list("abc"), index=list("abc"))
+p = corr_plot(df_corr)
+show(p)
+```
+
+## 坐标轴范围一致
+
+```python
+import numpy as np
+from bokeh.models import Range1d
+from bokeh.plotting import figure, show
+
+# 生成示例数据
+x = np.random.normal(0, 1, 1000)
+y = np.random.normal(0, 1, 1000)
+
+# 计算 x 和 y 数据的百分位数
+x_min, x_max = np.percentile(x, [1, 99])
+y_min, y_max = np.percentile(y, [1, 99])
+
+# 创建 Bokeh 图形对象
+p = figure()
+
+# 绘制散点图
+p.circle(x, y)
+
+# 设置 x 轴和 y 轴范围为相同的范围
+p.x_range = p.y_range = Range1d(min(x_min, y_min), max(x_max, y_max))
+
+# 显示图形
+show(p)
+
+```
+
+# bokeh布局
+
+品字形
+
+```python
+from bokeh.layouts import gridplot, layout
+from bokeh.plotting import figure, show
+from bokeh.plotting import output_notebook
+output_notebook()
+
+# 创建第一个图形
+p1 = figure(width=400, height=400, title='Plot 1')
+p1.circle([1,2,3,4,5], [6,7,2,4,5], size=10, color='navy', alpha=0.5)
+
+# 创建第二个图形
+p2 = figure(width=400, height=400, title='Plot 2')
+p2.triangle([1,2,3,4,5], [6,7,2,4,5], size=10, color='firebrick', alpha=0.5)
+
+# 创建第三个图形
+p3 = figure(width=800, height=400, title='Plot 3')
+p3.square([1,2,3,4,5], [6,7,2,4,5], size=10, color='olive', alpha=0.5)
+
+# 使用gridplot布局工具创建布局
+# layout = gridplot([[p1, p2], [p3, None]], sizing_mode="stretch_width", toolbar_location=None)
+lay = layout([
+    [p1, p2],
+    [p3],
+])
+# 显示布局
+show(lay)
+```
+
+网格布局
+
+两个是有区别的
+
+```python
+from bokeh.layouts import gridplot, layout
+from bokeh.plotting import figure, show
+from bokeh.plotting import output_notebook
+output_notebook()
+
+# 创建第一个图形
+p1 = figure(width=400, height=400, title='Plot 1')
+p1.circle([1,2,3,4,5], [6,7,2,4,5], size=10, color='navy', alpha=0.5)
+
+# 创建第二个图形
+p2 = figure(width=400, height=400, title='Plot 2')
+p2.triangle([1,2,3,4,5], [6,7,2,4,5], size=10, color='firebrick', alpha=0.5)
+
+# 创建第三个图形
+p3 = figure(width=800, height=400, title='Plot 3')
+p3.square([1,2,3,4,5], [6,7,2,4,5], size=10, color='olive', alpha=0.5)
+
+# 使用gridplot布局工具创建布局
+# layout = gridplot([[p1, p2], [p3, None]], sizing_mode="stretch_width", toolbar_location=None)
+lay = gridplot([
+    [p1, p2],
+    [p3],
+])
+# 显示布局
+show(lay)
+```
+

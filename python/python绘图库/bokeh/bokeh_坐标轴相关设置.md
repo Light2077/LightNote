@@ -20,6 +20,23 @@ p.x_range = Range1d(0, 100)
 p.y_range = Range1d(0, 15, bounds=(0, None))
 ```
 
+坐标轴放到图表上方
+
+```python
+p = figure(plot_width=400, plot_height=400, x_axis_location="above")
+
+```
+
+### 锁定y轴方向的移动
+
+```python
+# 设置y轴的范围
+p.y_range.start = 0
+p.y_range.end = 10
+
+p.y_range.bounds = (0, 10)
+```
+
 
 
 ### 类别型轴
