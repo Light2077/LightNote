@@ -41,7 +41,9 @@ def selectable_scatter_plot(df):
 
     # 创建初始散点图（这里假设初始状态为 A-B）
     p = figure(width=400, height=400)
-    circles = p.circle("A", "B", source=source, size=15, color="navy", alpha=0.5)
+    circles = p.circle(
+        cols[0], cols[1], source=source, size=15, color="navy", alpha=0.5
+    )
     # 创建两个选择器，用于选择散点图的x和y
     select_x = Select(title="x", value=cols[0], options=cols.tolist())
     select_y = Select(title="y", value=cols[1], options=cols.tolist())

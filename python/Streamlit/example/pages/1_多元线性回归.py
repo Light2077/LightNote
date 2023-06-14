@@ -8,6 +8,9 @@ from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 
+import statsmodels.api as sm
+from helper.ols_helper import show_summary_in_streamlit
+
 from plot_helper import selectable_scatter_plot
 from feature_engineering import (
     transform_columns,
@@ -97,21 +100,25 @@ if uploaded_file is not None:
     st.subheader("建模")
     if len(features) > 0 and target and st.button("开始建模"):
         # 特征组合
-        new_df = [df]
-
         use_features = list(features)
-        st.write("正在进行特征组合")
-        my_bar = st.progress(0)
+        if len(comb_funcs) > 0:
+            """如果设置了特征组合，就显示进度条"""
+            new_df = [df]
 
-        for i, func in enumerate(comb_funcs):
-            progress_text = f"当前阶段: {combine_names[i]}"
-            my_bar.progress((i + 1) / len(comb_funcs), text=progress_text)
-            tdf = func(df)
-            new_df.append(tdf)
-            time.sleep(0.5)
-            use_features.extend(list(tdf.columns))
+            st.write("正在进行特征组合")
+            my_bar = st.progress(0)
 
-        new_df = pd.concat(new_df, axis=1)
+            for i, func in enumerate(comb_funcs):
+                progress_text = f"当前阶段: {combine_names[i]}"
+                my_bar.progress((i + 1) / len(comb_funcs), text=progress_text)
+                tdf = func(df)
+                new_df.append(tdf)
+                time.sleep(0.5)
+                use_features.extend(list(tdf.columns))
+
+            new_df = pd.concat(new_df, axis=1)
+        else:
+            new_df = df
 
         X = new_df[use_features]
         y = new_df[target]
@@ -127,9 +134,15 @@ if uploaded_file is not None:
         st.write(f"测试集: {len(X_test)}条数据")
         # 模型训练
         if model is None:
-            model = LinearRegression()
-            model.fit(X_train, y_train)
+            # model = LinearRegression()
+            # model.fit(X_train, y_train)
+
+            # 构建模型
+            model = sm.OLS(y_train, X_train).fit()
+            summary = model.summary()
+
             st.write("模型训练已完成")
+            show_summary_in_streamlit(summary)
         else:
             st.write("使用加载的模型进行预测和评估")
 
@@ -157,9 +170,10 @@ if uploaded_file is not None:
         mse = mean_squared_error(y_test, y_pred)
         mae = mean_absolute_error(y_test, y_pred)
         r2 = r2_score(y_test, y_pred)
-        st.write(f"均方误差 (MSE): {mse:.4f}")
-        st.write(f"平均绝对误差 (MAE): {mae:.4f}")
-        st.write(f"R^2: {r2:.4f}")
+        col1, col2, col3 = st.columns(3)
+        col1.metric("均方误差 (MSE)", f"{mse:.4f}")
+        col2.metric("平均绝对误差 (MAE)", f"{mae:.4f}")
+        col3.metric("R平方", f"{r2:.4f}")
 
         selectable_scatter_plot(new_df.loc[X_test.index])
         # # 模型保存

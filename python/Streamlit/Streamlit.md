@@ -36,13 +36,16 @@ streamlit run your_script.py
 streamlit run https://raw.githubusercontent.com/streamlit/demo-uber-nyc-pickups/master/streamlit_app.py
 ```
 
-## Data flow
+## 基本知识
 
-每当屏幕上必须更新某些内容时，Streamlit都会从上到下重新运行整个Python脚本。这可能发生在两种情况下：
+streamlit的策略是这样的，当你触发一些交互时，Streamlit会从上到下重新运行整个Python脚本。
 
-- 每当修改应用的源代码时
-- 每当用户与应用程序中的小组件交互时。例如，拖动滑块、在输入框中输入文本或单击按钮时。
-- 每当通过 `on_change` （或 `on_click` ）参数将回调传递给小部件时，回调将始终在脚本的其余部分之前运行。有关回调 API 的详细信息，参考：[Session State API Reference Guide](https://docs.streamlit.io/library/api-reference/session-state#use-callbacks-to-update-session-state).
+比如下面的情况：
+
+- 修改APP的源代码后
+- 与应用程序中的小组件交互后。例如，点击按钮、拖动滑块、在输入框中输入文本。
+
+此外，每当通过 `on_change` （或 `on_click` ）参数将回调传递给小部件时，回调将始终在脚本的其余部分之前运行。有关回调 API 的详细信息，参考：[Session State API Reference Guide](https://docs.streamlit.io/library/api-reference/session-state#use-callbacks-to-update-session-state).
 
 ## 基本绘图
 
@@ -124,8 +127,6 @@ st.map(map_data)
 <img src="images/image-20230515164048289.png" alt="image-20230515164048289" style="zoom:67%;" />
 
 ## 基本部件
-
-
 
 比如滑条、按钮、下拉选择框
 
@@ -214,11 +215,39 @@ option = st.selectbox(
 'You selected: ', option
 ```
 
+### st.number_input
+
+[st.number_input - Streamlit Docs](https://docs.streamlit.io/library/api-reference/widgets/st.number_input)
+
+```python
+import streamlit as st
+st.subheader("数字输入框")
+
+number = st.number_input("Insert a number")
+st.write("The current number is ", round(number, 4))
+```
+
+<img src="images/image-20230531143315661.png" alt="image-20230531143315661" style="zoom:67%;" />
+
+可以设置数字输入框的最大最小值、每次点击按钮的步长
+
+```python
+# 注意: 设置min_value, max_value, value, step时
+# 数据类型要一致，要么全是浮点型，要么全是整型，否则会报错
+
+# 浮点
+st.number_input("输入数字", min_value=0.0, max_value=10.0, value=1.0, step=2.5)
+# 整数
+st.number_input("输入数字", min_value=2, max_value=8, value=3, step=1)
+```
+
+
+
+### st.selectbox
+
 下拉选项框
 
 <img src="images/image-20230515164729453.png" alt="image-20230515164729453" style="zoom:67%;" />
-
-### 下拉选择框
 
 [`st.selectbox()`](https://docs.streamlit.io/library/api-reference/widgets/st.selectbox)
 
@@ -238,7 +267,36 @@ option = st.selectbox(
 'You selected: ', option
 ```
 
+### st.checkbox
 
+勾选检查框后，会显示下面的内容
+
+```python
+import streamlit as st
+
+agree = st.checkbox('I agree')
+if agree:
+    st.write("Great! the checkbox's return value is ", agree)
+```
+
+![image-20230601170449870](images/streamlit_widget_checkbox.png)
+
+### st.radio
+
+```python
+import streamlit as st
+
+genre = st.radio(
+    "What\'s your favorite movie genre",
+    ('Comedy', 'Drama', 'Documentary'))
+
+if genre == 'Comedy':
+    st.write('You selected comedy.')
+else:
+    st.write("You didn\'t select comedy.")
+```
+
+![streamlit_widget_radio](images/streamlit_widget_radio.png)
 
 ### 多选框
 
@@ -324,13 +382,125 @@ if uploaded_file is not None:
 st.write("Filename: ", uploaded_file.name)
 ```
 
+### 文件下载
+
+## 部件的特性
+
+### key
+
+> 每个部件都可以设置一个 key，用于标记唯一的部件。
+
+通过key查看值
+
+```python
+st.session_state[key]
+```
+
+### 多个按钮
+
+如果设置多个按钮，当按下第二个按钮时，第一个按钮的值就变成False了
+
+```python
+import streamlit as st
+
+btn1 = st.button("btn1", key="btn1")
+btn2 = st.button("btn2", key="btn2")
+btn3 = st.button("btn3", key="btn3")
+
+st.text(f"btn1: {btn1} \nbtn2: {btn2} \nbtn3: {btn3}")
+```
+
+如果希望点击按钮执行相关操作的话，建议使用`st.checkbox`
+
+### on_change的用法
+
+`on_change` 参数在 Streamlit 中用于定义一个回调函数，当输入框的内容发生变化时，该函数将被调用。这个参数的使用场景包括但不限于：根据用户的输入实时地更新其他部分的界面，或者根据输入的内容进行某些实时的校验等。
+
+```python
+import streamlit as st
+
+container = st.container()
+container.write("this is container")
+
+
+def text_changed():
+    new_text = st.session_state["new_text"]
+    container.write(f"Text has changed to: {new_text}")
+
+
+st.text_input("Type here", on_change=text_changed, key="new_text")
+```
+
+可以使用 `on_change` 创建一个实时的文本校验系统，例如，如果我们希望用户在输入框中输入邮箱，我们可以用 `on_change` 进行实时的邮箱格式校验：
+
+```python
+import streamlit as st
+import re
+
+def validate_email():
+    email = st.session_state["email"]
+    email_regex = r"^\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b"
+    with container:
+        if not re.match(email_regex, email):
+            st.error("Invalid email address")
+        else:
+            st.success("Valid email address")
+
+container = st.container()
+with container:
+    st.text_input("Enter your email", on_change=validate_email, key="email")
+
+st.write("out of container")
+
+```
+
+### 如何改变文本标签内容
+
+```python
+import time
+import streamlit as st
+
+greeting = st.text("你好")
+with st.spinner("加载中..."):
+    time.sleep(2)
+greeting.markdown("**:blue[再见]**")
+```
+
+
+
+## 数据元素
+
+### st.metric
+
+[st.metric - Streamlit Docs](https://docs.streamlit.io/library/api-reference/data/st.metric)
+
+```python
+import streamlit as st
+
+col1, col2, col3 = st.columns(3)
+col1.metric("温度", "30 ℃", "1.2 ℃")
+col2.metric("风速", "9 mph", "-8%")
+col3.metric("湿度", "86%", "4%")
+```
+
+<img src="images/image-20230607095352081.png" alt="image-20230607095352081" style="zoom:67%;" />
+
+## 状态元素
+
+
+
+等待
+
+```python
+with st.spinner("加载中..."):
+    time.sleep(2)
+```
+
 
 
 ## 布局
 
-
-
-### 侧边栏
+### st.siderbar
 
 ```python
 import streamlit as st
@@ -393,7 +563,7 @@ with st.sidebar:
 
 <img src="images/image-20230523110657133.png" alt="image-20230523110657133" style="zoom:67%;" />
 
-### 分列
+### st.columns
 
 可以把streamlit的页面变成分列布局
 
@@ -436,11 +606,100 @@ left_column.write("x" * 300)
 right_column.write("x" * 100)
 ```
 
+### st.tabs
+
+[st.tabs - Streamlit Docs](https://docs.streamlit.io/library/api-reference/layout/st.tabs)
+
+```python
+import streamlit as st
+
+tab1, tab2, tab3 = st.tabs(["Cat", "Dog", "Owl"])
+
+with tab1:
+   st.header("A cat")
+   st.image("https://static.streamlit.io/examples/cat.jpg", width=200)
+
+with tab2:
+   st.header("A dog")
+   st.image("https://static.streamlit.io/examples/dog.jpg", width=200)
+
+with tab3:
+   st.header("An owl")
+   st.image("https://static.streamlit.io/examples/owl.jpg", width=200)
+```
+
+<img src="images/image-20230530152227655.png" alt="image-20230530152227655" style="zoom:50%;" />
+
+如何判断当前在哪个标签底下
+
+### st.expander
+
+[st.expander - Streamlit Docs](https://docs.streamlit.io/library/api-reference/layout/st.expander)
+
+```python
+import streamlit as st
+
+st.bar_chart({"data": [1, 5, 2, 6, 2, 1]})
+
+with st.expander("See explanation"):
+    st.write(\"\"\"
+        The chart above shows some numbers I picked for you.
+        I rolled actual dice for these, so they're *guaranteed* to
+        be random.
+    \"\"\")
+```
+
+点击**See explanation** 即可展开折叠内容
+
+<img src="images/streamlit_layout_expander.png" alt="image-20230601165317771" style="zoom:67%;" />
+
+## 文本
+
+大多数需求都可以用`st.markdown()`实现
+
+```python
+# 分隔线
+st.markdown("---")
+
+# 标题，效果同 st.subheader("标题")
+st.markdown("### 标题")
+```
+
+文本标题
+
+```python
+st.markdown("### ")
+```
+
+显示代码
+
+```python
+code = """
+def hello():
+    print("Hello, Streamlit!")
+"""
+st.code(code, language='python')
+```
+
+​	显示颜色
+
+```python
+# 颜色
+st.markdown(":red[提示]: 如何使用颜色")
+
+# 颜色 + 加粗
+st.markdown("**:red[提示]**: 如何使用颜色")
+```
 
 
-## 缓存
 
-缓存的基本思想是存储昂贵的耗时较长的函数调用结果，并在再次出现相同的输入时返回缓存的结果，而不是重新调用函数。
+## 数据缓存
+
+缓存的思想是存储耗时较长的函数调用结果。
+
+当下次出现相同的输入时，直接返回缓存的结果，而不用重新调用函数。
+
+
 
 使用`st.cache_data`装饰器或`st.cache_resource`
 
@@ -487,7 +746,10 @@ def load_data():
     return df
 
 
+loading_text = st.markdown("data loading!")
 df = load_data()
+loading_text.text("success")
+
 st.dataframe(df)
 
 st.button("Rerun")
@@ -585,4 +847,3 @@ streamlit run main_page.py
 
 <img src="images/image-20230523112708878.png" alt="image-20230523112708878" style="zoom:67%;" />
 
-​	
