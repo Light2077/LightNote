@@ -14,6 +14,23 @@ https://www.zhihu.com/question/322530705/answer/860418884
 
 
 
+折叠/展开光标所在位置的代码块
+
+- 折叠：`Ctrl + Shift + [`
+- 展开：`Ctrl + Shift + ]`
+
+折叠展开文件中所有代码块：
+
+- 折叠：`Ctrl + K` + `Ctrl + 0`
+- 展开：`Ctrl + K` + `Ctrl + J`
+
+单行缩进：
+
+- 增加缩进：`Ctrl + ]`
+- 减少缩进：`Ctrl + [`
+
+
+
 **设置python解释器**：
 
 - 输入快捷键`ctrl + shift + P`，在界面顶端弹出**搜索窗**

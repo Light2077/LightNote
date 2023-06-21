@@ -653,6 +653,27 @@ with st.expander("See explanation"):
 
 <img src="images/streamlit_layout_expander.png" alt="image-20230601165317771" style="zoom:67%;" />
 
+expander有点类似于container，可以在之后往expander内添加新的东西。
+
+```python
+import streamlit as st
+
+
+expander = st.expander("##### example", expanded=True)
+
+with expander:
+    st.info("inner expander")
+
+st.success("out of expander")
+
+with expander:
+    st.info("new inner expander")
+```
+
+<img src="images/image-20230621141816516.png" alt="image-20230621141816516" style="zoom:67%;" />
+
+
+
 ## 文本
 
 大多数需求都可以用`st.markdown()`实现
