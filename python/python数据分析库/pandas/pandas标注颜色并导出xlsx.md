@@ -45,3 +45,22 @@ df.style.apply(highlight_diffs, axis=1)
 
 ```
 
+标记某一列的颜色
+
+```python
+import pandas as pd
+
+# 假设你有一个名为df的DataFrame
+df = pd.DataFrame({
+   'A': [1, 2, 3],
+   'B': [4, 5, 6]
+})
+
+def color_column(val):
+    return 'background-color: pink'
+
+styled = df.style.applymap(color_column, subset=['A']) # 将A列标记为粉色
+styled
+
+```
+

@@ -1,5 +1,7 @@
 https://github.com/github/gitignore/blob/main/Python.gitignore
 
+可以直接复制下面的内容作为python的`.gitignore`
+
 ```ini
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -158,6 +160,15 @@ nohup.out
 ```
 
 
+
+在我的项目里，可能还包括
+
+```
+data/
+input/
+output/
+notebooks/	
+```
 
 
 

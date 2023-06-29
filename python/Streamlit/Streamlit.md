@@ -466,6 +466,44 @@ with st.spinner("加载中..."):
 greeting.markdown("**:blue[再见]**")
 ```
 
+### 点击按钮页面刷新的问题
+
+比如下面这段代码
+
+```python
+import streamlit as st
+
+btn1 = st.button("run 1step")
+if btn1:
+    st.write("1step!")
+
+btn2 = st.button("run 2step")
+if btn2:
+    st.write("2step!")
+```
+
+希望的效果是，点击第一个按钮，执行一步，点击第二个按钮执行下一步。
+但是因为streamlit 的特点是，与页面的元素互动后，会重新运行整个页面，因此无法达到我想要的效果。
+
+思路：利用页面缓存。修改代码为
+
+```python
+import streamlit as st
+
+btn1 = st.button("run 1step")
+if btn1 or st.session_state.get("btn1_clicked"):
+    st.session_state["btn1_clicked"] = True
+    st.write("1step!")
+
+btn2 = st.button("run 2step")
+if btn2:
+    st.write("2step!")
+    
+btn3 = st.button("reset")
+if btn3:
+    st.session_state["btn1_clicked"] = False
+```
+
 
 
 ## 数据元素

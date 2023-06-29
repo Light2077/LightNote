@@ -320,3 +320,13 @@ show(p)
 ```
 
 <img src="images/image-20230530095923453.png" alt="image-20230530095923453" style="zoom:67%;" />
+
+## 残差百分比累积图
+
+```python
+import numpy as np
+from bokeh.plotting import figure, show
+
+x = np.random.normal()
+```
+
