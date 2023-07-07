@@ -2,6 +2,27 @@
 
 [Statistical plots — Bokeh 3.1.1 Documentation](https://docs.bokeh.org/en/latest/docs/user_guide/topics/stats.html)
 
+## 柱状图
+
+```python
+from bokeh.models import ColumnDataSource
+from bokeh.plotting import figure
+
+# 准备数据
+y = [31, 24, 36, 18, 55, 27, 35, 44]
+x = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
+
+source = ColumnDataSource({'x': x, 'y': y})
+# 绘制图形
+p = figure(width=800, height=300, title="barplot", x_range=x)
+p.vbar(x='x', top='y', width=0.8, source=source, line_color="black")
+show(p)
+```
+
+![image-20230707173423332](images/image-20230707173423332.png)
+
+
+
 ## 直方图
 
 
