@@ -212,7 +212,7 @@ Git鼓励大量使用分支：
 
 ## [解决冲突](https://www.liaoxuefeng.com/wiki/896043488029600/900004111093344)
 
-合并分支时遭遇冲突，可以通过`git status`
+合并分支时遭遇冲突，可以通过`git status`。
 
 ## [分支管理策略](https://www.liaoxuefeng.com/wiki/896043488029600/900005860592480)
 
@@ -220,7 +220,7 @@ Git鼓励大量使用分支：
 
 储存当前工作分支
 
-<img src="picture/bug1.png" style="zoom: 33%;" />
+<img src="images/bug1.png" style="zoom: 33%;" />
 
 你在dev上工作准备更新版本时，突然发现了一个bug，需要立即修复，但是dev版本的更新起码还需要1周，现在修了bug也推不上去。
 
@@ -239,7 +239,7 @@ git switch master
 git switch -c issue
 ```
 
-<img src="picture/bug3.png" style="zoom:50%;" />
+<img src="images/bug3.png" style="zoom:50%;" />
 
 修复issue分支上的bug并提交
 
@@ -253,7 +253,7 @@ git add <file>
 git commit -m <msg>
 ```
 
-<img src="picture/bug4.png" style="zoom:50%;" />
+<img src="images/bug4.png" style="zoom:50%;" />
 
 合并分支
 
@@ -270,7 +270,7 @@ git switch master
 git merge --no-ff -m "fix bug" issue
 ```
 
-<img src="picture/bug5.png" style="zoom:50%;" />
+<img src="images/bug5.png" style="zoom:50%;" />
 
 【该图有误】
 
@@ -290,7 +290,7 @@ git stash pop
 git cherry-pick 9d9644a
 ```
 
-<img src="picture/bug6.png" style="zoom:50%;" />
+<img src="images/bug6.png" style="zoom:50%;" />
 
 继续工作
 
@@ -366,5 +366,3 @@ git config --global alias.lg "log --color --graph --pretty=format:'%Cred%h%Crese
 https://www.gerritcodereview.com/
 
 https://www.jianshu.com/p/b77fd16894b6
-
-# [期末总结](https://www.liaoxuefeng.com/wiki/896043488029600/900062620154944)
