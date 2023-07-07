@@ -45,11 +45,41 @@ https://www.zhihu.com/question/322530705/answer/860418884
 
 **代码跳转后回退**：`alt + ←`
 
+打开setting的json，快捷键`ctrl + shift + P`，搜索 Open User Settings (JSON)。（直接搜 open setting，就能看到选项）
+
 ## 自定义代码片段
 
+进入方式，在`ctrl + shift + P`中搜索Snippets: Configure User Snippets
+
+选择python.json
+
+下面是其中一个例子
+
+```cs
+{
+    "HEADER": {
+		"prefix": "header",
+		"body": [
+			"#!/usr/bin/env python",
+			"# -*- encoding: utf-8 -*-",
+			"\"\"\"",
+			"@File    :   $TM_FILENAME",
+			"@Time    :   $CURRENT_YEAR/$CURRENT_MONTH/$CURRENT_DATE $CURRENT_HOUR:$CURRENT_MINUTE:$CURRENT_SECOND",
+			"@Author  :",
+			"@Version :   1.0",
+			"@Desc    :",
+			"\"\"\"",
+			"",
+			"",
+			"$0"
+		],
+	},
+}
+```
 
 
-## 免密登录
+
+## 免密远程登录
 
 本机为windows，远端为linux。希望vscode每次连接到远端时无需重新输入密码
 
@@ -117,7 +147,7 @@ conda install --yes freetype=2.10.4
 
 ## python代码调试
 
-在任意空文件夹下创建`main.py`并传入一下内容
+在任意空文件夹下创建`main.py`并传以下内容
 
 ```python
 def foo(a, b):
@@ -143,3 +173,18 @@ for i in range(10):
 - ==F11== Step Into 单步运行，遇到子函数，进入并从子函数第一行开始单步运行
 - ==Shift + F11== Step Out 单步跳出，如果子函数内无断点，跳出子函数，若子函数有断点，执行完断点后再跳出子函数。
 
+## 初始界面
+
+在设置（ctrl + numpad9）中搜索 startup
+
+将workbench: startup editor这一项设置为：`welcomPageInEmptyWorkbench`
+
+## 代码自动格式化
+
+
+
+[python代码格式化工具只懂autopep8？这里有更好的 - 知乎 (zhihu.com)](https://zhuanlan.zhihu.com/p/203307235)
+
+[psf/black: The uncompromising Python code formatter (github.com)](https://github.com/psf/black)
+
+在setting中设置的关键词：Format
