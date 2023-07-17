@@ -9,8 +9,51 @@ from bokeh.models import Range1d
 from bokeh.plotting import figure
 
 p = figure(width=300, height=300, x_range=(0, 20))
+print("x_range:", p.x_range.start, p.x_range.end)
+
+p.x_range = Range1d(0, 100)
+print("changed x_range:", p.x_range.start, p.x_range.end)
+```
+
+```
+x_range: 0 20
+changed x_range: 0 100
+```
+
+获取坐标轴当前范围
+
+```python
+p.x_range.start, p.x_range.end
+```
+
+修改坐标轴范围
+
+```python
+from bokeh.models import Range1d
 p.x_range = Range1d(0, 100)
 ```
+
+另一种方式，不需要使用Range1d
+
+```python
+p.x_range.start = 0
+p.x_range.end = 100
+```
+
+### 设置坐标轴标签
+
+```python
+p.xaxis.axis_label = xlabel
+p.yaxis.axis_label = ylabel
+```
+
+### 取消logo
+
+```python
+ p.toolbar.logo = None
+```
+
+
 
 ### 设置坐标轴移动边界
 

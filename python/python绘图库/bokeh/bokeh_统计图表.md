@@ -5,21 +5,64 @@
 ## 柱状图
 
 ```python
-from bokeh.models import ColumnDataSource
-from bokeh.plotting import figure
+    from bokeh.models import ColumnDataSource
+    from bokeh.plotting import figure
 
-# 准备数据
-y = [31, 24, 36, 18, 55, 27, 35, 44]
-x = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
+    # 准备数据
+    y = [31, 24, 36, 18, 55, 27, 35, 44]
+    x = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
 
-source = ColumnDataSource({'x': x, 'y': y})
-# 绘制图形
-p = figure(width=800, height=300, title="barplot", x_range=x)
-p.vbar(x='x', top='y', width=0.8, source=source, line_color="black")
-show(p)
+    source = ColumnDataSource({'x': x, 'y': y})
+    # 绘制图形
+    p = figure(width=800, height=300, title="barplot", x_range=x)
+    p.vbar(x='x', top='y', width=0.8, source=source, line_color="black")
+    show(p)
 ```
 
 ![image-20230707173423332](images/image-20230707173423332.png)
+
+函数化
+
+```python
+from bokeh.models import ColumnDataSource, HoverTool
+
+def bar_plot(x, y, width=400, height=300, title="barplot", xlabel="", ylabel=""):
+    source = ColumnDataSource({'x': x, 'y': y})
+    p = figure(width=width, height=height, title=title, x_range=x)
+    p.vbar(x='x', top='y', width=0.8, source=source, line_color='black')
+    # 设置y轴范围
+    p.y_range.start = 0
+    
+    # 设置x,y轴标签
+    p.xaxis.axis_label = xlabel
+    p.yaxis.axis_label = ylabel
+    
+    # 悬浮显示值
+    tooltip = [("x","@x"), ("y", "@y")]
+    hover = HoverTool(tooltips=tooltip)
+    p.add_tools(hover)
+    return p
+```
+
+加入互动元素
+
+```python
+from bokeh.models import ColumnDataSource, HoverTool
+
+tooltip = [("x","@x"), ("y", "@y")]
+hover = HoverTool(tooltips=tooltip)
+p.add_tools(hover)
+```
+
+添加标签
+
+```python
+from bokeh.models import LabelSet
+
+# 创建一个标签集，指定x和y坐标，文本和数据源
+labels = LabelSet(x='x', y='y', text='y', level='glyph', y_offset=5, source=source)
+p.add_layout(labels)
+```
 
 
 
@@ -349,5 +392,46 @@ import numpy as np
 from bokeh.plotting import figure, show
 
 x = np.random.normal()
+```
+
+## 聚类结果可视化
+
+[transform_markers — Bokeh 3.2.0 Documentation](https://docs.bokeh.org/en/latest/docs/examples/basic/data/transform_markers.html)
+
+```python
+import matplotlib.pyplot as plt
+from sklearn.datasets import make_blobs
+
+from bokeh.plotting import figure, show
+from bokeh.transform import factor_cmap
+
+# 创建数据集
+# X为样本特征，Y为样本簇类别， 共1000个样本，每个样本4个特征，共4个簇，
+# 簇中心在[-1,-1], [0,0],[1,1], [2,2]， 簇方差分别为[0.4, 0.2, 0.2, 0.2]
+X, y = make_blobs(
+    n_samples=1000, 
+    n_features=2, 
+    centers=[[-1, -1], [1, -1], [0, 1]],
+    cluster_std=[0.5, 0.3, 0.2],
+    random_state=2022,
+)
+
+df = pd.DataFrame(X, columns=["x1", "x2"])
+df["y"] = y.astype(str)
+
+p = figure(title = "scatter plot", width=300, height=300)
+
+data_source = ColumnDataSource(df)
+p.scatter("x1", "x2", source=data_source,
+          legend_group="y", fill_alpha=0.4, size=6,
+          color=factor_cmap('y', 'Category10_3',df.y.unique())
+          )
+
+# p.y_range = Range1d(-5, 5)
+p.legend.location = "top_left"
+p.legend.title = "y"
+
+show(p)
+
 ```
 
