@@ -540,8 +540,6 @@ show(p)
 
 [bokeh.palettes — Bokeh 3.1.1 Documentation](https://docs.bokeh.org/en/latest/docs/reference/palettes.html#module-bokeh.palettes)
 
-
-
 使用颜色
 
 ```python
@@ -549,12 +547,9 @@ from bokeh.transform import linear_cmap
 linear_cmap('value', "Blues9", low=color_max, high=color_min)
 ```
 
-
-
 ## 相关系数图
 
 ```python
-
 from bokeh.models import ColumnDataSource
 from bokeh.transform import linear_cmap
 from bokeh.plotting import figure, show, output_notebook

@@ -23,7 +23,7 @@ https://v2.vuepress.vuejs.org/zh/guide/getting-started.html
 
 node.js 相当于javascript版本的后端语言
 
-npm JavaScript的包管理工具
+npm —— JavaScript的包管理工具
 
 yarn 暂时没用到
 
