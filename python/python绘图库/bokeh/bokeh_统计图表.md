@@ -1,4 +1,4 @@
-# Statistical plots
+# 常用图表
 
 [Statistical plots — Bokeh 3.1.1 Documentation](https://docs.bokeh.org/en/latest/docs/user_guide/topics/stats.html)
 
@@ -248,9 +248,30 @@ p.add_tools(hover)
 
 ## 散点图
 
+### 简单散点图
+
+```python
+from bokeh.models import ColumnDataSource
+from bokeh.plotting import figure, show, output_notebook
+```
+
+
+
 绘制一个散点图，用于对比两个值
 
 鼠标放在散点上可以显示值，散点用“△”和“○”进行区分。
+
+### 颜色区分
+
+
+
+### 形状区分
+
+### 颜色渐变
+
+
+
+
 
 ### 交互的散点图
 
@@ -430,6 +451,72 @@ p.scatter("x1", "x2", source=data_source,
 # p.y_range = Range1d(-5, 5)
 p.legend.location = "top_left"
 p.legend.title = "y"
+
+show(p)
+
+```
+
+## 加入hover tool互动元素
+
+```python
+from bokeh.models import ColumnDataSource, HoverTool
+
+tooltip = [("x","@x"), ("y", "@y")]
+hover = HoverTool(tooltips=tooltip)
+p.add_tools(hover)
+```
+
+### 如果使用中文
+
+```python
+tooltip = [("位置","@{位置}"), ("值", "@{值}")]
+```
+
+### 如果要保留N位有效数字
+
+```python
+tooltip = [("位置","@{位置}{0.0000}"), ("值", "@{值}{0.0000}")]
+```
+
+### 多元素分别配置hover tool
+
+核心代码
+
+```python
+r1 = p.circle(...)
+r2 = p.circle(...)
+
+hover1 = HoverTool(renderers=[r1], tooltips=tooltip1)
+hover2 = HoverTool(renderers=[r2], tooltips=tooltip2)
+```
+
+
+
+需要为每一个数据源分别设置一个HoverTool。这是因为每一个HoverTool只能与一个数据源关联。你可以通过设置`renderers`属性来实现。
+
+```python
+from bokeh.models import ColumnDataSource, HoverTool
+from bokeh.plotting import figure, show
+import pandas as pd
+import numpy as np
+
+df1 = pd.DataFrame(np.random.normal(size=(4, 2)), columns=["a", "b"])
+df2 = pd.DataFrame(np.random.normal(size=(3, 2)), columns=["c", "d"])
+source1 = ColumnDataSource(data=df1)
+source2 = ColumnDataSource(data=df2)
+
+p = figure(width=400, height=400)
+
+r1 = p.circle(x='a', y='b', source=source1, size=5, color="blue", alpha=1)
+r2 = p.circle(x='c', y='d', source=source2, size=10, color="red", alpha=1)
+
+tooltip1 = [("a","@a"), ("b", "@b")]
+tooltip2 = [("c","@c"), ("d", "@d")]
+
+hover1 = HoverTool(renderers=[r1], tooltips=tooltip1)
+hover2 = HoverTool(renderers=[r2], tooltips=tooltip2)
+
+p.add_tools(hover1, hover2)
 
 show(p)
 
