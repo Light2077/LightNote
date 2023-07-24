@@ -251,8 +251,32 @@ p.add_tools(hover)
 ### 简单散点图
 
 ```python
+import numpy as np
 from bokeh.models import ColumnDataSource
 from bokeh.plotting import figure, show, output_notebook
+
+# 模拟的数据
+x = np.linspace(0, 10, 100)
+y = 0.5 * x + np.random.uniform(-1, 1, 100)
+
+# 拟合结果
+coefficients = np.polyfit(x, y, 1)
+
+# 获取拟合的直线的斜率和截距
+slope = coefficients[0]
+intercept = coefficients[1]
+
+# 线性拟合结果
+y_pred = slope * x + intercept
+
+# 绘图
+source = ColumnDataSource({"x": x, "y": y, "y_pred": y_pred})
+
+p = figure(width=400, height=400)
+p.circle('x', 'y', source=source)
+p.line('x', 'y_pred', line_width=2, color="red", source=source)
+
+show(p)
 ```
 
 
