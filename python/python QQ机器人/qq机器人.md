@@ -78,7 +78,7 @@ servers:
             "group_id": {
                 ".in": [
                     12345678,
-                    55567778
+                    542423773
                 ]
             },
             "anonymous": {
@@ -119,6 +119,9 @@ await main()
 这一段是机器人给QQ群发消息
 
 ```python
+import async
+import aiohttp
+
 async def send_group_msg(group_id, msg):
     msg = {'group_id': group_id, 'message': msg}
     async with aiohttp.ClientSession() as session:
@@ -166,6 +169,68 @@ if __name__ == '__main__':
     loop = asyncio.get_event_loop()
     loop.run_until_complete(main())
 ```
+
+简化版
+
+
+
+你的这段代码似乎有些混淆了。`session.post` 是用于发送 HTTP POST 请求的，而不是用来发送 WebSocket 消息的。如果你要使用 aiohttp 库发送 WebSocket 消息，你需要使用 `session.ws_connect` 来创建一个 WebSocket 连接。
+
+```python
+import json
+import asyncio
+import aiohttp
+
+async def send_group_msg():
+    async with aiohttp.ClientSession() as session:
+        async with session.ws_connect("ws://127.0.0.1:8090/send_group_msg") as ws:
+            while True:
+                event = await ws.receive_json()
+                print(event)
+                if 'post_type' not in event:
+                    continue
+
+                if event['post_type'] == 'message' and event['message_type'] == 'group':
+                    data = {
+                        "action": "send_group_msg",
+                        "params": {'group_id': event['group_id'], 'message': '确实'}
+                    }
+                    if '确实' in event['message']:
+                        await ws.send_str(json.dumps(data))
+
+async def main():
+    await send_group_msg()
+
+# await main()
+if __name__ == '__main__':
+    asyncio.run(main())
+    # loop = asyncio.get_event_loop()
+    # loop.run_until_complete(main())
+```
+
+
+
+event 示例
+
+```json
+{
+    'post_type': 'message', 
+    'message_type': 'group', 
+    'time': 1690355174, 
+    'self_id': 323566263, 
+    'sub_type': 'normal', 
+    'anonymous': None, 
+    'message_seq': 8336, 
+    'raw_message': '这个确实是这样的', 
+    'message_id': 1392889488, 
+    'font': 0, 
+    'group_id': 542423773, 
+    'message': '这个确实是这样的', 
+    'sender': {'age': 0, 'area': '', 'card': '213', 'level': '', 'nickname': '梦见月球的猫', 'role': 'owner', 'sex': 'unknown', 'title': '', 'user_id': 435786117}, 
+    'user_id': 435786117}
+```
+
+
 
 定时播报
 

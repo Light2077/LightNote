@@ -287,6 +287,63 @@ show(p)
 
 ### 颜色区分
 
+[bokeh.palettes — Bokeh 3.2.1 Documentation](https://docs.bokeh.org/en/latest/docs/reference/palettes.html#bokeh-palette)
+
+```python
+import numpy as np
+from bokeh.models import ColumnDataSource
+from bokeh.plotting import figure, show
+from bokeh.transform import linear_cmap
+
+# 模拟的数据
+x = np.linspace(0, 10, 120)
+y = 0.5 * x + np.random.uniform(-1, 1, 120)
+
+# 获取拟合的直线的斜率和截距
+coefficients = np.polyfit(x, y, 1)
+slope = coefficients[0]
+intercept = coefficients[1]
+
+# 线性拟合结果
+y_pred = slope * x + intercept
+
+# 月份数据
+k = 10
+month = np.repeat(np.arange(1, 13), k)
+
+# 其实
+# 创建数据
+df = pd.DataFrame({
+    'x': x,
+    'y': y,
+    'y_pred': y_pred,
+    'month': month
+})
+source = ColumnDataSource(df)
+
+# 绘图
+p = figure(width=400, height=400)
+
+# 颜色配置
+fc = linear_cmap("month", "Turbo256", 0, df.month.nunique())
+
+p.circle('x', 'y', color=fc, source=source)
+p.line('x', 'y_pred', line_width=2, color="red", source=source)
+
+show(p)
+```
+
+![image-20230725101528988](images/image-20230725101528988.png)
+
+标记颜色的话，修改：
+
+```python
+p.circle('x', 'y', color=fc, source=source, legend_group="month")
+p.line('x', 'y_pred', line_width=2, color="red", source=source)
+p.legend.location = "top_left"
+p.legend.title = "month"
+```
+
 
 
 ### 形状区分
