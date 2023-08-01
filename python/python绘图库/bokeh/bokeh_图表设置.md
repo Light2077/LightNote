@@ -40,22 +40,7 @@ p.x_range.start = 0
 p.x_range.end = 100
 ```
 
-### 设置坐标轴标签
-
-```python
-p.xaxis.axis_label = xlabel
-p.yaxis.axis_label = ylabel
-```
-
-### 取消logo
-
-```python
- p.toolbar.logo = None
-```
-
-
-
-### 设置坐标轴移动边界
+### 设置坐标轴边界
 
 设置移动边界，这样平移或者缩放的范围就被限定了
 
@@ -66,11 +51,23 @@ p.y_range = Range1d(0, 15, bounds=(0, None))
 坐标轴放到图表上方
 
 ```python
-p = figure(plot_width=400, plot_height=400, x_axis_location="above")
-
+p = figure(x_axis_location="above")
 ```
 
-### 锁定y轴方向的移动
+### 设置坐标轴标签
+
+```python
+p.xaxis.axis_label = xlabel
+p.yaxis.axis_label = ylabel
+```
+
+### 取消bokeh工具栏的logo
+
+```python
+ p.toolbar.logo = None
+```
+
+### 锁定坐标轴移动
 
 ```python
 # 设置y轴的范围
@@ -241,7 +238,6 @@ p = figure(width=800, height=300, title="", tools="",
            toolbar_location=None, match_aspect=True)
 
 p.line(x, y, color="navy", alpha=0.4, line_width=4)
-p.background_fill_color = "#efefef"
 p.xaxis.fixed_location = 0
 p.yaxis.fixed_location = 0
 
