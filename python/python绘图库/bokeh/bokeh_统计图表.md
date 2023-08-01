@@ -322,7 +322,7 @@ df = pd.DataFrame({
 source = ColumnDataSource(df)
 
 # 绘图
-p = figure(width=400, height=400)
+p = figure(width=400, height=300)
 
 # 颜色配置
 fc = linear_cmap("month", "Turbo256", 0, df.month.nunique())
@@ -540,11 +540,11 @@ show(p)
 ## 加入hover tool互动元素
 
 ```python
-from bokeh.models import ColumnDataSource, HoverTool
+    from bokeh.models import ColumnDataSource, HoverTool
 
-tooltip = [("x","@x"), ("y", "@y")]
-hover = HoverTool(tooltips=tooltip)
-p.add_tools(hover)
+    tooltip = [("x","@x"), ("y", "@y")]
+    hover = HoverTool(tooltips=tooltip)
+    p.add_tools(hover)
 ```
 
 ### 如果使用中文
