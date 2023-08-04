@@ -63,15 +63,15 @@ $r_i \in \{0, 1\}$
 
 ### 矩阵
 
+[如何用latex编写矩阵（包括各类复杂、大型矩阵）？ - 知乎 (zhihu.com)](https://zhuanlan.zhihu.com/p/266267223)
 $$
-P = \left[ 
-\begin{matrix}
+P = 
+\begin{bmatrix}
 p_{00} & p_{01} & p_{02} & p_{03} \\
 p_{10} & p_{11} & p_{12} & p_{13} \\
 p_{20} & p_{21} & p_{22} & p_{23} \\
 p_{30} & p_{31} & p_{32} & p_{33} \\
-\end{matrix}
-\right]
+\end{bmatrix}
 $$
 
 求和符号的单行形式
