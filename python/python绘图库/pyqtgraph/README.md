@@ -260,6 +260,27 @@ curve.setData(data)
 curve.setData(x, y)
 ```
 
+### 如何设置xy轴标签
+
+```python
+w = pg.GraphicsLayoutWidget(show=True, title="examples")
+p = w.addPlot(row=0, col=0)
+p.setLabel("left", "折射率")
+p.setLabel("bottom", "位置", units="mm")
+```
+
+### 调整标签字体大小颜色样式
+
+```python
+from PyQt5 import QtWidgets, QtGui
+font_style = {"font-size": "15pt", "font-weight": "bold", "color": "black"}
+
+p.setLabel("left", "折射率", **font_style)
+p.setLabel("bottom", "位置", units="m", **font_style)
+```
+
+
+
 ### 如何设置双y轴
 
 ### 如何设置图例

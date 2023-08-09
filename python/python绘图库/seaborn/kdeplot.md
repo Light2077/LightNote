@@ -29,3 +29,23 @@ sns.kdeplot(data=tips, y="total_bill")
 
 ![](images/kdeplot_3_0.png)
 
+
+
+```python
+
+# 创建散点图
+plt.figure(figsize=(5, 3), dpi=100) # 设置图像大小
+sns.kdeplot(data=report, x=xcol, hue=hue, fill=True, alpha=.1)
+
+# 设置标题和轴标签
+plt.title(f'{hue}对比')
+plt.xlabel(xcol)
+plt.ylabel(ycol)
+
+# 显示图例
+# plt.legend()
+
+# 显示图像
+plt.show()
+```
+
