@@ -698,6 +698,15 @@ https://pyqtgraph.readthedocs.io/en/latest/api_reference/graphicsItems/roi.html
 
 region-of-interest 
 
+### 背景设置为白色
+
+```python
+import pyqtgraph as pg
+w = pg.GraphicsLayoutWidget
+w.setBackground("#FFFFFF")
+pg.setConfigOption("foreground", "k")
+```
+
 
 
 # 案例
