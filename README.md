@@ -1,8 +1,6 @@
 # LightNote
 
-有志之人立志长，无志之人常立志
 
-搏二兔而不得一兔
 
 优秀网址记录
 
@@ -46,7 +44,9 @@ PDF操作
 
 https://docsmall.com/pdf-compress
 
-工具网
+### 工具网
+
+https://carbon.now.sh/ 代码展示版
 
 https://xiaomark.com/tool
 
@@ -230,8 +230,10 @@ yank note
 
 typora
 
-### spyder相关
 
-webdriver 官方文档：https://www.seleniumhq.org/docs/03_webdriver.jsp
-selenium官网：https://www.seleniumhq.org/
-selenium 国内网站：http://www.selenium.org.cn/
+
+励志短语
+
+> 有志之人立志长，无志之人常立志
+>
+> 搏二兔而不得一兔

@@ -1,5 +1,13 @@
 # selenium配置
 
+### spyder相关
+
+webdriver 官方文档：https://www.seleniumhq.org/docs/03_webdriver.jsp
+selenium官网：https://www.seleniumhq.org/
+selenium 国内网站：http://www.selenium.org.cn/
+
+
+
 https://selenium-python-zh.readthedocs.io/en/latest/		
 
 **安装selenium**

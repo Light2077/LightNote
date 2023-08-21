@@ -19,18 +19,38 @@ https://help.aliyun.com/document_detail/301707.html?spm=a2c4g.337789.0.0.3b3a798
 
 ## Airflow安装
 
+创建新用户：可以在系统中创建一个Airflow用户用于管理
+
+```
+sudo useradd airflow -m -s /bin/bash
+```
+
+设置密码
+
+```
+sudo passwd airflow
+```
+
 如果python版本跟需要的版本不一致，可以用conda创建一个虚拟环境
 
 ```
-conda create -n py39 python=3.9
-conda activate py39
+conda create -n airflow python=3.9
+conda activate airflow
 ```
 
-创建一个文件夹方便管理
+创建文件夹便于管理
 
 ```
-mkdir /home/airflow
-cd /home/airflow
+cd ~
+mkdir airflow
+cd airflow
+```
+
+当前路径应该是
+
+```
+pwd
+> /home/airflow/airflow
 ```
 
 创建虚拟环境
@@ -45,14 +65,34 @@ python -m venv venv
 source venv/bin/activate
 ```
 
+设置Airflow目录
+
+```
+export AIRFLOW_HOME=~/airflow
+```
+
+
+
 使用以下命令安装Airflow（这个例子使用了Celery执行器，根据您的需求选择适当的执行器）：
 
 ```
-AIRFLOW_VERSION=2.5.3
+AIRFLOW_VERSION=2.6.3
 PYTHON_VERSION="$(python --version | cut -d " " -f 2 | cut -d "." -f 1-2)"
 CONSTRAINT_URL="https://raw.githubusercontent.com/apache/airflow/constraints-${AIRFLOW_VERSION}/constraints-${PYTHON_VERSION}.txt"
 pip install "apache-airflow[celery]==${AIRFLOW_VERSION}" --constraint "${CONSTRAINT_URL}"
 ```
+
+Run Airflow Standalone
+
+The `airflow standalone` command initializes the database, creates a user, and starts all components.
+
+这条命令会初始化所有数据库、创建一个用户并开启所有组件
+
+```
+airflow standalone
+```
+
+
 
 根据经验，一般要手动安装pandas
 
@@ -112,6 +152,8 @@ make install
 export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
 ```
 
+
+
 最后再启动
 
 ```
@@ -137,7 +179,7 @@ airflow users create \
 ```
 airflow users create \
   --username admin \
-  --password 123456 \
+  --password 2zhlmcy \
   --firstname admin \
   --lastname admin \
   --role Admin \
@@ -150,7 +192,7 @@ airflow users create \
 最后，启动Airflow Web服务器：
 
 ```
-airflow webserver --port 4399
+airflow webserver --port 7070
 ```
 
 在另一个终端中（不启动scheduler则无法显示dag）
@@ -163,13 +205,13 @@ airflow scheduler
 
 ```
 export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
-nohup airflow webserver --port 3030 >/dev/null &
+nohup airflow webserver --port 7070 >/dev/null &
 nohup airflow scheduler >/dev/null &
 ```
 
 
 
-打开浏览器并访问 [http://localhost:8080](http://localhost:8080/)
+打开浏览器并访问 [http://localhost:7070](http://localhost:7070/)
 
 现在，您已经在Linux服务器上成功安装了Airflow。如有需要，您可以按照官方文档进一步配置和定制Airflow。
 

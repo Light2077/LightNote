@@ -50,19 +50,19 @@ if __name__ == "__main__":
 
 ```
 
-### 设置窗口位置和宽高
+设置窗口位置和宽高
 
 ```python
 self.setGeometry(200, 200, 300, 200)
 ```
 
-### 设置窗口标题
+设置窗口标题
 
 ```python
 self.setWindowTitle("Example")
 ```
 
-### 设置窗口图标
+设置窗口图标
 
 需要导入`QIcon`
 
@@ -419,15 +419,22 @@ layout.addRow(title, title_edit)
 如果想把继承`QWidget`改成`QMainWindow`，由于`QMainWindow`不支持直接设置Layout，需要创建一个 QWidget 对象作为 QMainWindow 的中心窗口，然后再设置布局，比如：
 
 ```python
-# 在init_ui()内
-# 创建一个 QWidget 对象
-w = QWidget()
+class Example(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.init_ui()
+        self.show()
 
-# 将 QWidget 对象设置为 QMainWindow 的中心窗口
-self.setCentralWidget(central_widget)
+    def init_ui(self):
+        # 在init_ui()内
+        # 创建一个 QWidget 对象
+        widget = QWidget()
 
-# 将布局设置到 QWidget 对象上
-w.setLayout(layout)
+        # 将 QWidget 对象设置为 QMainWindow 的中心窗口
+        self.setCentralWidget(widget)
+
+        # 将布局设置到 QWidget 对象上
+        widget.setLayout(layout)
 ```
 
 ## 信号与槽

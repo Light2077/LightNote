@@ -6,6 +6,14 @@ https://pip.pypa.io/en/stable/cli/pip_download/
 
 ## 换源
 
+查看pip当前配置
+
+```
+pip config list
+```
+
+
+
 比如需要在一台新虚拟机部署环境，若该虚拟机可以联网，则更换默认的pip源，加快下载包的速度。
 
 https://mirrors.tuna.tsinghua.edu.cn/help/pypi/
