@@ -19,12 +19,11 @@ pyqtgraph.examples.run()
 import pyqtgraph as pg
 import numpy as np
 
-x = np.random.normal(size=1000)
-y = np.random.normal(size=1000)
-pg.plot(x, y, pen=None, symbol="o")  ## setting pen=None disables line drawing
+x = [1, 3, 2, 5, 4]
+y = [1, 2, 3, 4, 5]
+pg.plot(x, y)
 if __name__ == "__main__":
     pg.exec()
-
 ```
 
 ![image-20230227191440244](images/image-20230227191440244.png)
@@ -84,7 +83,7 @@ https://pyqtgraph.readthedocs.io/en/latest/getting_started/plotting.html
 
 ### 绘图类的组织架构
 
-在绘图时会涉及好几个类。大部分类都是自动实例化的，但是理解这些类是如何组织并联系在一起的也是有必要的。
+在绘图时会涉及好几个类。大部分类都是自动实例化的，但是理解这些类是如何组织并联	在一起的也是有必要的。
 
 PyQtGraph主要基于Qt的GraphicsView框架。如果你还不熟悉这个框架，可以去了解一下，但是不是必须的。
 

@@ -24,6 +24,16 @@ set PYTHONPATH=E:\Github\work\my_project
 python demo.py
 ```
 
+查看
+
+```
+echo %PATH%
+$env:PATH
+
+```
+
+
+
 写在一行
 
 ```

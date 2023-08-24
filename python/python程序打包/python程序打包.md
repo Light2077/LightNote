@@ -105,9 +105,29 @@ python main.py
 
 最稳妥的方式是先生成spec文件，如下
 
+> main.py 和 main.spec 最好在一个目录下。
+
 ```
 pyi-makespec -D -w main.py
 ```
+
+如果希望打包单文件
+
+```
+pyi-makespec -F -w main.py
+```
+
+### 指定dist 和 build的目录位置
+
+指定目录位置，更好地管理项目结构。
+
+在src目录（目录下有main.spec）中：
+
+```
+pyinstaller --distpath ../dist --workpath ../build main.spec
+```
+
+
 
 `-D`表示生成包含多个文件的目录，其中有一个可执行程序
 
@@ -126,6 +146,8 @@ pyi-makespec -D -w main.py
 ```
 pyinstaller main.spec
 ```
+
+
 
 打包完毕后，文件目录变成
 
@@ -222,11 +244,20 @@ if __name__ == '__main__':
 pyinstaller -D -w main.py
 ```
 
-发现也能自动识别要导入的包，直接解决问题了啊。
+发现也能自动识别要导入的包，直接解决问题了。
 
 ## 打包带有资源文件的程序
 
-那这个以后再研究吧
+在main.spec中修改
+
+```python
+a = Analysis(
+    ...
+    datas=[('icon.png', '.'),
+           ('style.qss', '.')],
+    ...
+)
+```
 
 ## 打包时排除某个包
 
@@ -234,7 +265,7 @@ pyinstaller -D -w main.py
 
 ## 参数说明
 
-## 
+#
 
 | -h，--help                  | 查看该模块的帮助信息                                         |
 | --------------------------- | ------------------------------------------------------------ |

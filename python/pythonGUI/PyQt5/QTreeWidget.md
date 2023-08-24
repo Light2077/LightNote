@@ -75,3 +75,88 @@ if __name__ == '__main__':
 - 双击一个 CSV 文件名将在下方的 `QLineEdit` 中显示该文件名。
 
 希望这能帮助你实现你需要的功能！
+
+
+
+自己写的
+
+```python
+import sys
+from PyQt5.QtWidgets import (
+    QApplication,
+    QTreeWidget,
+    QWidget,
+    QVBoxLayout,
+    QTreeWidgetItem,
+)
+
+
+class Example(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.setGeometry(200, 200, 300, 200)
+        self.init_ui()
+        self.show()
+
+    def init_ui(self):
+        layout = QVBoxLayout()
+        tree = QTreeWidget()
+        tree.setHeaderLabel(["列名"])
+
+        self.set_tree(tree)
+        layout.addWidget(tree)
+
+        self.setLayout(layout)
+
+    def set_tree(self, tree: QTreeWidget):
+        # item = QTreeWidgetItem([filename])
+        # parent_item.addChild(item)
+        root = tree.invisibleRootItem()
+        item1 = QTreeWidgetItem(["child1"])
+        item1_1 = QTreeWidgetItem(["child1_1"])
+        item1_2 = QTreeWidgetItem(["child1_2"])
+        item1_3 = QTreeWidgetItem(["child1_3"])
+
+        item1.addChild(item1_1)
+        item1.addChild(item1_2)
+        item1.addChild(item1_3)
+
+        item2 = QTreeWidgetItem(["child2"])
+        item3 = QTreeWidgetItem(["child3"])
+
+        root.addChild(item1)
+        root.addChild(item2)
+        root.addChild(item3)
+
+
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    ex = Example()
+    sys.exit(app.exec_())
+
+```
+
+生成一个树
+
+```python
+tree = QTreeWidget()
+```
+
+初始化树的列名，如果这里传入多个元素的list，那么QTreeWidget窗口就会是多列的
+
+```python
+tree.setHeaderLabel(["列名"])
+```
+
+创建一个结点，同理，列表里的是列元素的名字，一般一个就行。
+
+```python
+item1 = QTreeWidgetItem(["child1"])
+```
+
+添加子结点
+
+```python
+root.addChild(item1)
+```
+
