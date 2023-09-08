@@ -53,7 +53,7 @@ class Test(IsolatedAsyncioTestCase):
   ├── vector
   │ ├── __init__.py
   │ └── vector.py
-  └── test
+  └── tests
     ├── __init__.py
     └── test_vector.py
 ```
@@ -281,4 +281,59 @@ python -m unittest tests.test_vector.TestVector.test_add
 ctrl + shift + p 输入 python configure tests就可以一步步配置单元测试了。
 
 
+
+## 详解
+
+### setUpClass怎么用
+
+下面的示例`setUpClass` 用于初始化 `Vector` 实例，并存储在测试类的 `cls.v` 属性中。
+
+每个测试方法都可以直接用`cls.v`进行测试。
+
+这样就不需要在每个测试方法里重新创建一个 `Vector` 实例了。
+
+```python
+import unittest
+
+class Vector:
+    def __init__(self, x=0, y=0):
+        self.x = x
+        self.y = y
+        
+    def add(self, other):
+        return Vector(self.x + other.x, self.y + other.y)
+
+class TestVector(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        print("setUpClass")
+        cls.v = Vector(1, 1)
+
+    @classmethod
+    def tearDownClass(cls):
+        print("tearDownClass")
+        del cls.v
+
+    def test_add(self):
+        print("test_add")
+        v2 = Vector(1, 1)
+        result = self.v.add(v2)
+        self.assertEqual(result.x, 2)
+        self.assertEqual(result.y, 2)
+
+    def test_init(self):
+        print("test_init")
+        self.assertEqual(self.v.x, 1)
+        self.assertEqual(self.v.y, 1)
+
+```
+
+> 🔔需要注意的是，如果在测试过程中修改了 `cls.v`，由于`cls.v`是共享的，其他测试方法可能也会受到影响。
+
+### 只测试一个函数
+
+```
+python -m unittest -k test_my_function
+```
 
