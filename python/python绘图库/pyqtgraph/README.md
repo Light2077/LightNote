@@ -339,7 +339,7 @@ css格式
 "<p style='color: green; font-size: 12pt'>Hello</p>"
 ```
 
-### 如何设置图像的全局格式
+### 平滑曲线
 
 [Global Configuration Options](https://pyqtgraph.readthedocs.io/en/latest/api_reference/config_options.html)
 
