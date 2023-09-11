@@ -393,6 +393,8 @@ SELECT
 FROM order_list
 ```
 
+
+
 从订单表中找出出现次数最多的商品
 
 语法比较固定
@@ -400,6 +402,15 @@ FROM order_list
 ```sql
 mode() within group (order by <fields>)
 ```
+
+一般情况下，这种写法是为了服务需要排序的聚合函数，比如还有
+
+```postgresql
+SELECT percentile_cont(0.5) WITHIN GROUP (ORDER BY column_name) FROM table;
+SELECT percentile_disc(0.5) WITHIN GROUP (ORDER BY column_name) FROM table;
+```
+
+
 
 ## 时间戳字段自动填充
 
