@@ -249,9 +249,77 @@ logging.basicConfig(filename='example.log', level=logging.DEBUG, filemode='w')
 
 
 
+# 快速使用的方案
 
+步骤：
 
+- 创建文件，把下面的代码拷贝过去
+- 在程序的入口文件添加相应的设置规则
 
+创建`logging_config.py`文件
+
+```python
+import os
+import logging
+import logging.handlers
+
+def setup_logger(debug_mode=False, log_dir=None):
+    # 创建logger记录器
+    logger = logging.getLogger()
+    if debug_mode:
+        logger.setLevel(logging.DEBUG)
+    else:
+        logger.setLevel(logging.INFO)
+    if log_dir is None:
+        parent_dir = os.path.dirname(os.path.dirname(__file__))
+        log_dir = os.path.join(parent_dir, "logs")
+    log_file_path = os.path.join(log_dir, "output.log")
+    if not os.path.isdir(log_dir):
+        os.makedirs(log_dir)
+
+    # 文件处理器，保存日志到文件
+    file_handler = logging.handlers.RotatingFileHandler(
+        filename=log_file_path, 
+        maxBytes=1024 * 1024,  # 日志最大为1Mb
+        backupCount=2,  # 最多备份2个日志
+        encoding='utf8'
+    )
+
+    file_handler.setLevel(logging.INFO)
+
+    # 输出日志到终端
+    stream_handler = logging.StreamHandler()
+    stream_handler.setLevel(logging.DEBUG)
+
+    # 显示格式
+    formatter = logging.Formatter(
+        fmt="[%(asctime)s][%(levelname)s][%(name)s]:%(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S"
+    )
+
+    file_handler.setFormatter(formatter)
+    stream_handler.setFormatter(formatter)
+
+    logger.addHandler(file_handler)
+    logger.addHandler(stream_handler)
+
+    logger.debug('日志初始化完毕')
+
+```
+
+**在主程序或入口处配置logger**：主程序或程序入口处，引入刚刚创建的 `logging_config.py` 文件，并调用 `setup_logger` 函数
+
+```python
+import logging_config
+
+# 是否为DEBUG模式
+DEBUG_MODE = True
+
+logging_config.setup_logger(debug_mode=DEBUG_MODE)
+
+# 程序其余部分
+
+```
 
 
 
