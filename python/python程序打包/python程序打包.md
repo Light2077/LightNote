@@ -26,7 +26,10 @@ pyinstaller -D -w -i favicon.ico main.py
 
 
 ```shell
+# 带图标
 pyi-makespec -D -w -i favicon.ico main.py
+# 无图标
+pyi-makespec -D -w main.py
 ```
 
 会生成一个`main.spec`文件，按需要修改这个文件后运行

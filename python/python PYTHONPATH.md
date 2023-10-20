@@ -27,8 +27,8 @@ python demo.py
 查看
 
 ```
-echo %PATH%
-$env:PATH
+echo %PYTHONPATH%
+$env:PYTHONPATH
 
 ```
 
