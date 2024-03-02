@@ -752,3 +752,33 @@ public void OnEndDrag(...)
   |- Scripts
     |- MoveBag # 实现拖拽背包改变位置
 ```
+
+鼠标悬浮在物品上，显示信息
+
+新建`ItemOnHover.cs`脚本
+
+```cs
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.EventSystems;
+
+public class ItemOnHover : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+{
+    public Slot slot;
+
+    // Start is called before the first frame update
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        InventoryManager.UpdateItemInfo(slot.slotInfo);
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        InventoryManager.UpdateItemInfo("");
+    }
+}
+```
+
+挂载到slot Prefab 下的item对象上。
+
